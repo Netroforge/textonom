@@ -53,10 +53,10 @@ fun FrameWindowScope.App() {
         tabManager.startAutoSave()
     }
 
-    // Automatically create a new tab when the editor starts with no tabs
-    LaunchedEffect(Unit) {
-        if (tabManager.tabs.isEmpty()) {
-            tabManager.createNewTab()
+    // Save session state when the app is closing
+    DisposableEffect(Unit) {
+        onDispose {
+            tabManager.saveSessionState()
         }
     }
 

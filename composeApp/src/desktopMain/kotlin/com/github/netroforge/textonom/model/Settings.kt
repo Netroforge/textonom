@@ -52,11 +52,14 @@ data class Settings(
     val autoSaveIntervalSeconds: Int = 60,
 
     // Theme effect settings
-    val enableCrtEffect: Boolean = false
+    val enableCrtEffect: Boolean = false,
+
+    // Session state
+    val sessionState: SessionState = SessionState()
 ) {
     companion object {
         private const val SETTINGS_FILENAME = "textonom_settings.json"
-        private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
+        private val json = Json { prettyPrint = true; ignoreUnknownKeys = true; encodeDefaults = true }
 
         /**
          * Gets the settings file location.
@@ -180,4 +183,9 @@ data class Settings(
      * Returns a copy with the updated CRT effect setting.
      */
     fun withCrtEffect(enabled: Boolean) = copy(enableCrtEffect = enabled)
+
+    /**
+     * Returns a copy with the updated session state.
+     */
+    fun withSessionState(newSessionState: SessionState) = copy(sessionState = newSessionState)
 }

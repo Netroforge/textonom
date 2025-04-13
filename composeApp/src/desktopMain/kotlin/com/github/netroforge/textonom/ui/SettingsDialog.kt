@@ -73,10 +73,10 @@ fun SettingsDialog(
                     var selectedTabIndex by remember { mutableStateOf(0) }
                     val tabs = listOf("Theme", "Font", "Tab Behavior", "Display", "Auto-Save")
 
-                    // Use 25% of dialog width for tabs section
+                    // Use 30% of dialog width for tabs section
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(0.25f)
+                            .fillMaxWidth(0.30f)
                             .fillMaxHeight()
                             .background(MaterialTheme.colors.surface)
                             .padding(8.dp)
@@ -90,7 +90,7 @@ fun SettingsDialog(
                         }
                     }
 
-                    // Settings content based on selected tab (75% of dialog width)
+                    // Settings content based on selected tab (70% of dialog width)
                     Box(
                         modifier = Modifier
                             .weight(1f)
