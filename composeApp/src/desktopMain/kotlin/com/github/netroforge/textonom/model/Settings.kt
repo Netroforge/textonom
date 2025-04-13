@@ -21,7 +21,10 @@ enum class ThemeType {
     DARK,
 
     @SerialName("cyberpunk")
-    CYBERPUNK
+    CYBERPUNK,
+
+    @SerialName("cyberpunk_turbo")
+    CYBERPUNK_TURBO
 }
 
 /**
@@ -48,7 +51,10 @@ data class Settings(
 
     // Auto-save settings
     val autoSave: Boolean = false,
-    val autoSaveIntervalSeconds: Int = 60
+    val autoSaveIntervalSeconds: Int = 60,
+
+    // Theme effect settings
+    val enableCrtEffect: Boolean = false
 ) {
     companion object {
         private const val SETTINGS_FILENAME = "textonom_settings.json"
@@ -117,10 +123,10 @@ data class Settings(
     fun withThemeType(type: ThemeType) = copy(themeType = type)
 
     /**
-     * Returns whether the current theme is dark (either DARK or CYBERPUNK).
+     * Returns whether the current theme is dark (DARK, CYBERPUNK, or CYBERPUNK_TURBO).
      */
     val isDarkTheme: Boolean
-        get() = themeType == ThemeType.DARK || themeType == ThemeType.CYBERPUNK
+        get() = themeType == ThemeType.DARK || themeType == ThemeType.CYBERPUNK || themeType == ThemeType.CYBERPUNK_TURBO
 
     /**
      * Returns a copy with the updated font name.
@@ -171,4 +177,9 @@ data class Settings(
      * Returns a copy with the updated auto-save interval.
      */
     fun withAutoSaveInterval(intervalSeconds: Int) = copy(autoSaveIntervalSeconds = intervalSeconds)
+
+    /**
+     * Returns a copy with the updated CRT effect setting.
+     */
+    fun withCrtEffect(enabled: Boolean) = copy(enableCrtEffect = enabled)
 }

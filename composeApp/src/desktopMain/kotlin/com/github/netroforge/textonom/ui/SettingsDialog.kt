@@ -23,6 +23,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.github.netroforge.textonom.model.Settings
 import com.github.netroforge.textonom.model.ThemeType
 import com.github.netroforge.textonom.cyberpunkColors
+import com.github.netroforge.textonom.ui.effects.crtEffect
 import java.awt.Dimension
 import java.awt.Toolkit
 
@@ -254,6 +255,22 @@ private fun ThemeSettings(
                         color = if (settings.themeType == ThemeType.CYBERPUNK) Color(0xFF00FFFF) else MaterialTheme.colors.onSurface
                     )
                 }
+
+                // Cyberpunk Turbo theme option
+                Row(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = settings.themeType == ThemeType.CYBERPUNK_TURBO,
+                        onClick = { onSettingsChanged(settings.withThemeType(ThemeType.CYBERPUNK_TURBO)) }
+                    )
+                    Text(
+                        text = "Cyberpunk Turbo",
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = if (settings.themeType == ThemeType.CYBERPUNK_TURBO) Color(0xFF00FF00) else MaterialTheme.colors.onSurface
+                    )
+                }
             }
         }
 
@@ -268,9 +285,17 @@ private fun ThemeSettings(
                         ThemeType.LIGHT -> Color.White
                         ThemeType.DARK -> Color.DarkGray
                         ThemeType.CYBERPUNK -> Color(0xFF0A0A20) // Dark blue-purple background
+                        ThemeType.CYBERPUNK_TURBO -> Color(0xFF0A0A20) // Same background for Turbo
                     }
                 )
                 .border(1.dp, Color.Gray)
+                // Apply CRT effect only for Cyberpunk Turbo theme
+                .crtEffect(
+                    enabled = settings.themeType == ThemeType.CYBERPUNK_TURBO,
+                    scanlineAlpha = 0.2f, // Stronger effect for the preview
+                    flickerStrength = 0.04f, // More noticeable flicker for preview
+                    glitchProbability = 0.1f // Much higher probability for preview to showcase the effect
+                )
         ) {
             Text(
                 text = "Theme Preview",
@@ -278,6 +303,7 @@ private fun ThemeSettings(
                     ThemeType.LIGHT -> Color.Black
                     ThemeType.DARK -> Color.White
                     ThemeType.CYBERPUNK -> Color(0xFF00FFFF) // Cyan neon text
+                    ThemeType.CYBERPUNK_TURBO -> Color(0xFF00FFFF) // Cyan neon text for turbo theme
                 },
                 modifier = Modifier.align(Alignment.Center)
             )

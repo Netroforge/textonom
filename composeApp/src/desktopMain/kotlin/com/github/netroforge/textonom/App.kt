@@ -9,6 +9,7 @@ import androidx.compose.ui.window.FrameWindowScope
 import com.github.netroforge.textonom.model.Settings
 import com.github.netroforge.textonom.model.ThemeType
 import com.github.netroforge.textonom.ui.*
+import com.github.netroforge.textonom.ui.effects.crtEffect
 import com.github.netroforge.textonom.utils.TextTransformations
 import com.github.netroforge.textonom.viewmodel.SettingsManager
 import com.github.netroforge.textonom.viewmodel.TabManager
@@ -58,6 +59,7 @@ fun FrameWindowScope.App() {
             ThemeType.DARK -> darkColors()
             ThemeType.LIGHT -> lightColors()
             ThemeType.CYBERPUNK -> cyberpunkColors()
+            ThemeType.CYBERPUNK_TURBO -> cyberpunkColors() // Use same colors as regular cyberpunk
         }
     ) {
         // Set up the menu bar
@@ -143,7 +145,18 @@ fun FrameWindowScope.App() {
         )
 
         // Main layout
-        Column(modifier = Modifier.fillMaxSize()) {
+        // Apply CRT effect only for Cyberpunk Turbo theme
+        val shouldApplyCrtEffect = settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO
+
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .crtEffect(
+                enabled = shouldApplyCrtEffect,
+                scanlineAlpha = 0.12f,  // Slightly reduced for better readability
+                flickerStrength = 0.02f, // Subtle flicker
+                glitchProbability = 0.05f // More frequent glitches for authentic retro feel
+            )
+        ) {
             // Tab bar
             TabBar(
                 tabs = tabManager.tabs,

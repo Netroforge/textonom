@@ -249,6 +249,7 @@ private fun getCursorColor(themeType: ThemeType): Color {
         ThemeType.LIGHT -> Color(0xFF000000) // Black cursor for light theme
         ThemeType.DARK -> Color(0xFFFFFFFF) // White cursor for dark theme
         ThemeType.CYBERPUNK -> Color(0xFF00FFFF) // Cyan neon cursor for cyberpunk theme
+        ThemeType.CYBERPUNK_TURBO -> Color(0xFF00FFFF) // Cyan neon cursor for cyberpunk turbo theme
     }
 }
 
