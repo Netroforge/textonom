@@ -7,6 +7,22 @@ import kotlinx.serialization.Serializable
 import java.io.File
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.SerialName
+
+/**
+ * Enum representing the available themes.
+ */
+@Serializable
+enum class ThemeType {
+    @SerialName("light")
+    LIGHT,
+
+    @SerialName("dark")
+    DARK,
+
+    @SerialName("cyberpunk")
+    CYBERPUNK
+}
 
 /**
  * Represents the editor settings.
@@ -14,22 +30,22 @@ import kotlinx.serialization.json.Json
 @Serializable
 data class Settings(
     // Theme settings
-    val isDarkTheme: Boolean = false,
-    
+    val themeType: ThemeType = ThemeType.LIGHT,
+
     // Font settings
     val fontName: String = "Monospace",
     val fontSize: Int = 14,
-    
+
     // Tab settings
     val tabSize: Int = 4,
     val useSpacesForTabs: Boolean = true,
     val autoIndent: Boolean = true,
-    
+
     // Display settings
     val showLineNumbers: Boolean = true,
     val wordWrap: Boolean = true,
     val wrapColumn: Int = 80,
-    
+
     // Auto-save settings
     val autoSave: Boolean = false,
     val autoSaveIntervalSeconds: Int = 60
@@ -37,7 +53,7 @@ data class Settings(
     companion object {
         private const val SETTINGS_FILENAME = "textonom_settings.json"
         private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
-        
+
         /**
          * Gets the settings file location.
          */
@@ -49,7 +65,7 @@ data class Settings(
             }
             return File(appDir, SETTINGS_FILENAME)
         }
-        
+
         /**
          * Loads settings from disk.
          */
@@ -68,7 +84,7 @@ data class Settings(
             }
         }
     }
-    
+
     /**
      * Saves settings to disk.
      */
@@ -76,7 +92,7 @@ data class Settings(
         val settingsFile = getSettingsFile()
         settingsFile.writeText(json.encodeToString(this))
     }
-    
+
     /**
      * Returns the FontFamily based on the fontName.
      */
@@ -89,62 +105,68 @@ data class Settings(
             else -> FontFamily.Default
         }
     }
-    
+
     /**
      * Returns the font size in sp.
      */
     fun getFontSize() = fontSize.sp
-    
+
     /**
-     * Returns a copy with the dark theme toggled.
+     * Returns a copy with the theme type updated.
      */
-    fun toggleDarkTheme() = copy(isDarkTheme = !isDarkTheme)
-    
+    fun withThemeType(type: ThemeType) = copy(themeType = type)
+
+    /**
+     * Returns whether the current theme is dark (either DARK or CYBERPUNK).
+     */
+    val isDarkTheme: Boolean
+        get() = themeType == ThemeType.DARK || themeType == ThemeType.CYBERPUNK
+
     /**
      * Returns a copy with the updated font name.
      */
     fun withFontName(name: String) = copy(fontName = name)
-    
+
     /**
      * Returns a copy with the updated font size.
      */
     fun withFontSize(size: Int) = copy(fontSize = size)
-    
+
     /**
      * Returns a copy with the updated tab size.
      */
     fun withTabSize(size: Int) = copy(tabSize = size)
-    
+
     /**
      * Returns a copy with the updated spaces for tabs setting.
      */
     fun withSpacesForTabs(useSpaces: Boolean) = copy(useSpacesForTabs = useSpaces)
-    
+
     /**
      * Returns a copy with the updated auto-indent setting.
      */
     fun withAutoIndent(autoIndent: Boolean) = copy(autoIndent = autoIndent)
-    
+
     /**
      * Returns a copy with the updated line numbers visibility.
      */
     fun withShowLineNumbers(show: Boolean) = copy(showLineNumbers = show)
-    
+
     /**
      * Returns a copy with the updated word wrap setting.
      */
     fun withWordWrap(wrap: Boolean) = copy(wordWrap = wrap)
-    
+
     /**
      * Returns a copy with the updated wrap column.
      */
     fun withWrapColumn(column: Int) = copy(wrapColumn = column)
-    
+
     /**
      * Returns a copy with the updated auto-save setting.
      */
     fun withAutoSave(autoSave: Boolean) = copy(autoSave = autoSave)
-    
+
     /**
      * Returns a copy with the updated auto-save interval.
      */

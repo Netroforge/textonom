@@ -4,13 +4,36 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.FrameWindowScope
 import com.github.netroforge.textonom.model.Settings
+import com.github.netroforge.textonom.model.ThemeType
 import com.github.netroforge.textonom.ui.*
 import com.github.netroforge.textonom.utils.TextTransformations
 import com.github.netroforge.textonom.viewmodel.SettingsManager
 import com.github.netroforge.textonom.viewmodel.TabManager
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+/**
+ * Creates a cyberpunk color palette inspired by new retro wave from the 80s.
+ */
+fun cyberpunkColors(): Colors {
+    return Colors(
+        primary = Color(0xFF00FFFF), // Cyan neon
+        primaryVariant = Color(0xFF00CCCC),
+        secondary = Color(0xFFFF00FF), // Magenta neon
+        secondaryVariant = Color(0xFFCC00CC),
+        background = Color(0xFF0A0A20), // Dark blue-purple
+        surface = Color(0xFF1A1A30),
+        error = Color(0xFFFF3366), // Neon red
+        onPrimary = Color(0xFF000000), // Black text on bright colors
+        onSecondary = Color(0xFF000000),
+        onBackground = Color(0xFFFFFFFF), // White text on dark backgrounds
+        onSurface = Color(0xFFFFFFFF),
+        onError = Color(0xFF000000),
+        isLight = false
+    )
+}
 
 @Composable
 fun FrameWindowScope.App() {
@@ -31,10 +54,10 @@ fun FrameWindowScope.App() {
 
     // Apply theme based on settings
     MaterialTheme(
-        colors = if (settingsManager.settings.isDarkTheme) {
-            darkColors()
-        } else {
-            lightColors()
+        colors = when (settingsManager.settings.themeType) {
+            ThemeType.DARK -> darkColors()
+            ThemeType.LIGHT -> lightColors()
+            ThemeType.CYBERPUNK -> cyberpunkColors()
         }
     ) {
         // Set up the menu bar

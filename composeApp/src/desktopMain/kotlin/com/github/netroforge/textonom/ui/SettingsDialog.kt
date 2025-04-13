@@ -21,6 +21,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.rememberWindowState
 import com.github.netroforge.textonom.model.Settings
+import com.github.netroforge.textonom.model.ThemeType
+import com.github.netroforge.textonom.cyberpunkColors
 import java.awt.Dimension
 import java.awt.Toolkit
 
@@ -206,28 +208,52 @@ private fun ThemeSettings(
         ) {
             Text("Theme Mode:", modifier = Modifier.width(120.dp))
 
-            Row(modifier = Modifier.selectableGroup()) {
-                RadioButton(
-                    selected = !settings.isDarkTheme,
-                    onClick = { onSettingsChanged(settings.copy(isDarkTheme = false)) }
-                )
-                Text(
-                    text = "Light",
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 16.dp)
-                        .align(Alignment.CenterVertically)
-                )
+            Column(modifier = Modifier.selectableGroup()) {
+                // Light theme option
+                Row(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = settings.themeType == ThemeType.LIGHT,
+                        onClick = { onSettingsChanged(settings.withThemeType(ThemeType.LIGHT)) }
+                    )
+                    Text(
+                        text = "Light",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
 
-                RadioButton(
-                    selected = settings.isDarkTheme,
-                    onClick = { onSettingsChanged(settings.copy(isDarkTheme = true)) }
-                )
-                Text(
-                    text = "Dark",
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .align(Alignment.CenterVertically)
-                )
+                // Dark theme option
+                Row(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = settings.themeType == ThemeType.DARK,
+                        onClick = { onSettingsChanged(settings.withThemeType(ThemeType.DARK)) }
+                    )
+                    Text(
+                        text = "Dark",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
+                // Cyberpunk theme option
+                Row(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = settings.themeType == ThemeType.CYBERPUNK,
+                        onClick = { onSettingsChanged(settings.withThemeType(ThemeType.CYBERPUNK)) }
+                    )
+                    Text(
+                        text = "Cyberpunk",
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = if (settings.themeType == ThemeType.CYBERPUNK) Color(0xFF00FFFF) else MaterialTheme.colors.onSurface
+                    )
+                }
             }
         }
 
@@ -237,14 +263,23 @@ private fun ThemeSettings(
                 .fillMaxWidth()
                 .height(100.dp)
                 .padding(vertical = 16.dp)
-                .background(if (settings.isDarkTheme) Color.DarkGray else Color.White)
+                .background(
+                    when (settings.themeType) {
+                        ThemeType.LIGHT -> Color.White
+                        ThemeType.DARK -> Color.DarkGray
+                        ThemeType.CYBERPUNK -> Color(0xFF0A0A20) // Dark blue-purple background
+                    }
+                )
                 .border(1.dp, Color.Gray)
         ) {
             Text(
                 text = "Theme Preview",
-                color = if (settings.isDarkTheme) Color.White else Color.Black,
-                modifier = Modifier
-                    .align(Alignment.Center)
+                color = when (settings.themeType) {
+                    ThemeType.LIGHT -> Color.Black
+                    ThemeType.DARK -> Color.White
+                    ThemeType.CYBERPUNK -> Color(0xFF00FFFF) // Cyan neon text
+                },
+                modifier = Modifier.align(Alignment.Center)
             )
         }
     }
