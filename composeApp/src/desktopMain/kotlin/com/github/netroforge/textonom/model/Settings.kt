@@ -48,7 +48,11 @@ data class Settings(
 
     // Auto-save settings
     val autoSave: Boolean = false,
-    val autoSaveIntervalSeconds: Int = 60
+    val autoSaveIntervalSeconds: Int = 60,
+
+    // Theme effect settings
+    val enableCrtEffect: Boolean = false,
+    val useGreenPhosphor: Boolean = false
 ) {
     companion object {
         private const val SETTINGS_FILENAME = "textonom_settings.json"
@@ -171,4 +175,14 @@ data class Settings(
      * Returns a copy with the updated auto-save interval.
      */
     fun withAutoSaveInterval(intervalSeconds: Int) = copy(autoSaveIntervalSeconds = intervalSeconds)
+
+    /**
+     * Returns a copy with the updated CRT effect setting.
+     */
+    fun withCrtEffect(enabled: Boolean) = copy(enableCrtEffect = enabled)
+
+    /**
+     * Returns a copy with the updated green phosphor setting.
+     */
+    fun withGreenPhosphor(enabled: Boolean) = copy(useGreenPhosphor = enabled)
 }

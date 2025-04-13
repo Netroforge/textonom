@@ -23,6 +23,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.github.netroforge.textonom.model.Settings
 import com.github.netroforge.textonom.model.ThemeType
 import com.github.netroforge.textonom.cyberpunkColors
+import com.github.netroforge.textonom.ui.effects.crtEffect
 import java.awt.Dimension
 import java.awt.Toolkit
 
@@ -257,6 +258,46 @@ private fun ThemeSettings(
             }
         }
 
+        // CRT effect toggle (only visible for Cyberpunk theme)
+        if (settings.themeType == ThemeType.CYBERPUNK) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("CRT Monitor Effect:", modifier = Modifier.width(160.dp))
+                Switch(
+                    checked = settings.enableCrtEffect,
+                    onCheckedChange = { onSettingsChanged(settings.withCrtEffect(it)) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color(0xFF00FFFF), // Cyan neon for cyberpunk theme
+                        checkedTrackColor = Color(0xFF0A0A20).copy(alpha = 0.5f)
+                    )
+                )
+            }
+
+            // Green phosphor toggle (only visible when CRT effect is enabled)
+            if (settings.enableCrtEffect) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Green Phosphor Mode:", modifier = Modifier.width(160.dp))
+                    Switch(
+                        checked = settings.useGreenPhosphor,
+                        onCheckedChange = { onSettingsChanged(settings.withGreenPhosphor(it)) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color(0xFF00FF00), // Green for phosphor mode
+                            checkedTrackColor = Color(0xFF0A0A20).copy(alpha = 0.5f)
+                        )
+                    )
+                }
+            }
+        }
+
         // Theme preview
         Box(
             modifier = Modifier
@@ -271,6 +312,14 @@ private fun ThemeSettings(
                     }
                 )
                 .border(1.dp, Color.Gray)
+                // Apply CRT effect to preview if cyberpunk theme is selected and effect is enabled
+                .crtEffect(
+                    enabled = settings.themeType == ThemeType.CYBERPUNK && settings.enableCrtEffect,
+                    scanlineAlpha = 0.2f, // Stronger effect for the preview
+                    flickerStrength = 0.04f, // More noticeable flicker for preview
+                    glitchProbability = 0.1f, // Much higher probability for preview to showcase the effect
+                    greenPhosphor = settings.useGreenPhosphor // Use green phosphor mode if selected
+                )
         ) {
             Text(
                 text = "Theme Preview",

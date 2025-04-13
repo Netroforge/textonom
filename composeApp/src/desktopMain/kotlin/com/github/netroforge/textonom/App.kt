@@ -9,6 +9,7 @@ import androidx.compose.ui.window.FrameWindowScope
 import com.github.netroforge.textonom.model.Settings
 import com.github.netroforge.textonom.model.ThemeType
 import com.github.netroforge.textonom.ui.*
+import com.github.netroforge.textonom.ui.effects.crtEffect
 import com.github.netroforge.textonom.utils.TextTransformations
 import com.github.netroforge.textonom.viewmodel.SettingsManager
 import com.github.netroforge.textonom.viewmodel.TabManager
@@ -143,7 +144,20 @@ fun FrameWindowScope.App() {
         )
 
         // Main layout
-        Column(modifier = Modifier.fillMaxSize()) {
+        // Apply CRT effect if cyberpunk theme is selected and effect is enabled
+        val shouldApplyCrtEffect = settingsManager.settings.themeType == ThemeType.CYBERPUNK &&
+                                  settingsManager.settings.enableCrtEffect
+
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .crtEffect(
+                enabled = shouldApplyCrtEffect,
+                scanlineAlpha = 0.12f,  // Slightly reduced for better readability
+                flickerStrength = 0.02f, // Subtle flicker
+                glitchProbability = 0.05f, // More frequent glitches for authentic retro feel
+                greenPhosphor = settingsManager.settings.useGreenPhosphor  // Use green phosphor mode if selected
+            )
+        ) {
             // Tab bar
             TabBar(
                 tabs = tabManager.tabs,
