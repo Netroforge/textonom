@@ -59,6 +59,7 @@ fun FrameWindowScope.App() {
             ThemeType.DARK -> darkColors()
             ThemeType.LIGHT -> lightColors()
             ThemeType.CYBERPUNK -> cyberpunkColors()
+            ThemeType.CYBERPUNK_TURBO -> cyberpunkColors() // Use same colors as regular cyberpunk
         }
     ) {
         // Set up the menu bar
@@ -144,9 +145,8 @@ fun FrameWindowScope.App() {
         )
 
         // Main layout
-        // Apply CRT effect if cyberpunk theme is selected and effect is enabled
-        val shouldApplyCrtEffect = settingsManager.settings.themeType == ThemeType.CYBERPUNK &&
-                                  settingsManager.settings.enableCrtEffect
+        // Apply CRT effect only for Cyberpunk Turbo theme
+        val shouldApplyCrtEffect = settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -154,8 +154,7 @@ fun FrameWindowScope.App() {
                 enabled = shouldApplyCrtEffect,
                 scanlineAlpha = 0.12f,  // Slightly reduced for better readability
                 flickerStrength = 0.02f, // Subtle flicker
-                glitchProbability = 0.05f, // More frequent glitches for authentic retro feel
-                greenPhosphor = settingsManager.settings.useGreenPhosphor  // Use green phosphor mode if selected
+                glitchProbability = 0.05f // More frequent glitches for authentic retro feel
             )
         ) {
             // Tab bar

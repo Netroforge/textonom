@@ -25,14 +25,12 @@ import kotlin.random.Random
  * @param scanlineAlpha The alpha value for the scanlines (0.0-1.0)
  * @param flickerStrength The strength of the flicker effect (0.0-1.0)
  * @param glitchProbability The probability of a glitch occurring (0.0-1.0)
- * @param greenPhosphor Whether to use green phosphor color (true) or cyan (false)
  */
 fun Modifier.crtEffect(
     enabled: Boolean = true,
     scanlineAlpha: Float = 0.15f,
     flickerStrength: Float = 0.03f,
-    glitchProbability: Float = 0.01f,
-    greenPhosphor: Boolean = false
+    glitchProbability: Float = 0.01f
 ): Modifier {
     if (!enabled) return this
 
@@ -44,15 +42,13 @@ fun Modifier.crtEffect(
 
             // Draw the CRT effects
             drawScanlines(scanlineAlpha)
-            if (!greenPhosphor) {
-                drawRgbSeparation() // Only for non-green phosphor mode
-            }
+            drawRgbSeparation()
             drawVignette()
-            drawScreenGlow(greenPhosphor)
+            drawScreenGlow()
             // No screen curvature for flat monitor look
-            drawRandomGlitches(glitchProbability, greenPhosphor)
+            drawRandomGlitches(glitchProbability)
         }
-        .flickerEffect(enabled = enabled, strength = flickerStrength, greenPhosphor = greenPhosphor)
+        .flickerEffect(enabled = enabled, strength = flickerStrength)
 }
 
 /**
@@ -229,18 +225,14 @@ private fun DrawScope.drawVignette() {
 /**
  * Draws an enhanced glow effect to simulate CRT phosphor glow and bloom.
  */
-private fun DrawScope.drawScreenGlow(greenPhosphor: Boolean = false) {
+private fun DrawScope.drawScreenGlow() {
     // Create a more dynamic bloom/glow effect with multiple layers
 
-    // Choose color based on mode
-    val glowColor = if (greenPhosphor) {
-        Color(0xFF00FF00) // Green phosphor
-    } else {
-        Color(0xFF00FFFF) // Cyan for cyberpunk theme
-    }
+    // Cyan color for cyberpunk theme
+    val glowColor = Color(0xFF00FFFF)
 
     // Base glow - subtle overall glow
-    val baseGlowAlpha = if (greenPhosphor) 0.06f else 0.03f // Stronger for green phosphor
+    val baseGlowAlpha = 0.03f
     drawRect(
         color = glowColor.copy(alpha = baseGlowAlpha),
         size = Size(size.width, size.height),
@@ -248,7 +240,7 @@ private fun DrawScope.drawScreenGlow(greenPhosphor: Boolean = false) {
     )
 
     // Uniform horizontal glow - no circular effects
-    val horizontalGlowAlpha = if (greenPhosphor) 0.08f else 0.04f // Stronger for green phosphor
+    val horizontalGlowAlpha = 0.04f
     val horizontalGlow = Brush.verticalGradient(
         colors = listOf(
             glowColor.copy(alpha = horizontalGlowAlpha),
@@ -266,11 +258,7 @@ private fun DrawScope.drawScreenGlow(greenPhosphor: Boolean = false) {
 
     // Add subtle pulsing effect to the glow (this will be controlled by the flickerEffect)
     val pulseTime = System.currentTimeMillis() % 2000 / 2000f
-    val pulseIntensity = if (greenPhosphor) {
-        (sin(pulseTime * 2 * PI.toFloat()) * 0.02f + 0.04f).toFloat() // Stronger for green phosphor
-    } else {
-        (sin(pulseTime * 2 * PI.toFloat()) * 0.01f + 0.02f).toFloat()
-    }
+    val pulseIntensity = (sin(pulseTime * 2 * PI.toFloat()) * 0.01f + 0.02f).toFloat()
 
     drawRect(
         color = glowColor.copy(alpha = pulseIntensity),
@@ -284,7 +272,7 @@ private fun DrawScope.drawScreenGlow(greenPhosphor: Boolean = false) {
 /**
  * Draws enhanced random glitches to simulate CRT interference and analog signal issues.
  */
-private fun DrawScope.drawRandomGlitches(probability: Float, greenPhosphor: Boolean = false) {
+private fun DrawScope.drawRandomGlitches(probability: Float) {
     // Only draw glitches occasionally based on probability
     if (Random.nextFloat() > probability) return
 
@@ -294,11 +282,11 @@ private fun DrawScope.drawRandomGlitches(probability: Float, greenPhosphor: Bool
     repeat(glitchCount) {
         // Determine glitch type - more variety
         when (Random.nextInt(5)) {
-            0 -> drawHorizontalGlitchLines(greenPhosphor)
-            1 -> if (!greenPhosphor) drawColorShift() else drawHorizontalGlitchLines(greenPhosphor) // No color shift for green phosphor
-            2 -> drawStaticNoise(greenPhosphor)
-            3 -> drawVerticalSyncLoss(greenPhosphor)
-            4 -> drawSignalJitter(greenPhosphor)
+            0 -> drawHorizontalGlitchLines()
+            1 -> drawColorShift()
+            2 -> drawStaticNoise()
+            3 -> drawVerticalSyncLoss()
+            4 -> drawSignalJitter()
         }
     }
 }
@@ -306,7 +294,7 @@ private fun DrawScope.drawRandomGlitches(probability: Float, greenPhosphor: Bool
 /**
  * Draws horizontal glitch lines (common in CRT displays).
  */
-private fun DrawScope.drawHorizontalGlitchLines(greenPhosphor: Boolean = false) {
+private fun DrawScope.drawHorizontalGlitchLines() {
     // Draw 2-5 horizontal glitch lines (increased from 1-3)
     val numLines = Random.nextInt(2, 6)
 
@@ -319,12 +307,8 @@ private fun DrawScope.drawHorizontalGlitchLines(greenPhosphor: Boolean = false) 
         val offsetX = if (Random.nextBoolean()) Random.nextFloat() * size.width * 0.3f else 0f
         val glitchWidth = size.width - offsetX
 
-        // Use green for phosphor mode, white for regular mode
-        val glitchColor = if (greenPhosphor) {
-            Color(0xFF00FF00).copy(alpha = glitchAlpha) // Green
-        } else {
-            Color.White.copy(alpha = glitchAlpha)
-        }
+        // White glitch color for cyberpunk theme
+        val glitchColor = Color.White.copy(alpha = glitchAlpha)
 
         drawRect(
             color = glitchColor,
@@ -390,19 +374,15 @@ private fun DrawScope.drawColorShift() {
 /**
  * Draws static noise (snow) effect.
  */
-private fun DrawScope.drawStaticNoise(greenPhosphor: Boolean = false) {
+private fun DrawScope.drawStaticNoise() {
     // Make noise cover more of the screen
     val noiseRegionX = Random.nextFloat() * size.width * 0.5f
     val noiseRegionY = Random.nextFloat() * size.height * 0.5f
     val noiseRegionWidth = Random.nextFloat() * 300f + 200f // Larger region
     val noiseRegionHeight = Random.nextFloat() * 200f + 100f // Larger region
 
-    // Use green for phosphor mode, white for regular mode
-    val noiseColor = if (greenPhosphor) {
-        Color(0xFF00FF00) // Green
-    } else {
-        Color.White
-    }
+    // White noise color for cyberpunk theme
+    val noiseColor = Color.White
 
     // Draw more random noise pixels (increased from 200 to 350)
     repeat(350) {
@@ -442,16 +422,12 @@ private fun DrawScope.drawStaticNoise(greenPhosphor: Boolean = false) {
 /**
  * Simulates vertical sync loss (rolling/jumping image).
  */
-private fun DrawScope.drawVerticalSyncLoss(greenPhosphor: Boolean = false) {
+private fun DrawScope.drawVerticalSyncLoss() {
     val syncLossY = Random.nextFloat() * size.height * 0.7f
     val syncLossHeight = Random.nextFloat() * 50f + 30f
 
-    // Use appropriate colors based on mode
-    val lineColor = if (greenPhosphor) {
-        Color(0xFF00FF00).copy(alpha = 0.4f) // Green
-    } else {
-        Color.White.copy(alpha = 0.4f)
-    }
+    // White line color for cyberpunk theme
+    val lineColor = Color.White.copy(alpha = 0.4f)
 
     // Draw a horizontal tear line
     drawLine(
@@ -472,11 +448,7 @@ private fun DrawScope.drawVerticalSyncLoss(greenPhosphor: Boolean = false) {
     }
 
     // Draw a semi-transparent overlay to simulate the distortion
-    val distortionColor = if (greenPhosphor) {
-        Color(0xFF00FF00).copy(alpha = 0.05f) // Green
-    } else {
-        Color.Cyan.copy(alpha = 0.05f)
-    }
+    val distortionColor = Color.Cyan.copy(alpha = 0.05f)
 
     drawRect(
         color = distortionColor,
@@ -489,17 +461,13 @@ private fun DrawScope.drawVerticalSyncLoss(greenPhosphor: Boolean = false) {
 /**
  * Simulates signal jitter (small horizontal displacement).
  */
-private fun DrawScope.drawSignalJitter(greenPhosphor: Boolean = false) {
+private fun DrawScope.drawSignalJitter() {
     val jitterY = Random.nextFloat() * size.height
     val jitterHeight = Random.nextFloat() * 80f + 40f
     val jitterOffset = Random.nextFloat() * 15f + 5f
 
-    // Use appropriate color based on mode
-    val jitterColor = if (greenPhosphor) {
-        Color(0xFF00FF00).copy(alpha = 0.1f) // Green phosphor
-    } else {
-        Color(0xFF00FFFF).copy(alpha = 0.1f) // Cyan for cyberpunk theme
-    }
+    // Cyan color for cyberpunk theme
+    val jitterColor = Color(0xFF00FFFF).copy(alpha = 0.1f)
 
     // Draw a slightly offset rectangle to simulate horizontal jitter
     drawRect(
@@ -515,8 +483,7 @@ private fun DrawScope.drawSignalJitter(greenPhosphor: Boolean = false) {
  */
 private fun Modifier.flickerEffect(
     enabled: Boolean = true,
-    strength: Float = 0.03f,
-    greenPhosphor: Boolean = false
+    strength: Float = 0.03f
 ): Modifier {
     if (!enabled) return this
 
@@ -525,16 +492,11 @@ private fun Modifier.flickerEffect(
 
         LaunchedEffect(Unit) {
             while (true) {
-                // Random flicker effect - more pronounced for green phosphor
-                val flickerStrength = if (greenPhosphor) strength * 1.5f else strength
-                flickerAlpha = 1f - (Random.nextFloat() * flickerStrength)
+                // Random flicker effect
+                flickerAlpha = 1f - (Random.nextFloat() * strength)
 
-                // Shorter delay for green phosphor for more noticeable flicker
-                val delayTime = if (greenPhosphor) {
-                    Random.nextLong(30, 200) // Faster flicker for green phosphor
-                } else {
-                    Random.nextLong(50, 300)
-                }
+                // Random delay between flickers
+                val delayTime = Random.nextLong(50, 300)
                 delay(delayTime)
             }
         }
