@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.netroforge.textonom.model.Settings
+import com.github.netroforge.textonom.model.ThemeType
 
 /**
  * A text editor component with configurable settings.
@@ -96,7 +98,8 @@ fun TextEditor(
                                 fontSize = settings.getFontSize(),
                                 color = MaterialTheme.colors.onBackground,
                                 lineHeight = settings.getFontSize().times(1.5f) // Add consistent line height
-                            )
+                            ),
+                            cursorBrush = SolidColor(getCursorColor(settings.themeType))
                         )
                     }
 
@@ -130,7 +133,8 @@ fun TextEditor(
                                 fontSize = settings.getFontSize(),
                                 color = MaterialTheme.colors.onBackground,
                                 lineHeight = settings.getFontSize().times(1.5f) // Add consistent line height
-                            )
+                            ),
+                            cursorBrush = SolidColor(getCursorColor(settings.themeType))
                         )
                     }
 
@@ -235,6 +239,17 @@ private fun calculateVisualLineCount(line: String, wrapColumn: Int): Int {
 
     // Otherwise, estimate how many visual lines it will take
     return (line.length / wrapColumn + 1).coerceAtLeast(1)
+}
+
+/**
+ * Returns the cursor color based on the current theme.
+ */
+private fun getCursorColor(themeType: ThemeType): Color {
+    return when (themeType) {
+        ThemeType.LIGHT -> Color(0xFF000000) // Black cursor for light theme
+        ThemeType.DARK -> Color(0xFFFFFFFF) // White cursor for dark theme
+        ThemeType.CYBERPUNK -> Color(0xFF00FFFF) // Cyan neon cursor for cyberpunk theme
+    }
 }
 
 /**
