@@ -1,26 +1,16 @@
 package com.github.netroforge.textonom.ui
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.ScrollbarAdapter
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.HorizontalScrollbar
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -41,16 +31,27 @@ fun TextEditor(
     onTextChange: (String) -> Unit,
     settings: Settings,
     modifier: Modifier = Modifier,
-    readOnly: Boolean = false
+    readOnly: Boolean = false,
+    autoFocus: Boolean = true // Add parameter to control auto-focus behavior
 ) {
     // Create shared scroll state to synchronize line numbers with text
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
 
+    // Create a focus requester to automatically focus the text field
+    val focusRequester = remember { FocusRequester() }
+
     // Remember the available width for text (used for calculating wrapping)
     var editorWidthPx by remember { mutableStateOf(0f) }
     val density = LocalDensity.current
     val charWidth = with(density) { settings.getFontSize().toPx() * 0.6f } // Estimate average character width
+
+    // Auto-focus the text field when it's first displayed
+    LaunchedEffect(Unit) {
+        if (autoFocus) {
+            focusRequester.requestFocus()
+        }
+    }
 
     Surface(
         color = MaterialTheme.colors.background,
@@ -91,7 +92,8 @@ fun TextEditor(
                             onValueChange = onTextChange,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(start = 8.dp, top = 14.dp, end = 8.dp, bottom = 8.dp),
+                                .padding(start = 8.dp, top = 14.dp, end = 8.dp, bottom = 8.dp)
+                                .focusRequester(focusRequester),
                             readOnly = readOnly,
                             textStyle = TextStyle(
                                 fontFamily = settings.getFontFamily(),
@@ -126,7 +128,8 @@ fun TextEditor(
                             onValueChange = onTextChange,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(start = 8.dp, top = 14.dp, end = 8.dp, bottom = 8.dp),
+                                .padding(start = 8.dp, top = 14.dp, end = 8.dp, bottom = 8.dp)
+                                .focusRequester(focusRequester),
                             readOnly = readOnly,
                             textStyle = TextStyle(
                                 fontFamily = settings.getFontFamily(),

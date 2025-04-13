@@ -1,19 +1,22 @@
 package com.github.netroforge.textonom
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Colors
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.FrameWindowScope
-import com.github.netroforge.textonom.model.Settings
 import com.github.netroforge.textonom.model.ThemeType
 import com.github.netroforge.textonom.ui.*
 import com.github.netroforge.textonom.ui.effects.crtEffect
 import com.github.netroforge.textonom.utils.TextTransformations
 import com.github.netroforge.textonom.viewmodel.SettingsManager
 import com.github.netroforge.textonom.viewmodel.TabManager
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Creates a cyberpunk color palette inspired by new retro wave from the 80s.
@@ -48,6 +51,13 @@ fun FrameWindowScope.App() {
     LaunchedEffect(settingsManager.settings) {
         tabManager.updateSettings(settingsManager.settings)
         tabManager.startAutoSave()
+    }
+
+    // Automatically create a new tab when the editor starts with no tabs
+    LaunchedEffect(Unit) {
+        if (tabManager.tabs.isEmpty()) {
+            tabManager.createNewTab()
+        }
     }
 
     // Show settings dialog state

@@ -1,20 +1,20 @@
 package com.github.netroforge.textonom.utils
 
+import kotlinx.serialization.json.*
+import org.w3c.dom.Document
+import org.xml.sax.InputSource
+import java.io.StringReader
+import java.io.StringWriter
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-import java.util.Base64
-import kotlinx.serialization.json.*
-import org.w3c.dom.Document
+import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import java.io.StringReader
-import java.io.StringWriter
-import org.xml.sax.InputSource
 
 /**
  * Utility class for text transformations.

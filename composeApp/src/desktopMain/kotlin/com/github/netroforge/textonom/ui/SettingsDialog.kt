@@ -8,8 +8,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,13 +16,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.rememberWindowState
 import com.github.netroforge.textonom.model.Settings
 import com.github.netroforge.textonom.model.ThemeType
-import com.github.netroforge.textonom.cyberpunkColors
 import com.github.netroforge.textonom.ui.effects.crtEffect
-import java.awt.Dimension
 import java.awt.Toolkit
 
 /**

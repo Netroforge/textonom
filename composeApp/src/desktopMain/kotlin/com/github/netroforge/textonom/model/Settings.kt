@@ -1,13 +1,11 @@
 package com.github.netroforge.textonom.model
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
-import kotlinx.serialization.Serializable
-import java.io.File
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import java.io.File
 
 /**
  * Enum representing the available themes.
