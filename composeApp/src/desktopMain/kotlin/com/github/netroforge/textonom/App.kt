@@ -77,12 +77,21 @@ fun FrameWindowScope.App() {
         }
     ) {
         // Log the current undo/redo state
-        println("App: Current state before AppMenuBar - canUndo=${tabManager.canUndo}, canRedo=${tabManager.canRedo}")
+        println("App: Current state before TopNavBar - canUndo=${tabManager.canUndo}, canRedo=${tabManager.canRedo}")
 
-        // Set up the menu bar
-        // Pass a key that includes the undo/redo state to force recomposition
-        AppMenuBar(
-            key = "${canUndoState.value}-${canRedoState.value}",
+        // Main layout
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .crtEffect(
+                    enabled = settingsManager.settings.enableCrtEffect,
+                    scanlineAlpha = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.15f else 0.12f,  // Stronger effect for Turbo theme
+                    flickerStrength = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.04f else 0.02f, // More pronounced flicker for Turbo theme
+                    glitchProbability = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.15f else 0.05f // Much more frequent glitches for Turbo theme
+                )
+        ) {
+            // Custom top navigation bar
+            TopNavBar(
             onOpenFile = { file ->
                 tabManager.openFile(file)
             },
@@ -179,19 +188,7 @@ fun FrameWindowScope.App() {
             canUndo = canUndoState.value,
             canRedo = canRedoState.value,
             selectedTab = tabManager.selectedTab
-        )
-
-        // Main layout
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .crtEffect(
-                    enabled = settingsManager.settings.enableCrtEffect,
-                    scanlineAlpha = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.15f else 0.12f,  // Stronger effect for Turbo theme
-                    flickerStrength = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.04f else 0.02f, // More pronounced flicker for Turbo theme
-                    glitchProbability = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.15f else 0.05f // Much more frequent glitches for Turbo theme
-                )
-        ) {
+            )
             // Tab bar
             TabBar(
                 tabs = tabManager.tabs,
