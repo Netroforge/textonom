@@ -1,5 +1,7 @@
 package com.github.netroforge.textonom.model
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -9,6 +11,7 @@ import kotlinx.serialization.Transient
  */
 @Serializable
 data class TextHistory(private val initialText: String = "") {
+
     /**
      * Creates a copy of this TextHistory with the same state.
      * This is a custom copy method that preserves the internal state.
@@ -20,7 +23,10 @@ data class TextHistory(private val initialText: String = "") {
         copy.history.addAll(this.history)
         copy.currentPosition = this.currentPosition
         copy.totalStates = this.totalStates
-        println("TextHistory.copy: created copy with currentPosition=$currentPosition, historySize=${history.size}")
+        // Copy the state values
+        copy._canUndo.value = this._canUndo.value
+        copy._canRedo.value = this._canRedo.value
+        println("TextHistory.copy: created copy with currentPosition=$currentPosition, historySize=${history.size}, canUndo=${_canUndo.value}, canRedo=${_canRedo.value}")
         return copy
     }
 
@@ -45,6 +51,18 @@ data class TextHistory(private val initialText: String = "") {
     @Transient
     private var totalStates = 0
 
+    // MutableState for undo/redo availability
+    @Transient
+    private val _canUndo = mutableStateOf(false)
+
+    @Transient
+    private val _canRedo = mutableStateOf(false)
+
+    init {
+        // Initialize state values
+        updateStateValues()
+    }
+
     /**
      * Adds a new text state to the history.
      * If we're not at the end of the history, truncate the future states.
@@ -68,6 +86,9 @@ data class TextHistory(private val initialText: String = "") {
             history.removeAt(0)
             currentPosition--
         }
+
+        // Update state values
+        updateStateValues()
     }
 
     /**
@@ -80,13 +101,22 @@ data class TextHistory(private val initialText: String = "") {
      * Returns true if undo is available.
      */
     val canUndo: Boolean
-        get() = currentPosition > 0
+        get() = _canUndo.value
 
     /**
      * Returns true if redo is available.
      */
     val canRedo: Boolean
-        get() = currentPosition < history.size - 1
+        get() = _canRedo.value
+
+    /**
+     * Updates the state values based on the current position.
+     */
+    private fun updateStateValues() {
+        _canUndo.value = currentPosition > 0
+        _canRedo.value = currentPosition < history.size - 1
+        println("TextHistory.updateStateValues: canUndo=${_canUndo.value}, canRedo=${_canRedo.value}")
+    }
 
     /**
      * Moves back one step in history and returns the previous state.
@@ -96,6 +126,7 @@ data class TextHistory(private val initialText: String = "") {
         if (!canUndo) return null
 
         currentPosition--
+        updateStateValues()
         return history[currentPosition]
     }
 
@@ -107,6 +138,7 @@ data class TextHistory(private val initialText: String = "") {
         if (!canRedo) return null
 
         currentPosition++
+        updateStateValues()
         return history[currentPosition]
     }
 
@@ -118,5 +150,6 @@ data class TextHistory(private val initialText: String = "") {
         history.add(initialText)
         currentPosition = 0
         totalStates = 0
+        updateStateValues()
     }
 }

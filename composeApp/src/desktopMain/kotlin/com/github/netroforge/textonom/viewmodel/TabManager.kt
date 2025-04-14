@@ -31,28 +31,12 @@ class TabManager(private var settings: Settings) {
             null
         }
 
-    // Undo availability state
-    private val _canUndo = mutableStateOf(false)
-    val canUndo: Boolean get() = _canUndo.value
+    // Undo/redo availability directly from the selected tab's TextHistory
+    val canUndo: Boolean
+        get() = selectedTab?.textHistory?.canUndo ?: false
 
-    // Redo availability state
-    private val _canRedo = mutableStateOf(false)
-    val canRedo: Boolean get() = _canRedo.value
-
-    /**
-     * Updates the undo/redo state based on the current selected tab.
-     * This forces a recomposition of any UI elements that depend on canUndo/canRedo.
-     */
-    fun updateUndoRedoState() {
-        val tab = selectedTab
-        val canUndoValue = tab?.textHistory?.canUndo ?: false
-        val canRedoValue = tab?.textHistory?.canRedo ?: false
-
-        if (_canUndo.value != canUndoValue || _canRedo.value != canRedoValue) {
-            _canUndo.value = canUndoValue
-            _canRedo.value = canRedoValue
-        }
-    }
+    val canRedo: Boolean
+        get() = selectedTab?.textHistory?.canRedo ?: false
 
     // Counter for untitled tabs
     private var untitledCounter = 1
@@ -60,8 +44,6 @@ class TabManager(private var settings: Settings) {
     init {
         // Restore tabs from session state if available
         restoreSessionState()
-        // Initialize undo/redo state
-        updateUndoRedoState()
     }
 
     /**
@@ -71,7 +53,6 @@ class TabManager(private var settings: Settings) {
         val newTab = Tab.createEmpty(untitledCounter++)
         _tabs.add(newTab)
         _selectedTabIndex.value = _tabs.size - 1
-        updateUndoRedoState()
         saveSessionState()
     }
 
@@ -85,7 +66,6 @@ class TabManager(private var settings: Settings) {
         if (existingTabIndex >= 0) {
             // File is already open, select that tab
             _selectedTabIndex.value = existingTabIndex
-            updateUndoRedoState()
             return
         }
 
@@ -93,7 +73,6 @@ class TabManager(private var settings: Settings) {
         val newTab = Tab.fromFile(file)
         _tabs.add(newTab)
         _selectedTabIndex.value = _tabs.size - 1
-        updateUndoRedoState()
         saveSessionState()
     }
 
@@ -140,8 +119,7 @@ class TabManager(private var settings: Settings) {
         val updatedTab = currentTab.withContent(newContent)
         _tabs[_selectedTabIndex.value] = updatedTab
 
-        // Ensure UI state is updated after content change
-        updateUndoRedoState()
+        // Save session state after content change
         saveSessionState()
     }
 
@@ -151,7 +129,6 @@ class TabManager(private var settings: Settings) {
     fun selectTab(index: Int) {
         if (index in _tabs.indices) {
             _selectedTabIndex.value = index
-            updateUndoRedoState()
             saveSessionState()
         }
     }
@@ -196,9 +173,6 @@ class TabManager(private var settings: Settings) {
 
         // Update the tab in the list
         _tabs[_selectedTabIndex.value] = undoneTab
-
-        // Update UI state immediately
-        updateUndoRedoState()
         return true
     }
 
@@ -212,9 +186,6 @@ class TabManager(private var settings: Settings) {
 
         // Update the tab in the list
         _tabs[_selectedTabIndex.value] = redoneTab
-
-        // Update UI state immediately
-        updateUndoRedoState()
         return true
     }
 
