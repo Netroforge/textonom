@@ -185,8 +185,11 @@ data class Settings(
 
     /**
      * Returns a copy with the updated CRT effect setting.
+     * For Cyberpunk Turbo theme, CRT effect is always enabled and cannot be disabled.
      */
-    fun withCrtEffect(enabled: Boolean) = copy(enableCrtEffect = enabled)
+    fun withCrtEffect(enabled: Boolean) = copy(
+        enableCrtEffect = if (themeType == ThemeType.CYBERPUNK_TURBO) true else enabled
+    )
 
     /**
      * Returns a copy with the updated session state.

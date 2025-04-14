@@ -17,6 +17,8 @@ import java.io.File
  */
 @Composable
 fun FrameWindowScope.AppMenuBar(
+    // Add a key parameter to force recomposition
+    key: Any? = null,
     onOpenFile: (File) -> Unit,
     onSaveFile: (File?) -> Unit,
     onNewFile: () -> Unit,
@@ -120,12 +122,17 @@ fun FrameWindowScope.AppMenuBar(
         }
 
         // Edit menu
+        println("AppMenuBar: Recomposing Edit menu, canUndo=$canUndo, canRedo=$canRedo, key=$key")
+        // Force recomposition by using key parameter
         Menu("Edit", mnemonic = 'E', enabled = hasSelectedTab) {
             // Undo item with keyboard shortcut hint
             Item(
                 "Undo (Ctrl+Z)",
                 enabled = canUndo,
-                onClick = { onUndo() },
+                onClick = {
+                    println("AppMenuBar: Undo clicked")
+                    onUndo()
+                },
                 shortcut = KeyShortcut(Key.Z, ctrl = true)
             )
 
@@ -133,7 +140,10 @@ fun FrameWindowScope.AppMenuBar(
             Item(
                 "Redo (Ctrl+Shift+Z)",
                 enabled = canRedo,
-                onClick = { onRedo() },
+                onClick = {
+                    println("AppMenuBar: Redo clicked")
+                    onRedo()
+                },
                 shortcut = KeyShortcut(Key.Z, ctrl = true, shift = true)
             )
         }

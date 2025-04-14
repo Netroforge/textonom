@@ -56,6 +56,17 @@ fun FrameWindowScope.App() {
     // Show settings dialog state
     var showSettingsDialog by remember { mutableStateOf(false) }
 
+    // Create state for undo/redo to force recomposition
+    val canUndoState = remember { mutableStateOf(tabManager.canUndo) }
+    val canRedoState = remember { mutableStateOf(tabManager.canRedo) }
+
+    // Update the state when it changes
+    LaunchedEffect(tabManager.canUndo, tabManager.canRedo) {
+        canUndoState.value = tabManager.canUndo
+        canRedoState.value = tabManager.canRedo
+        println("App: LaunchedEffect - canUndo=${canUndoState.value}, canRedo=${canRedoState.value}")
+    }
+
     // Apply theme based on settings
     MaterialTheme(
         colors = when (settingsManager.settings.themeType) {
@@ -65,8 +76,13 @@ fun FrameWindowScope.App() {
             ThemeType.CYBERPUNK_TURBO -> cyberpunkColors()
         }
     ) {
+        // Log the current undo/redo state
+        println("App: Current state before AppMenuBar - canUndo=${tabManager.canUndo}, canRedo=${tabManager.canRedo}")
+
         // Set up the menu bar
+        // Pass a key that includes the undo/redo state to force recomposition
         AppMenuBar(
+            key = "${canUndoState.value}-${canRedoState.value}",
             onOpenFile = { file ->
                 tabManager.openFile(file)
             },
@@ -78,10 +94,14 @@ fun FrameWindowScope.App() {
             },
             onExit = { },
             onUndo = {
-                tabManager.undoSelectedTab()
+                val result = tabManager.undoSelectedTab()
+                println("App: After undoSelectedTab() - result=$result, canUndo=${tabManager.canUndo}, canRedo=${tabManager.canRedo}")
+                result
             },
             onRedo = {
-                tabManager.redoSelectedTab()
+                val result = tabManager.redoSelectedTab()
+                println("App: After redoSelectedTab() - result=$result, canUndo=${tabManager.canUndo}, canRedo=${tabManager.canRedo}")
+                result
             },
             onEncodeBase64 = {
                 tabManager.transformSelectedTabContent(TextTransformations::encodeBase64)
@@ -156,8 +176,8 @@ fun FrameWindowScope.App() {
                 showSettingsDialog = true
             },
             hasSelectedTab = tabManager.selectedTab != null,
-            canUndo = tabManager.canUndo,
-            canRedo = tabManager.canRedo,
+            canUndo = canUndoState.value,
+            canRedo = canRedoState.value,
             selectedTab = tabManager.selectedTab
         )
 
@@ -167,9 +187,9 @@ fun FrameWindowScope.App() {
                 .fillMaxSize()
                 .crtEffect(
                     enabled = settingsManager.settings.enableCrtEffect,
-                    scanlineAlpha = 0.12f,  // Slightly reduced for better readability
-                    flickerStrength = 0.02f, // Subtle flicker
-                    glitchProbability = 0.05f // More frequent glitches for authentic retro feel
+                    scanlineAlpha = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.15f else 0.12f,  // Stronger effect for Turbo theme
+                    flickerStrength = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.04f else 0.02f, // More pronounced flicker for Turbo theme
+                    glitchProbability = if (settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.15f else 0.05f // Much more frequent glitches for Turbo theme
                 )
         ) {
             // Tab bar

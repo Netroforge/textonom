@@ -17,6 +17,8 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,6 +66,10 @@ fun TextEditor(
                 println("TextEditor: Ctrl+Z pressed, calling onUndo()")
                 val undoResult = onUndo()
                 println("TextEditor: onUndo() result=$undoResult")
+                // Force recomposition of the menu bar
+                println("TextEditor: After Ctrl+Z, forcing recomposition")
+                // Add a small delay to ensure state is updated before next event
+                kotlinx.coroutines.runBlocking { kotlinx.coroutines.delay(50) }
                 true
             }
             // Redo: Ctrl+Shift+Z
@@ -71,6 +77,8 @@ fun TextEditor(
                 println("TextEditor: Ctrl+Shift+Z pressed, calling onRedo()")
                 val redoResult = onRedo()
                 println("TextEditor: onRedo() result=$redoResult")
+                // Add a small delay to ensure state is updated before next event
+                kotlinx.coroutines.runBlocking { kotlinx.coroutines.delay(50) }
                 true
             }
             else -> false

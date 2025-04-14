@@ -31,12 +31,21 @@ class TabManager(private var settings: Settings) {
             null
         }
 
-    // Undo/redo availability directly from the selected tab's TextHistory
+    // Undo/redo availability as observable state
+    private val _canUndo = mutableStateOf(false)
     val canUndo: Boolean
-        get() = selectedTab?.textHistory?.canUndo ?: false
+        get() = _canUndo.value
 
+    private val _canRedo = mutableStateOf(false)
     val canRedo: Boolean
-        get() = selectedTab?.textHistory?.canRedo ?: false
+        get() = _canRedo.value
+
+    // Update undo/redo state based on the selected tab
+    private fun updateUndoRedoState() {
+        _canUndo.value = selectedTab?.textHistory?.canUndo ?: false
+        _canRedo.value = selectedTab?.textHistory?.canRedo ?: false
+        println("TabManager.updateUndoRedoState: canUndo=${_canUndo.value}, canRedo=${_canRedo.value}")
+    }
 
     // Counter for untitled tabs
     private var untitledCounter = 1
@@ -44,6 +53,8 @@ class TabManager(private var settings: Settings) {
     init {
         // Restore tabs from session state if available
         restoreSessionState()
+        // Initialize undo/redo state
+        updateUndoRedoState()
     }
 
     /**
@@ -53,6 +64,7 @@ class TabManager(private var settings: Settings) {
         val newTab = Tab.createEmpty(untitledCounter++)
         _tabs.add(newTab)
         _selectedTabIndex.value = _tabs.size - 1
+        updateUndoRedoState()
         saveSessionState()
     }
 
@@ -73,6 +85,7 @@ class TabManager(private var settings: Settings) {
         val newTab = Tab.fromFile(file)
         _tabs.add(newTab)
         _selectedTabIndex.value = _tabs.size - 1
+        updateUndoRedoState()
         saveSessionState()
     }
 
@@ -102,6 +115,7 @@ class TabManager(private var settings: Settings) {
 
         // Replace the tab in the list
         _tabs[_selectedTabIndex.value] = updatedTab
+        updateUndoRedoState()
         saveSessionState()
     }
 
@@ -119,6 +133,9 @@ class TabManager(private var settings: Settings) {
         val updatedTab = currentTab.withContent(newContent)
         _tabs[_selectedTabIndex.value] = updatedTab
 
+        // Update undo/redo state
+        updateUndoRedoState()
+
         // Save session state after content change
         saveSessionState()
     }
@@ -129,6 +146,7 @@ class TabManager(private var settings: Settings) {
     fun selectTab(index: Int) {
         if (index in _tabs.indices) {
             _selectedTabIndex.value = index
+            updateUndoRedoState()
             saveSessionState()
         }
     }
@@ -151,6 +169,8 @@ class TabManager(private var settings: Settings) {
             // If index == selectedTabIndex, we keep the same index which now points to the next tab
         }
 
+        // Update undo/redo state after tab selection changes
+        updateUndoRedoState()
         saveSessionState()
     }
 
@@ -168,11 +188,21 @@ class TabManager(private var settings: Settings) {
      * Returns true if the operation was successful, false otherwise.
      */
     fun undoSelectedTab(): Boolean {
+        println("TabManager.undoSelectedTab: Starting undo operation")
         val currentTab = selectedTab ?: return false
-        val undoneTab = currentTab.undo() ?: return false
+        println("TabManager.undoSelectedTab: Current tab canUndo=${currentTab.textHistory.canUndo}, canRedo=${currentTab.textHistory.canRedo}")
+        val undoneTab = currentTab.undo()
+        if (undoneTab == null) {
+            println("TabManager.undoSelectedTab: Undo operation failed, no previous state")
+            return false
+        }
 
+        println("TabManager.undoSelectedTab: Undo successful, new tab canUndo=${undoneTab.textHistory.canUndo}, canRedo=${undoneTab.textHistory.canRedo}")
         // Update the tab in the list
         _tabs[_selectedTabIndex.value] = undoneTab
+        // Update undo/redo state
+        updateUndoRedoState()
+        println("TabManager.undoSelectedTab: After updateUndoRedoState, canUndo=${_canUndo.value}, canRedo=${_canRedo.value}")
         return true
     }
 
@@ -181,11 +211,21 @@ class TabManager(private var settings: Settings) {
      * Returns true if the operation was successful, false otherwise.
      */
     fun redoSelectedTab(): Boolean {
+        println("TabManager.redoSelectedTab: Starting redo operation")
         val currentTab = selectedTab ?: return false
-        val redoneTab = currentTab.redo() ?: return false
+        println("TabManager.redoSelectedTab: Current tab canUndo=${currentTab.textHistory.canUndo}, canRedo=${currentTab.textHistory.canRedo}")
+        val redoneTab = currentTab.redo()
+        if (redoneTab == null) {
+            println("TabManager.redoSelectedTab: Redo operation failed, no next state")
+            return false
+        }
 
+        println("TabManager.redoSelectedTab: Redo successful, new tab canUndo=${redoneTab.textHistory.canUndo}, canRedo=${redoneTab.textHistory.canRedo}")
         // Update the tab in the list
         _tabs[_selectedTabIndex.value] = redoneTab
+        // Update undo/redo state
+        updateUndoRedoState()
+        println("TabManager.redoSelectedTab: After updateUndoRedoState, canUndo=${_canUndo.value}, canRedo=${_canRedo.value}")
         return true
     }
 

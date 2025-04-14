@@ -268,6 +268,34 @@ private fun ThemeSettings(
             }
         }
 
+        // CRT effect toggle (disabled for Cyberpunk Turbo theme as it's always enabled there)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = settings.enableCrtEffect || settings.themeType == ThemeType.CYBERPUNK_TURBO,
+                onCheckedChange = { onSettingsChanged(settings.withCrtEffect(it)) },
+                enabled = settings.themeType != ThemeType.CYBERPUNK_TURBO
+            )
+
+            Text(
+                text = if (settings.themeType == ThemeType.CYBERPUNK_TURBO) {
+                    "CRT effect (always enabled for Cyberpunk Turbo)"
+                } else {
+                    "Enable CRT effect"
+                },
+                modifier = Modifier.padding(start = 8.dp),
+                color = if (settings.themeType == ThemeType.CYBERPUNK_TURBO) {
+                    MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                } else {
+                    MaterialTheme.colors.onSurface
+                }
+            )
+        }
+
         // Theme preview
         Box(
             modifier = Modifier
@@ -284,10 +312,10 @@ private fun ThemeSettings(
                 )
                 .border(1.dp, Color.Gray)
                 .crtEffect(
-                    enabled = settings.enableCrtEffect,
-                    scanlineAlpha = 0.2f, // Stronger effect for the preview
-                    flickerStrength = 0.04f, // More noticeable flicker for preview
-                    glitchProbability = 0.1f // Much higher probability for preview to showcase the effect
+                    enabled = settings.enableCrtEffect || settings.themeType == ThemeType.CYBERPUNK_TURBO,
+                    scanlineAlpha = if (settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.2f else 0.15f, // Stronger effect for Turbo
+                    flickerStrength = if (settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.05f else 0.03f, // More pronounced flicker for Turbo
+                    glitchProbability = if (settings.themeType == ThemeType.CYBERPUNK_TURBO) 0.2f else 0.1f // Much higher probability for Turbo
                 )
         ) {
             Text(
