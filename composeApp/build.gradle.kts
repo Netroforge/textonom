@@ -12,6 +12,7 @@ kotlin {
 
     sourceSets {
         val desktopMain by getting
+        val desktopTest by getting
 
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -32,7 +33,18 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
+
+        desktopTest.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(kotlin("test"))
+            implementation(kotlin("test-junit"))
+        }
     }
+}
+
+// Configure tests
+tasks.withType<Test> {
+    useJUnit()
 }
 
 compose.resources {

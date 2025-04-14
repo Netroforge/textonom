@@ -56,90 +56,90 @@ fun SettingsDialog(
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                // Title
-                Text(
-                    text = "Editor Settings",
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                    // Title
+                    Text(
+                        text = "Editor Settings",
+                        style = MaterialTheme.typography.h5,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
 
-                // Settings content
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    // Tabs for settings categories
-                    var selectedTabIndex by remember { mutableStateOf(0) }
-                    val tabs = listOf("Theme", "Font", "Tab Behavior", "Display", "Auto-Save")
-
-                    // Use 30% of dialog width for tabs section
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(0.30f)
-                            .fillMaxHeight()
-                            .background(MaterialTheme.colors.surface)
-                            .padding(8.dp)
-                    ) {
-                        tabs.forEachIndexed { index, title ->
-                            SettingsTab(
-                                title = title,
-                                selected = index == selectedTabIndex,
-                                onClick = { selectedTabIndex = index }
-                            )
-                        }
-                    }
-
-                    // Settings content based on selected tab (70% of dialog width)
-                    Box(
+                    // Settings content
+                    Row(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxHeight()
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState())
+                            .fillMaxWidth()
                     ) {
-                        when (selectedTabIndex) {
-                            0 -> ThemeSettings(currentSettings) { currentSettings = it }
-                            1 -> FontSettings(currentSettings) { currentSettings = it }
-                            2 -> TabSettings(currentSettings) { currentSettings = it }
-                            3 -> DisplaySettings(currentSettings) { currentSettings = it }
-                            4 -> AutoSaveSettings(currentSettings) { currentSettings = it }
+                        // Tabs for settings categories
+                        var selectedTabIndex by remember { mutableStateOf(0) }
+                        val tabs = listOf("Theme", "Font", "Tab Behavior", "Display", "Auto-Save")
+
+                        // Use 30% of dialog width for a tabs section
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(0.30f)
+                                .fillMaxHeight()
+                                .background(MaterialTheme.colors.surface)
+                                .padding(8.dp)
+                        ) {
+                            tabs.forEachIndexed { index, title ->
+                                SettingsTab(
+                                    title = title,
+                                    selected = index == selectedTabIndex,
+                                    onClick = { selectedTabIndex = index }
+                                )
+                            }
+                        }
+
+                        // Settings content based on selected tab (70% of dialog width)
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .padding(16.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            when (selectedTabIndex) {
+                                0 -> ThemeSettings(currentSettings) { currentSettings = it }
+                                1 -> FontSettings(currentSettings) { currentSettings = it }
+                                2 -> TabSettings(currentSettings) { currentSettings = it }
+                                3 -> DisplaySettings(currentSettings) { currentSettings = it }
+                                4 -> AutoSaveSettings(currentSettings) { currentSettings = it }
+                            }
+                        }
+                    }
+
+                    // Buttons
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = {
+                                onSettingsChanged(currentSettings)
+                                onDismiss()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primary
+                            )
+                        ) {
+                            Text("Save")
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(
+                            onClick = onDismiss,
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.surface
+                            )
+                        ) {
+                            Text("Cancel")
                         }
                     }
                 }
-
-                // Buttons
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Button(
-                        onClick = {
-                            onSettingsChanged(currentSettings)
-                            onDismiss()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.primary
-                        )
-                    ) {
-                        Text("Save")
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Button(
-                        onClick = onDismiss,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.surface
-                        )
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-                    }
-                }
+            }
         }
     }
 }
@@ -283,9 +283,8 @@ private fun ThemeSettings(
                     }
                 )
                 .border(1.dp, Color.Gray)
-                // Apply CRT effect only for Cyberpunk Turbo theme
                 .crtEffect(
-                    enabled = settings.themeType == ThemeType.CYBERPUNK_TURBO,
+                    enabled = settings.enableCrtEffect,
                     scanlineAlpha = 0.2f, // Stronger effect for the preview
                     flickerStrength = 0.04f, // More noticeable flicker for preview
                     glitchProbability = 0.1f // Much higher probability for preview to showcase the effect

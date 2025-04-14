@@ -120,8 +120,12 @@ data class Settings(
 
     /**
      * Returns a copy with the theme type updated.
+     * For Cyberpunk Turbo, automatically enables CRT effect.
      */
-    fun withThemeType(type: ThemeType) = copy(themeType = type)
+    fun withThemeType(type: ThemeType) = copy(
+        themeType = type,
+        enableCrtEffect = type == ThemeType.CYBERPUNK_TURBO
+    )
 
     /**
      * Returns whether the current theme is dark (DARK, CYBERPUNK, or CYBERPUNK_TURBO).

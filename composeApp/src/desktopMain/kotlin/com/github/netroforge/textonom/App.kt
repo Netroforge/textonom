@@ -53,13 +53,6 @@ fun FrameWindowScope.App() {
         tabManager.startAutoSave()
     }
 
-    // Save session state when the app is closing
-    DisposableEffect(Unit) {
-        onDispose {
-            tabManager.saveSessionState()
-        }
-    }
-
     // Show settings dialog state
     var showSettingsDialog by remember { mutableStateOf(false) }
 
@@ -69,15 +62,27 @@ fun FrameWindowScope.App() {
             ThemeType.DARK -> darkColors()
             ThemeType.LIGHT -> lightColors()
             ThemeType.CYBERPUNK -> cyberpunkColors()
-            ThemeType.CYBERPUNK_TURBO -> cyberpunkColors() // Use same colors as regular cyberpunk
+            ThemeType.CYBERPUNK_TURBO -> cyberpunkColors()
         }
     ) {
         // Set up the menu bar
         AppMenuBar(
-            onOpenFile = { file -> tabManager.openFile(file) },
-            onSaveFile = { file -> tabManager.saveSelectedTab(file) },
-            onNewFile = { tabManager.createNewTab() },
-            onExit = { },  // This will be handled in Main.kt
+            onOpenFile = { file ->
+                tabManager.openFile(file)
+            },
+            onSaveFile = { file ->
+                tabManager.saveSelectedTab(file)
+            },
+            onNewFile = {
+                tabManager.createNewTab()
+            },
+            onExit = { },
+            onUndo = {
+                tabManager.undoSelectedTab()
+            },
+            onRedo = {
+                tabManager.redoSelectedTab()
+            },
             onEncodeBase64 = {
                 tabManager.transformSelectedTabContent(TextTransformations::encodeBase64)
             },
@@ -151,21 +156,21 @@ fun FrameWindowScope.App() {
                 showSettingsDialog = true
             },
             hasSelectedTab = tabManager.selectedTab != null,
+            canUndo = tabManager.canUndo,
+            canRedo = tabManager.canRedo,
             selectedTab = tabManager.selectedTab
         )
 
         // Main layout
-        // Apply CRT effect only for Cyberpunk Turbo theme
-        val shouldApplyCrtEffect = settingsManager.settings.themeType == ThemeType.CYBERPUNK_TURBO
-
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .crtEffect(
-                enabled = shouldApplyCrtEffect,
-                scanlineAlpha = 0.12f,  // Slightly reduced for better readability
-                flickerStrength = 0.02f, // Subtle flicker
-                glitchProbability = 0.05f // More frequent glitches for authentic retro feel
-            )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .crtEffect(
+                    enabled = settingsManager.settings.enableCrtEffect,
+                    scanlineAlpha = 0.12f,  // Slightly reduced for better readability
+                    flickerStrength = 0.02f, // Subtle flicker
+                    glitchProbability = 0.05f // More frequent glitches for authentic retro feel
+                )
         ) {
             // Tab bar
             TabBar(
@@ -183,7 +188,9 @@ fun FrameWindowScope.App() {
                     TextEditor(
                         text = selectedTab.content,
                         onTextChange = { newText -> tabManager.updateSelectedTabContent(newText) },
-                        settings = settingsManager.settings
+                        settings = settingsManager.settings,
+                        onUndo = { tabManager.undoSelectedTab() },
+                        onRedo = { tabManager.redoSelectedTab() }
                     )
                 } else {
                     NoTabSelectedPlaceholder(settings = settingsManager.settings)
@@ -195,9 +202,7 @@ fun FrameWindowScope.App() {
         if (showSettingsDialog) {
             SettingsDialog(
                 settings = settingsManager.settings,
-                onSettingsChanged = { newSettings ->
-                    settingsManager.updateSettings(newSettings)
-                },
+                onSettingsChanged = { newSettings -> settingsManager.updateSettings(newSettings) },
                 onDismiss = { showSettingsDialog = false }
             )
         }

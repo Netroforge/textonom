@@ -13,6 +13,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -30,6 +31,8 @@ fun TextEditor(
     text: String,
     onTextChange: (String) -> Unit,
     settings: Settings,
+    onUndo: () -> Boolean = { false },
+    onRedo: () -> Boolean = { false },
     modifier: Modifier = Modifier,
     readOnly: Boolean = false,
     autoFocus: Boolean = true // Add parameter to control auto-focus behavior
@@ -53,9 +56,30 @@ fun TextEditor(
         }
     }
 
+    // Key event handler for undo/redo
+    val keyEventHandler = { keyEvent: KeyEvent ->
+        when {
+            // Undo: Ctrl+Z
+            (keyEvent.isCtrlPressed && !keyEvent.isShiftPressed && keyEvent.key == Key.Z && keyEvent.type == KeyEventType.KeyDown) -> {
+                println("TextEditor: Ctrl+Z pressed, calling onUndo()")
+                val undoResult = onUndo()
+                println("TextEditor: onUndo() result=$undoResult")
+                true
+            }
+            // Redo: Ctrl+Shift+Z
+            (keyEvent.isCtrlPressed && keyEvent.isShiftPressed && keyEvent.key == Key.Z && keyEvent.type == KeyEventType.KeyDown) -> {
+                println("TextEditor: Ctrl+Shift+Z pressed, calling onRedo()")
+                val redoResult = onRedo()
+                println("TextEditor: onRedo() result=$redoResult")
+                true
+            }
+            else -> false
+        }
+    }
+
     Surface(
         color = MaterialTheme.colors.background,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize().onKeyEvent(keyEventHandler)
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             // Line numbers column (if enabled)

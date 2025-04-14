@@ -2,6 +2,8 @@ package com.github.netroforge.textonom.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.MenuBar
 import io.github.vinceglb.filekit.core.FileKit
@@ -19,6 +21,8 @@ fun FrameWindowScope.AppMenuBar(
     onSaveFile: (File?) -> Unit,
     onNewFile: () -> Unit,
     onExit: () -> Unit,
+    onUndo: () -> Boolean,
+    onRedo: () -> Boolean,
     onEncodeBase64: () -> Unit,
     onDecodeBase64: () -> Unit,
     onPrettifyJson: () -> Unit,
@@ -44,6 +48,8 @@ fun FrameWindowScope.AppMenuBar(
     onPropertiesToYaml: () -> Unit,
     onOpenSettings: () -> Unit,
     hasSelectedTab: Boolean,
+    canUndo: Boolean,
+    canRedo: Boolean,
     selectedTab: com.github.netroforge.textonom.model.Tab?
 ) {
     MenuBar {
@@ -111,6 +117,25 @@ fun FrameWindowScope.AppMenuBar(
 
             Separator()
             Item("Exit", onClick = onExit)
+        }
+
+        // Edit menu
+        Menu("Edit", mnemonic = 'E', enabled = hasSelectedTab) {
+            // Undo item with keyboard shortcut hint
+            Item(
+                "Undo (Ctrl+Z)",
+                enabled = canUndo,
+                onClick = { onUndo() },
+                shortcut = KeyShortcut(Key.Z, ctrl = true)
+            )
+
+            // Redo item with keyboard shortcut hint
+            Item(
+                "Redo (Ctrl+Shift+Z)",
+                enabled = canRedo,
+                onClick = { onRedo() },
+                shortcut = KeyShortcut(Key.Z, ctrl = true, shift = true)
+            )
         }
 
         // Transform menu
