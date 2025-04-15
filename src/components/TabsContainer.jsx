@@ -16,8 +16,13 @@ const TabsHeader = styled.div`
   display: flex;
   background-color: ${props => props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0'};
   border-bottom: 1px solid ${props => props.theme === 'dark' ? '#333' : '#ddd'};
+  position: relative; /* For absolute positioning of the new tab button */
+`;
+
+const TabsScroller = styled.div`
+  display: flex;
   overflow-x: auto;
-  white-space: nowrap;
+  flex-grow: 1;
   &::-webkit-scrollbar {
     height: 5px;
   }
@@ -73,9 +78,17 @@ const NewTabButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 8px 12px;
   cursor: pointer;
   color: ${props => props.theme === 'dark' ? '#ccc' : '#666'};
+  position: sticky;
+  right: 0;
+  top: 0;
+  background-color: ${props => props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0'};
+  border-left: 1px solid ${props => props.theme === 'dark' ? '#333' : '#ddd'};
+  z-index: 10;
+  box-shadow: ${props => props.theme === 'dark' ? '-5px 0 10px rgba(0, 0, 0, 0.3)' : '-5px 0 10px rgba(0, 0, 0, 0.1)'};
+  height: 100%;
 
   &:hover {
     background-color: ${props => props.theme === 'dark' ? '#3a3a3a' : '#f9f9f9'};
@@ -566,31 +579,32 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
     return (
         <TabsWrapper>
             <TabsHeader theme={settings.theme}>
-                {tabs.map((tab, index) => (
-                    <Tab
-                        key={tab.id}
-                        active={index === activeTabIndex}
-                        theme={settings.theme}
-                        onClick={() => switchToTab(index)}
-                    >
-                        <TabTitle>
-                            {tab.title}{tab.isModified ? ' *' : ''}
-                        </TabTitle>
-                        <CloseButton
+                <TabsScroller theme={settings.theme}>
+                    {tabs.map((tab, index) => (
+                        <Tab
+                            key={tab.id}
+                            active={index === activeTabIndex}
                             theme={settings.theme}
-                            onClick={(e) => closeTab(index, e)}
+                            onClick={() => switchToTab(index)}
                         >
-                            <FiX size={12} />
-                        </CloseButton>
-                    </Tab>
-                ))}
+                            <TabTitle>
+                                {tab.title}{tab.isModified ? ' *' : ''}
+                            </TabTitle>
+                            <CloseButton
+                                theme={settings.theme}
+                                onClick={(e) => closeTab(index, e)}
+                            >
+                                <FiX size={12} />
+                            </CloseButton>
+                        </Tab>
+                    ))}
+                </TabsScroller>
                 <NewTabButton
                     theme={settings.theme}
                     onClick={addNewTab}
                 >
                     <FiPlus size={16} />
                 </NewTabButton>
-
             </TabsHeader>
 
             <TabContent>
