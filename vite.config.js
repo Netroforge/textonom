@@ -13,7 +13,6 @@ function copyMonacoEditorFiles() {
       try {
         await fs.ensureDir(path.dirname(monacoDestination))
         await fs.copy(monacoSource, monacoDestination)
-        console.log('Monaco editor files copied successfully')
       } catch (error) {
         console.error('Failed to copy Monaco editor files:', error)
       }

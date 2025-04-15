@@ -106,7 +106,6 @@ const TextEditor = ({
 
     // Handle editor mount
     const handleEditorDidMount = (editor, monaco) => {
-        console.log('Editor mounted');
         editorRef.current = editor;
         modelRef.current = editor.getModel();
     };
@@ -120,7 +119,6 @@ const TextEditor = ({
         // Handle undo event
         const handleUndo = () => {
             if (editorRef.current) {
-                console.log('Executing undo command');
                 editorRef.current.trigger('keyboard', 'undo', null);
             }
         };
@@ -128,7 +126,6 @@ const TextEditor = ({
         // Handle redo event
         const handleRedo = () => {
             if (editorRef.current) {
-                console.log('Executing redo command');
                 editorRef.current.trigger('keyboard', 'redo', null);
             }
         };
@@ -146,8 +143,6 @@ const TextEditor = ({
 
     // Method to apply text transformation while preserving undo history
     const applyTransformation = (newContent) => {
-        console.log('TextEditor.applyTransformation called with content length:', newContent.length);
-
         if (!editorRef.current || !modelRef.current) {
             console.error('Editor or model reference is null');
             return;
@@ -156,11 +151,9 @@ const TextEditor = ({
         try {
             // Get the current range of the model
             const fullRange = modelRef.current.getFullModelRange();
-            console.log('Current model range:', fullRange);
 
             // Create an edit operation that replaces the entire content
             // This will be added to the undo stack as a single operation
-            console.log('Executing editor edit operation');
             editorRef.current.executeEdits('transformation', [
                 {
                     range: fullRange,
@@ -168,7 +161,6 @@ const TextEditor = ({
                     forceMoveMarkers: true
                 }
             ]);
-            console.log('Edit operation completed successfully');
         } catch (error) {
             console.error('Error applying transformation:', error);
             console.error('Stack trace:', error.stack);
@@ -178,13 +170,9 @@ const TextEditor = ({
     // Listen for transformation results
     useEffect(() => {
         const handleTransformationResult = (event) => {
-            console.log('TextEditor received transformation-result event');
             const { content: newContent, tabIndex } = event.detail;
 
-            console.log(`Event details - tabIndex: ${tabIndex}, content length: ${newContent ? newContent.length : 0}`);
-
             if (newContent && editorRef.current) {
-                console.log('Applying transformation with undo preservation');
                 applyTransformation(newContent);
             } else {
                 if (!newContent) {
@@ -197,12 +185,10 @@ const TextEditor = ({
         };
 
         // Add event listener
-        console.log('Adding transformation-result event listener');
         window.addEventListener('transformation-result', handleTransformationResult);
 
         // Clean up
         return () => {
-            console.log('Removing transformation-result event listener');
             window.removeEventListener('transformation-result', handleTransformationResult);
         };
     }, []);

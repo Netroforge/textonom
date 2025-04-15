@@ -69,14 +69,11 @@ try {
     // Ensure we have at least one tab
     if (loadedState && loadedState.tabs && loadedState.tabs.length > 0) {
       tabsState = loadedState;
-      console.log('Loaded tabs state from file:', JSON.stringify(tabsState, null, 2));
     } else {
-      console.log('Loaded tabs state is empty, using default');
       tabsState = defaultTabsState;
       fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
     }
   } else {
-    console.log('No tabs state file found, creating default');
     tabsState = defaultTabsState;
     fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
   }
@@ -120,7 +117,6 @@ function createWindow() {
   // Send the saved tabs state to the renderer process after it's loaded
   mainWindow.webContents.on('did-finish-load', () => {
     if (tabsState && tabsState.tabs && tabsState.tabs.length > 0) {
-      console.log('Sending saved tabs state to renderer process');
       mainWindow.webContents.send('load-tabs-state', tabsState);
     }
   });
@@ -184,7 +180,6 @@ function createMenu() {
           label: 'Redo',
           accelerator: 'CmdOrCtrl+Shift+Z',
           click: () => {
-            console.log('Sending menu-redo event');
             mainWindow.webContents.send('menu-redo');
           }
         },
@@ -206,7 +201,6 @@ function createMenu() {
             {
               label: 'Encode',
               click: () => {
-                console.log('Sending transform event: base64-encode');
                 mainWindow.webContents.send('transform', 'base64-encode');
               }
             },
@@ -248,7 +242,6 @@ function createMenu() {
             {
               label: 'UPPERCASE',
               click: () => {
-                console.log('Sending transform event: case-upper');
                 mainWindow.webContents.send('transform', 'case-upper');
               }
             },
@@ -483,7 +476,6 @@ function updateLastOpenDirectory(directoryPath) {
     settings.lastOpenDirectory = directoryPath;
     try {
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-      console.log('Updated last open directory:', directoryPath);
     } catch (error) {
       console.error('Error saving last open directory:', error);
     }
@@ -553,11 +545,9 @@ ipcMain.handle('show-error', (event, { title, message }) => {
 
 // Save tabs state
 ipcMain.handle('save-tabs-state', (event, newTabsState) => {
-  console.log('Main process: Received tabs state to save:', JSON.stringify(newTabsState, null, 2));
   tabsState = newTabsState;
   try {
     fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
-    console.log('Main process: Tabs state saved successfully to', tabsPath);
     return true;
   } catch (error) {
     console.error('Error saving tabs state:', error);
@@ -567,7 +557,6 @@ ipcMain.handle('save-tabs-state', (event, newTabsState) => {
 
 // Get tabs state
 ipcMain.handle('get-tabs-state', () => {
-  console.log('Main process: Returning tabs state:', JSON.stringify(tabsState, null, 2));
   return tabsState;
 });
 
@@ -578,7 +567,6 @@ ipcMain.handle('path-basename', (event, filePath) => {
 
 // Listen for console logs from the renderer process
 ipcMain.on('console-log', (event, ...args) => {
-  console.log('Renderer log:', ...args);
 });
 
 ipcMain.on('console-error', (event, ...args) => {
@@ -587,16 +575,8 @@ ipcMain.on('console-error', (event, ...args) => {
 
 // Handle load-tabs-state event from renderer
 ipcMain.on('load-tabs-state', (event, receivedTabsState) => {
-  console.log('Main process: Received load-tabs-state event');
-  // If we received a state from the renderer, use it (this is for debugging)
-  if (receivedTabsState && receivedTabsState.tabs) {
-    console.log('Main process: Using received tabs state');
-    // We don't update our tabsState here as we want to use what's in the file
-  }
-
   // Send the current tabs state back to the renderer
   if (mainWindow) {
-    console.log('Main process: Sending tabs state to renderer:', JSON.stringify(tabsState, null, 2));
     mainWindow.webContents.send('load-tabs-state', tabsState);
   }
 });

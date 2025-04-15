@@ -33,9 +33,6 @@ contextBridge.exposeInMainWorld('electron', {
 
       // Create a new subscription function
       const subscription = (_event, ...args) => {
-        if (channel === 'transform') {
-          console.log(`Transform event with type: ${args[0]}`);
-        }
         listener(_event, ...args);
       };
 
