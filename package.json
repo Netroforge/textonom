@@ -57,7 +57,7 @@
     "fs-extra": "^11.3.0",
     "globals": "^15.15.0",
     "vite": "^5.0.0",
-    "vite-plugin-electron": "^0.15.0"
+    "vite-plugin-electron": "^0.29.0"
   },
   "build": {
     "appId": "com.netroforge.textonom",
