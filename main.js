@@ -126,8 +126,21 @@ function createMenu() {
     {
       label: 'Edit',
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
+        {
+          label: 'Undo',
+          accelerator: 'CmdOrCtrl+Z',
+          click: () => {
+            mainWindow.webContents.send('menu-undo');
+          }
+        },
+        {
+          label: 'Redo',
+          accelerator: 'CmdOrCtrl+Shift+Z',
+          click: () => {
+            console.log('Sending menu-redo event');
+            mainWindow.webContents.send('menu-redo');
+          }
+        },
         { type: 'separator' },
         { role: 'cut' },
         { role: 'copy' },

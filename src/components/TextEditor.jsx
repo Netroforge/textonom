@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
+import { registerIpcEvent } from '../utils/eventManager';
 
 const EditorContainer = styled.div`
   height: 100%;
@@ -28,6 +29,10 @@ const TextEditor = ({
   filePath,
   settings = {}
 }) => {
+  // Reference to the Monaco editor instance
+  const editorRef = useRef(null);
+  // Reference to the Monaco editor model
+  const modelRef = useRef(null);
   const handleEditorBeforeMount = (monaco) => {
     // Configure Monaco before mounting
 
@@ -99,6 +104,81 @@ const TextEditor = ({
     automaticLayout: true
   });
 
+  // Handle editor mount
+  const handleEditorDidMount = (editor, monaco) => {
+    console.log('Editor mounted');
+    editorRef.current = editor;
+    modelRef.current = editor.getModel();
+  };
+
+  // Listen for undo/redo events from the main process
+  useEffect(() => {
+    if (!window.electron) return;
+
+    const { ipcRenderer } = window.electron;
+
+    // Handle undo event
+    const handleUndo = () => {
+      if (editorRef.current) {
+        console.log('Executing undo command');
+        editorRef.current.trigger('keyboard', 'undo', null);
+      }
+    };
+
+    // Handle redo event
+    const handleRedo = () => {
+      if (editorRef.current) {
+        console.log('Executing redo command');
+        editorRef.current.trigger('keyboard', 'redo', null);
+      }
+    };
+
+    // Register event listeners
+    const cleanupUndo = registerIpcEvent(ipcRenderer, 'menu-undo', handleUndo);
+    const cleanupRedo = registerIpcEvent(ipcRenderer, 'menu-redo', handleRedo);
+
+    // Clean up event listeners
+    return () => {
+      cleanupUndo();
+      cleanupRedo();
+    };
+  }, []);
+
+  // Method to apply text transformation while preserving undo history
+  const applyTransformation = (newContent) => {
+    if (!editorRef.current || !modelRef.current) return;
+
+    // Create an edit operation that replaces the entire content
+    // This will be added to the undo stack as a single operation
+    editorRef.current.executeEdits('transformation', [
+      {
+        range: modelRef.current.getFullModelRange(),
+        text: newContent,
+        forceMoveMarkers: true
+      }
+    ]);
+  };
+
+  // Listen for transformation results
+  useEffect(() => {
+    const handleTransformationResult = (event) => {
+      const { content: newContent } = event.detail;
+
+      if (newContent && editorRef.current) {
+        console.log('Applying transformation with undo preservation');
+        applyTransformation(newContent);
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('transformation-result', handleTransformationResult);
+
+    // Clean up
+    return () => {
+      window.removeEventListener('transformation-result', handleTransformationResult);
+    };
+  }, []);
+
   return (
     <EditorContainer>
       <Editor
@@ -108,6 +188,7 @@ const TextEditor = ({
         value={content}
         onChange={onChange}
         beforeMount={handleEditorBeforeMount}
+        onMount={handleEditorDidMount}
         options={getEditorOptions()}
         theme={getMonacoTheme(settings.theme)}
         loading={<div>Loading editor...</div>}

@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {useTransformation} from '../contexts/TransformationContext';
-import {registerIpcEvent, registerWindowEvent} from '../utils/eventManager';
+import React, { useEffect, useState } from 'react';
+import { useTransformation } from '../contexts/TransformationContext';
+import { registerIpcEvent, registerWindowEvent } from '../utils/eventManager';
 import styled from 'styled-components';
-import {FiPlus, FiX} from 'react-icons/fi';
+import { FiPlus, FiX } from 'react-icons/fi';
 import TextEditor from './TextEditor';
 import path from 'path';
 
@@ -305,15 +305,21 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
     setActiveTabContent(content);
   };
 
-  // Listen for transformation results
+  // Listen for transformation results to update tab state
+  // Note: The actual content update is now handled by the TextEditor component
   useEffect(() => {
     const handleTransformationResult = (event) => {
       console.log('TabsContainer received transformation-result event');
       const { tabIndex, content } = event.detail;
 
       if (tabIndex === activeTabIndex && content) {
-        console.log('Updating editor content with transformation result');
-        handleEditorChange(content);
+        console.log('Marking tab as modified after transformation');
+        // Only update the modified status, not the content
+        // This prevents breaking the undo history
+        const currentTab = tabs[activeTabIndex];
+        if (currentTab.filePath) {
+          updateTabModifiedStatus(activeTabIndex, true);
+        }
       }
     };
 
