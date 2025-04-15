@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {FiX} from 'react-icons/fi';
+import { FiX } from 'react-icons/fi';
+import { getTextGlow } from '../styles/themes';
 
 const DialogOverlay = styled.div`
   position: fixed;
@@ -16,15 +17,32 @@ const DialogOverlay = styled.div`
 `;
 
 const DialogContent = styled.div`
-  background-color: ${props => props.theme === 'dark' ? '#1e1e1e' : '#fff'};
-  color: ${props => props.theme === 'dark' ? '#fff' : '#000'};
+  background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#0a0a12';
+        }
+        return props.theme === 'dark' ? '#1e1e1e' : '#fff';
+    }};
+  color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#f0f0f0';
+        }
+        return props.theme === 'dark' ? '#fff' : '#000';
+    }};
   border-radius: 4px;
   padding: 20px;
   width: 500px;
   max-width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '0 0 10px rgba(0, 255, 238, 0.3), 0 4px 15px rgba(0, 0, 0, 0.5)';
+        }
+        return '0 4px 8px rgba(0, 0, 0, 0.2)';
+    }};
+  border: ${props => props.theme === 'cyberpunk-turbo' ? '1px solid rgba(0, 255, 238, 0.3)' : 'none'};
+  transition: all 0.2s ease;
 `;
 
 const DialogHeader = styled.div`
@@ -37,19 +55,41 @@ const DialogHeader = styled.div`
 const DialogTitle = styled.h2`
   margin: 0;
   font-size: 1.5rem;
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    color: #00ffee;
+    ${getTextGlow('rgba(0, 255, 238, ', 1)}
+  ` : ''}
 `;
 
 const CloseButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: ${props => props.theme === 'dark' ? '#ccc' : '#666'};
+  color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#00ffee';
+        }
+        return props.theme === 'dark' ? '#ccc' : '#666';
+    }};
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  transition: all 0.2s ease;
+
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
+  ` : ''}
+
   &:hover {
-    color: ${props => props.theme === 'dark' ? '#fff' : '#000'};
+    color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#00ffee';
+        }
+        return props.theme === 'dark' ? '#fff' : '#000';
+    }};
+    ${props => props.theme === 'cyberpunk-turbo' ? `
+      ${getTextGlow('rgba(0, 255, 238, ', 1)}
+    ` : ''}
   }
 `;
 
@@ -67,22 +107,77 @@ const FormGroup = styled.div`
 
 const Label = styled.label`
   font-weight: 500;
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    color: #ff00aa;
+    ${getTextGlow('rgba(255, 0, 170, ', 0.7)}
+  ` : ''}
 `;
 
 const Select = styled.select`
   padding: 8px;
   border-radius: 4px;
-  border: 1px solid ${props => props.theme === 'dark' ? '#555' : '#ddd'};
-  background-color: ${props => props.theme === 'dark' ? '#2d2d2d' : '#fff'};
-  color: ${props => props.theme === 'dark' ? '#fff' : '#000'};
+  border: 1px solid ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return 'rgba(0, 255, 238, 0.5)';
+        }
+        return props.theme === 'dark' ? '#555' : '#ddd';
+    }};
+  background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#0a0a12';
+        }
+        return props.theme === 'dark' ? '#2d2d2d' : '#fff';
+    }};
+  color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#00ffee';
+        }
+        return props.theme === 'dark' ? '#fff' : '#000';
+    }};
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
+    box-shadow: 0 0 5px rgba(0, 255, 238, 0.2);
+    &:focus {
+      outline: none;
+      border-color: #00ffee;
+      box-shadow: 0 0 8px rgba(0, 255, 238, 0.4);
+    }
+  ` : ''}
 `;
 
 const Input = styled.input`
   padding: 8px;
   border-radius: 4px;
-  border: 1px solid ${props => props.theme === 'dark' ? '#555' : '#ddd'};
-  background-color: ${props => props.theme === 'dark' ? '#2d2d2d' : '#fff'};
-  color: ${props => props.theme === 'dark' ? '#fff' : '#000'};
+  border: 1px solid ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return 'rgba(0, 255, 238, 0.5)';
+        }
+        return props.theme === 'dark' ? '#555' : '#ddd';
+    }};
+  background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#0a0a12';
+        }
+        return props.theme === 'dark' ? '#2d2d2d' : '#fff';
+    }};
+  color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#00ffee';
+        }
+        return props.theme === 'dark' ? '#fff' : '#000';
+    }};
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
+    box-shadow: 0 0 5px rgba(0, 255, 238, 0.2);
+    &:focus {
+      outline: none;
+      border-color: #00ffee;
+      box-shadow: 0 0 8px rgba(0, 255, 238, 0.4);
+    }
+    &[type="checkbox"] {
+      accent-color: #00ffee;
+    }
+  ` : ''}
 `;
 
 const Checkbox = styled.div`
@@ -104,27 +199,59 @@ const Button = styled.button`
   border: none;
   cursor: pointer;
   font-weight: 500;
-  
+  transition: all 0.2s ease;
+
   &.primary {
-    background-color: #0066cc;
+    background-color: ${props => props.theme === 'cyberpunk-turbo' ? '#ff00aa' : '#0066cc'};
     color: white;
-    
+    ${props => props.theme === 'cyberpunk-turbo' ? `
+      border: 1px solid rgba(255, 0, 170, 0.5);
+      ${getTextGlow('rgba(255, 0, 170, ', 0.8)}
+    ` : ''}
+
     &:hover {
-      background-color: #0055aa;
+      background-color: ${props => props.theme === 'cyberpunk-turbo' ? '#ff33bb' : '#0055aa'};
+      ${props => props.theme === 'cyberpunk-turbo' ? `
+        ${getTextGlow('rgba(255, 0, 170, ', 1)}
+        box-shadow: 0 0 10px rgba(255, 0, 170, 0.3);
+      ` : ''}
     }
   }
-  
+
   &.secondary {
-    background-color: ${props => props.theme === 'dark' ? '#555' : '#eee'};
-    color: ${props => props.theme === 'dark' ? '#fff' : '#000'};
-    
+    background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#1a1a2e';
+        }
+        return props.theme === 'dark' ? '#555' : '#eee';
+    }};
+    color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#00ffee';
+        }
+        return props.theme === 'dark' ? '#fff' : '#000';
+    }};
+    ${props => props.theme === 'cyberpunk-turbo' ? `
+      border: 1px solid rgba(0, 255, 238, 0.3);
+      ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
+    ` : ''}
+
     &:hover {
-      background-color: ${props => props.theme === 'dark' ? '#666' : '#ddd'};
+      background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#2a2a4e';
+        }
+        return props.theme === 'dark' ? '#666' : '#ddd';
+    }};
+      ${props => props.theme === 'cyberpunk-turbo' ? `
+        ${getTextGlow('rgba(0, 255, 238, ', 0.8)}
+        box-shadow: 0 0 10px rgba(0, 255, 238, 0.2);
+      ` : ''}
     }
   }
 `;
 
-const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
+const SettingsDialog = ({ isOpen, onClose, settings, onSaveSettings }) => {
     const [formData, setFormData] = useState({
         theme: 'light',
         fontFamily: 'Consolas, monospace',
@@ -158,7 +285,7 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
 
     // Handle form input changes
     const handleChange = (e) => {
-        const {name, value, type, checked} = e.target;
+        const { name, value, type, checked } = e.target;
 
         setFormData({
             ...formData,
@@ -199,15 +326,15 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                 onClick={(e) => e.stopPropagation()}
             >
                 <DialogHeader>
-                    <DialogTitle>Settings</DialogTitle>
+                    <DialogTitle theme={settings.theme}>Settings</DialogTitle>
                     <CloseButton theme={settings.theme} onClick={onClose}>
-                        <FiX size={24}/>
+                        <FiX size={24} />
                     </CloseButton>
                 </DialogHeader>
 
                 <Form onSubmit={handleSubmit}>
                     <FormGroup>
-                        <Label htmlFor="theme">Theme</Label>
+                        <Label htmlFor="theme" theme={settings.theme}>Theme</Label>
                         <Select
                             id="theme"
                             name="theme"
@@ -223,7 +350,7 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="fontFamily">Font Family</Label>
+                        <Label htmlFor="fontFamily" theme={settings.theme}>Font Family</Label>
                         <Select
                             id="fontFamily"
                             name="fontFamily"
@@ -240,7 +367,7 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="fontSize">Font Size</Label>
+                        <Label htmlFor="fontSize" theme={settings.theme}>Font Size</Label>
                         <Input
                             type="number"
                             id="fontSize"
@@ -254,7 +381,7 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="tabSize">Tab Size</Label>
+                        <Label htmlFor="tabSize" theme={settings.theme}>Tab Size</Label>
                         <Input
                             type="number"
                             id="tabSize"
@@ -276,7 +403,7 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                                 checked={formData.useTabs}
                                 onChange={handleChange}
                             />
-                            <Label htmlFor="useTabs">Use Tabs Instead of Spaces</Label>
+                            <Label htmlFor="useTabs" theme={settings.theme}>Use Tabs Instead of Spaces</Label>
                         </Checkbox>
                     </FormGroup>
 
@@ -289,7 +416,7 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                                 checked={formData.showLineNumbers}
                                 onChange={handleChange}
                             />
-                            <Label htmlFor="showLineNumbers">Show Line Numbers</Label>
+                            <Label htmlFor="showLineNumbers" theme={settings.theme}>Show Line Numbers</Label>
                         </Checkbox>
                     </FormGroup>
 
@@ -302,13 +429,13 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                                 checked={formData.wordWrap}
                                 onChange={handleChange}
                             />
-                            <Label htmlFor="wordWrap">Word Wrap</Label>
+                            <Label htmlFor="wordWrap" theme={settings.theme}>Word Wrap</Label>
                         </Checkbox>
                     </FormGroup>
 
                     {formData.wordWrap && (
                         <FormGroup>
-                            <Label htmlFor="wrapColumn">Wrap Column</Label>
+                            <Label htmlFor="wrapColumn" theme={settings.theme}>Wrap Column</Label>
                             <Input
                                 type="number"
                                 id="wrapColumn"
@@ -331,13 +458,13 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                                 checked={formData.autoSave}
                                 onChange={handleChange}
                             />
-                            <Label htmlFor="autoSave">Auto Save</Label>
+                            <Label htmlFor="autoSave" theme={settings.theme}>Auto Save</Label>
                         </Checkbox>
                     </FormGroup>
 
                     {formData.autoSave && (
                         <FormGroup>
-                            <Label htmlFor="autoSaveInterval">Auto Save Interval (seconds)</Label>
+                            <Label htmlFor="autoSaveInterval" theme={settings.theme}>Auto Save Interval (seconds)</Label>
                             <Input
                                 type="number"
                                 id="autoSaveInterval"
@@ -360,7 +487,7 @@ const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" className="primary">
+                        <Button type="submit" className="primary" theme={settings.theme}>
                             Save
                         </Button>
                     </ButtonGroup>

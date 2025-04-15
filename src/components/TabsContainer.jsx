@@ -4,6 +4,7 @@ import { registerIpcEvent, registerWindowEvent } from '../utils/eventManager';
 import styled from 'styled-components';
 import { FiPlus, FiX } from 'react-icons/fi';
 import TextEditor from './TextEditor';
+import { getTextGlow } from '../styles/themes';
 
 const TabsWrapper = styled.div`
   display: flex;
@@ -14,9 +15,24 @@ const TabsWrapper = styled.div`
 
 const TabsHeader = styled.div`
   display: flex;
-  background-color: ${props => props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0'};
-  border-bottom: 1px solid ${props => props.theme === 'dark' ? '#333' : '#ddd'};
+  background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#0a0a12';
+        }
+        return props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0';
+    }};
+  border-bottom: 1px solid ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#3a3a5a';
+        }
+        return props.theme === 'dark' ? '#333' : '#ddd';
+    }};
   position: relative; /* For absolute positioning of the new tab button */
+
+  /* Add subtle glow to the bottom border for cyberpunk-turbo theme */
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    box-shadow: 0 1px 5px rgba(0, 255, 238, 0.2);
+  ` : ''}
 `;
 
 const TabsScroller = styled.div`
@@ -38,19 +54,49 @@ const Tab = styled.div`
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  background-color: ${props => props.active
-        ? (props.theme === 'dark' ? '#2d2d2d' : '#fff')
-        : (props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0')};
-  color: ${props => props.active
-        ? (props.theme === 'dark' ? '#fff' : '#000')
-        : (props.theme === 'dark' ? '#ccc' : '#666')};
-  border-right: 1px solid ${props => props.theme === 'dark' ? '#333' : '#ddd'};
+  background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return props.active ? '#1a1a2e' : '#0a0a12';
+        }
+        return props.active
+            ? (props.theme === 'dark' ? '#2d2d2d' : '#fff')
+            : (props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0');
+    }};
+  color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return props.active ? '#00ffee' : '#f0f0f0';
+        }
+        return props.active
+            ? (props.theme === 'dark' ? '#fff' : '#000')
+            : (props.theme === 'dark' ? '#ccc' : '#666');
+    }};
+  border-right: 1px solid ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return props.active ? '#00ffee' : '#3a3a5a';
+        }
+        return props.theme === 'dark' ? '#333' : '#ddd';
+    }};
   min-width: 10%;
   max-width: 20%;
   position: relative;
+  transition: all 0.2s ease;
+
+  /* Apply glow effect for cyberpunk-turbo theme */
+  ${props => props.theme === 'cyberpunk-turbo' && props.active ? `
+    ${getTextGlow('rgba(0, 255, 238, ', 1)}
+    border-bottom: 2px solid #00ffee;
+  ` : ''}
 
   &:hover {
-    background-color: ${props => props.theme === 'dark' ? '#3a3a3a' : '#f9f9f9'};
+    background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#1a1a2e';
+        }
+        return props.theme === 'dark' ? '#3a3a3a' : '#f9f9f9';
+    }};
+    ${props => props.theme === 'cyberpunk-turbo' && !props.active ? `
+      ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
+    ` : ''}
   }
 `;
 
@@ -80,18 +126,52 @@ const NewTabButton = styled.div`
   justify-content: center;
   padding: 8px 12px;
   cursor: pointer;
-  color: ${props => props.theme === 'dark' ? '#ccc' : '#666'};
+  color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#00ffee';
+        }
+        return props.theme === 'dark' ? '#ccc' : '#666';
+    }};
   position: sticky;
   right: 0;
   top: 0;
-  background-color: ${props => props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0'};
-  border-left: 1px solid ${props => props.theme === 'dark' ? '#333' : '#ddd'};
+  background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#0a0a12';
+        }
+        return props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0';
+    }};
+  border-left: 1px solid ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#3a3a5a';
+        }
+        return props.theme === 'dark' ? '#333' : '#ddd';
+    }};
   z-index: 10;
-  box-shadow: ${props => props.theme === 'dark' ? '-5px 0 10px rgba(0, 0, 0, 0.3)' : '-5px 0 10px rgba(0, 0, 0, 0.1)'};
+  box-shadow: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '-5px 0 10px rgba(0, 0, 30, 0.5), 0 0 5px rgba(0, 255, 238, 0.2)';
+        }
+        return props.theme === 'dark' ? '-5px 0 10px rgba(0, 0, 0, 0.3)' : '-5px 0 10px rgba(0, 0, 0, 0.1)';
+    }};
   height: 100%;
+  transition: all 0.2s ease;
+
+  /* Apply glow effect for cyberpunk-turbo theme */
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    ${getTextGlow('rgba(0, 255, 238, ', 0.8)}
+  ` : ''}
 
   &:hover {
-    background-color: ${props => props.theme === 'dark' ? '#3a3a3a' : '#f9f9f9'};
+    background-color: ${props => {
+        if (props.theme === 'cyberpunk-turbo') {
+            return '#1a1a2e';
+        }
+        return props.theme === 'dark' ? '#3a3a3a' : '#f9f9f9';
+    }};
+    ${props => props.theme === 'cyberpunk-turbo' ? `
+      ${getTextGlow('rgba(0, 255, 238, ', 1)}
+    ` : ''}
   }
 `;
 

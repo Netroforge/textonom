@@ -1,4 +1,4 @@
-import {createGlobalStyle} from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 // Light theme
 export const LightTheme = {
@@ -44,6 +44,16 @@ export const CyberpunkTurboTheme = {
     accent: '#00ffee'
 };
 
+// Utility function for text glow in cyberpunk turbo theme
+export const getTextGlow = (color, intensity = 1) => {
+    // Base glow effect with multiple layers for a more pronounced effect
+    return `
+    text-shadow: 0 0 2px ${color}${intensity * 0.3},
+                 0 0 4px ${color}${intensity * 0.2},
+                 0 0 8px ${color}${intensity * 0.1};
+  `;
+};
+
 // Global styles for each theme
 export const GlobalStyles = createGlobalStyle`
   body {
@@ -68,20 +78,27 @@ export const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  /* Apply text glow to all text elements in cyberpunk-turbo theme */
+  ${props => props.theme === 'cyberpunk-turbo' ? `
+    h1, h2, h3, h4, h5, h6, p, span, div, button, a {
+      ${getTextGlow('rgba(0, 255, 238, ', 0.8)}
+    }
+  ` : ''}
+
   /* Ensure all input fields have a visible cursor */
   input, textarea, [contenteditable="true"] {
     caret-color: ${props => {
-    switch (props.theme) {
-        case 'dark':
-            return '#0099ff';
-        case 'cyberpunk':
-            return '#ff00ff';
-        case 'cyberpunk-turbo':
-            return '#ff00aa';
-        default:
-            return '#0066cc';
-    }
-}};
+        switch (props.theme) {
+            case 'dark':
+                return '#0099ff';
+            case 'cyberpunk':
+                return '#ff00ff';
+            case 'cyberpunk-turbo':
+                return '#ff00aa';
+            default:
+                return '#0066cc';
+        }
+    }};
   }
 
   ::-webkit-scrollbar {
@@ -93,39 +110,39 @@ export const GlobalStyles = createGlobalStyle`
 
   ::-webkit-scrollbar-track {
     background: ${props => props.theme === 'dark' || props.theme === 'cyberpunk' || props.theme === 'cyberpunk-turbo'
-    ? '#1a1a1a'
-    : '#f0f0f0'};
+        ? '#1a1a1a'
+        : '#f0f0f0'};
   }
 
   ::-webkit-scrollbar-thumb {
     background: ${props => {
-    switch (props.theme) {
-        case 'dark':
-            return '#555555';
-        case 'cyberpunk':
-            return '#ff00ff';
-        case 'cyberpunk-turbo':
-            return '#ff00aa';
-        default:
-            return '#cccccc';
-    }
-}};
+        switch (props.theme) {
+            case 'dark':
+                return '#555555';
+            case 'cyberpunk':
+                return '#ff00ff';
+            case 'cyberpunk-turbo':
+                return '#ff00aa';
+            default:
+                return '#cccccc';
+        }
+    }};
     border-radius: 6px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
     background: ${props => {
-    switch (props.theme) {
-        case 'dark':
-            return '#777777';
-        case 'cyberpunk':
-            return '#ff55ff';
-        case 'cyberpunk-turbo':
-            return '#ff55cc';
-        default:
-            return '#aaaaaa';
-    }
-}};
+        switch (props.theme) {
+            case 'dark':
+                return '#777777';
+            case 'cyberpunk':
+                return '#ff55ff';
+            case 'cyberpunk-turbo':
+                return '#ff55cc';
+            default:
+                return '#aaaaaa';
+        }
+    }};
   }
 `;
 
