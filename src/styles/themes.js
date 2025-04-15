@@ -26,19 +26,6 @@ export const DarkTheme = {
 
 // Cyberpunk theme
 export const CyberpunkTheme = {
-    background: '#0c0c14',
-    text: '#f0f0f0',
-    primary: '#ff00ff',
-    secondary: '#1a1a2e',
-    border: '#3a3a5a',
-    accent: '#00ffff',
-    error: '#ff0055',
-    success: '#00ff99'
-};
-
-// Cyberpunk Turbo theme (extends Cyberpunk)
-export const CyberpunkTurboTheme = {
-    ...CyberpunkTheme,
     background: '#0a0a12',
     text: '#f0f0f0',
     primary: '#ff00aa',    // Magenta (primary color for buttons, labels)
@@ -47,6 +34,12 @@ export const CyberpunkTurboTheme = {
     accent: '#00ffee',      // Cyan (accent color for highlights, glows)
     error: '#ff0055',       // Error color
     success: '#00ff99'      // Success color
+};
+
+// Cyberpunk Turbo theme (extends Cyberpunk)
+export const CyberpunkTurboTheme = {
+    ...CyberpunkTheme
+    // Both themes now use the same color schema
 };
 
 // Utility function for text glow in cyberpunk turbo theme
@@ -100,8 +93,8 @@ export const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
 
-  /* Apply text glow to all text elements in cyberpunk-turbo theme */
-  ${props => props.theme === 'cyberpunk-turbo' ? `
+  /* Apply text glow to all text elements in cyberpunk and cyberpunk-turbo themes */
+  ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
     h1, h2, h3, h4, h5, h6, p, span, div, button, a {
       ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.8)}
     }
@@ -114,7 +107,6 @@ export const GlobalStyles = createGlobalStyle`
             case 'dark':
                 return '#0099ff';
             case 'cyberpunk':
-                return '#ff00ff';
             case 'cyberpunk-turbo':
                 return CyberpunkColors.magenta;
             default:

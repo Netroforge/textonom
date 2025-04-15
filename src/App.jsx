@@ -1,10 +1,10 @@
-import {useEffect, useState} from 'react';
-import styled, {ThemeProvider} from 'styled-components';
-import {registerIpcEvent} from './utils/eventManager';
+import { useEffect, useState } from 'react';
+import styled, { ThemeProvider } from 'styled-components';
+import { registerIpcEvent } from './utils/eventManager';
 import TabsContainer from './components/TabsContainer';
 import SettingsDialog from './components/SettingsDialog';
 import CRTEffect from './components/CRTEffect';
-import {getThemeByName, GlobalStyles} from './styles/themes';
+import { getThemeByName, GlobalStyles } from './styles/themes';
 import MonacoWrapper from './components/MonacoWrapper';
 
 const AppContainer = styled.div`
@@ -41,7 +41,7 @@ function App() {
                     console.error('Electron APIs not available');
                     return;
                 }
-                const {ipcRenderer} = window.electron;
+                const { ipcRenderer } = window.electron;
                 const savedSettings = await ipcRenderer.invoke('get-settings');
                 if (savedSettings) {
                     setSettings(savedSettings);
@@ -56,7 +56,7 @@ function App() {
 
     // Listen for menu events
     useEffect(() => {
-        const {ipcRenderer} = window.electron;
+        const { ipcRenderer } = window.electron;
 
         // Handle settings menu click
         const handleSettingsMenu = () => {
@@ -73,7 +73,7 @@ function App() {
     // Save settings
     const handleSaveSettings = async (newSettings) => {
         try {
-            const {ipcRenderer} = window.electron;
+            const { ipcRenderer } = window.electron;
             const success = await ipcRenderer.invoke('save-settings', newSettings);
 
             if (success) {
@@ -90,10 +90,10 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <GlobalStyles theme={settings.theme} fontFamily={settings.font?.family}
-                          fontSize={settings.font?.size + 'px'}/>
+                fontSize={settings.font?.size + 'px'} />
             <MonacoWrapper>
                 <AppContainer>
-                    <TabsContainer settings={settings}/>
+                    <TabsContainer settings={settings} />
 
                     {isSettingsOpen && (
                         <SettingsDialog
@@ -104,7 +104,7 @@ function App() {
                         />
                     )}
 
-                    {settings.theme === 'cyberpunk-turbo' && <CRTEffect/>}
+                    {settings.theme === 'cyberpunk-turbo' && <CRTEffect />}
                 </AppContainer>
             </MonacoWrapper>
         </ThemeProvider>

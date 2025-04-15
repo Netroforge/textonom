@@ -18,13 +18,13 @@ const DialogOverlay = styled.div`
 
 const DialogContent = styled.div`
   background-color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.darkBlue;
     }
     return props.theme === 'dark' ? '#1e1e1e' : '#fff';
   }};
   color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.lightText;
     }
     return props.theme === 'dark' ? '#fff' : '#000';
@@ -36,12 +36,12 @@ const DialogContent = styled.div`
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return `0 0 10px ${CyberpunkColors.cyanRGBA(0.3)}, 0 4px 15px rgba(0, 0, 0, 0.5)`;
     }
     return '0 4px 8px rgba(0, 0, 0, 0.2)';
   }};
-  border: ${props => props.theme === 'cyberpunk-turbo' ? `1px solid ${CyberpunkColors.cyanRGBA(0.3)}` : 'none'};
+  border: ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `1px solid ${CyberpunkColors.cyanRGBA(0.3)}` : 'none'};
   transition: all 0.2s ease;
 `;
 
@@ -55,7 +55,7 @@ const DialogHeader = styled.div`
 const DialogTitle = styled.h2`
   margin: 0;
   font-size: 1.5rem;
-  ${props => props.theme === 'cyberpunk-turbo' ? `
+  ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
     color: ${CyberpunkColors.cyan};
     ${getTextGlow(CyberpunkColors.cyanRGBA(), 1)}
   ` : ''}
@@ -66,7 +66,7 @@ const CloseButton = styled.button`
   border: none;
   cursor: pointer;
   color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.cyan;
     }
     return props.theme === 'dark' ? '#ccc' : '#666';
@@ -76,18 +76,18 @@ const CloseButton = styled.button`
   justify-content: center;
   transition: all 0.2s ease;
 
-  ${props => props.theme === 'cyberpunk-turbo' ? `
+  ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
     ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.5)}
   ` : ''}
 
   &:hover {
     color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.cyan;
     }
     return props.theme === 'dark' ? '#fff' : '#000';
   }};
-    ${props => props.theme === 'cyberpunk-turbo' ? `
+    ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
       ${getTextGlow(CyberpunkColors.cyanRGBA(), 1)}
     ` : ''}
   }
@@ -107,7 +107,7 @@ const FormGroup = styled.div`
 
 const Label = styled.label`
   font-weight: 500;
-  ${props => props.theme === 'cyberpunk-turbo' ? `
+  ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
     color: ${CyberpunkColors.magenta};
     ${getTextGlow(CyberpunkColors.magentaRGBA(), 0.7)}
   ` : ''}
@@ -117,24 +117,24 @@ const Select = styled.select`
   padding: 8px;
   border-radius: 4px;
   border: 1px solid ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.cyanRGBA(0.5);
     }
     return props.theme === 'dark' ? '#555' : '#ddd';
   }};
   background-color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.darkBlue;
     }
     return props.theme === 'dark' ? '#2d2d2d' : '#fff';
   }};
   color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.cyan;
     }
     return props.theme === 'dark' ? '#fff' : '#000';
   }};
-  ${props => props.theme === 'cyberpunk-turbo' ? `
+  ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
     ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.5)}
     box-shadow: 0 0 5px ${CyberpunkColors.cyanRGBA(0.2)};
     &:focus {
@@ -202,16 +202,16 @@ const Button = styled.button`
   transition: all 0.2s ease;
 
   &.primary {
-    background-color: ${props => props.theme === 'cyberpunk-turbo' ? CyberpunkColors.magenta : '#0066cc'};
+    background-color: ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? CyberpunkColors.magenta : '#0066cc'};
     color: white;
-    ${props => props.theme === 'cyberpunk-turbo' ? `
+    ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
       border: 1px solid ${CyberpunkColors.magentaRGBA(0.5)};
       ${getTextGlow(CyberpunkColors.magentaRGBA(), 0.8)}
     ` : ''}
 
     &:hover {
-      background-color: ${props => props.theme === 'cyberpunk-turbo' ? '#ff33bb' : '#0055aa'};
-      ${props => props.theme === 'cyberpunk-turbo' ? `
+      background-color: ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? '#ff33bb' : '#0055aa'};
+      ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
         ${getTextGlow(CyberpunkColors.magentaRGBA(), 1)}
         box-shadow: 0 0 10px ${CyberpunkColors.magentaRGBA(0.3)};
       ` : ''}
@@ -220,30 +220,30 @@ const Button = styled.button`
 
   &.secondary {
     background-color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.mediumBlue;
     }
     return props.theme === 'dark' ? '#555' : '#eee';
   }};
     color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return CyberpunkColors.cyan;
     }
     return props.theme === 'dark' ? '#fff' : '#000';
   }};
-    ${props => props.theme === 'cyberpunk-turbo' ? `
+    ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
       border: 1px solid ${CyberpunkColors.cyanRGBA(0.3)};
       ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.5)}
     ` : ''}
 
     &:hover {
       background-color: ${props => {
-    if (props.theme === 'cyberpunk-turbo') {
+    if (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') {
       return '#2a2a4e';
     }
     return props.theme === 'dark' ? '#666' : '#ddd';
   }};
-      ${props => props.theme === 'cyberpunk-turbo' ? `
+      ${props => (props.theme === 'cyberpunk-turbo' || props.theme === 'cyberpunk') ? `
         ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.8)}
         box-shadow: 0 0 10px ${CyberpunkColors.cyanRGBA(0.2)};
       ` : ''}

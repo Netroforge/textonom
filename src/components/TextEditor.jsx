@@ -44,21 +44,21 @@ const TextEditor = ({
             colors: {}
         });
 
-        // Cyberpunk theme
+        // Cyberpunk theme - now matches Cyberpunk Turbo
         monaco.editor.defineTheme('cyberpunk', {
             base: 'vs-dark',
             inherit: true,
             rules: [
                 { token: 'comment', foreground: '#6272a4' },
-                { token: 'string', foreground: '#ff79c6' },
-                { token: 'keyword', foreground: '#ff00ff' },
+                { token: 'string', foreground: '#ff55cc' },
+                { token: 'keyword', foreground: '#ff00aa' },
                 { token: 'number', foreground: '#bd93f9' },
-                { token: 'operator', foreground: '#00ffff' }
+                { token: 'operator', foreground: '#00ffee' }
             ],
             colors: {
-                'editor.background': '#0c0c14',
+                'editor.background': '#0a0a12',
                 'editor.foreground': '#f0f0f0',
-                'editorCursor.foreground': '#ff00ff',
+                'editorCursor.foreground': '#ff00aa',
                 'editor.lineHighlightBackground': '#1a1a2e',
                 'editorLineNumber.foreground': '#3a3a5a',
                 'editor.selectionBackground': '#3a3a5a',
