@@ -19,7 +19,9 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "preview": "vite preview",
-    "test": "mocha tests --recursive"
+    "test": "mocha tests --recursive",
+    "debug:main": "vite build && electron --inspect=9229 .",
+    "debug:main:brk": "vite build && electron --inspect-brk=9229 ."
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
@@ -72,7 +74,7 @@
     "productName": "Textonom",
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "src/**/*"
     ],
     "directories": {
       "buildResources": "assets",
