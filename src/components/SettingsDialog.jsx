@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FiX } from 'react-icons/fi';
-import { getTextGlow } from '../styles/themes';
+import { getTextGlow, CyberpunkColors } from '../styles/themes';
 
 const DialogOverlay = styled.div`
   position: fixed;
@@ -18,17 +18,17 @@ const DialogOverlay = styled.div`
 
 const DialogContent = styled.div`
   background-color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#0a0a12';
-        }
-        return props.theme === 'dark' ? '#1e1e1e' : '#fff';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.darkBlue;
+    }
+    return props.theme === 'dark' ? '#1e1e1e' : '#fff';
+  }};
   color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#f0f0f0';
-        }
-        return props.theme === 'dark' ? '#fff' : '#000';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.lightText;
+    }
+    return props.theme === 'dark' ? '#fff' : '#000';
+  }};
   border-radius: 4px;
   padding: 20px;
   width: 500px;
@@ -36,12 +36,12 @@ const DialogContent = styled.div`
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '0 0 10px rgba(0, 255, 238, 0.3), 0 4px 15px rgba(0, 0, 0, 0.5)';
-        }
-        return '0 4px 8px rgba(0, 0, 0, 0.2)';
-    }};
-  border: ${props => props.theme === 'cyberpunk-turbo' ? '1px solid rgba(0, 255, 238, 0.3)' : 'none'};
+    if (props.theme === 'cyberpunk-turbo') {
+      return `0 0 10px ${CyberpunkColors.cyanRGBA(0.3)}, 0 4px 15px rgba(0, 0, 0, 0.5)`;
+    }
+    return '0 4px 8px rgba(0, 0, 0, 0.2)';
+  }};
+  border: ${props => props.theme === 'cyberpunk-turbo' ? `1px solid ${CyberpunkColors.cyanRGBA(0.3)}` : 'none'};
   transition: all 0.2s ease;
 `;
 
@@ -56,8 +56,8 @@ const DialogTitle = styled.h2`
   margin: 0;
   font-size: 1.5rem;
   ${props => props.theme === 'cyberpunk-turbo' ? `
-    color: #00ffee;
-    ${getTextGlow('rgba(0, 255, 238, ', 1)}
+    color: ${CyberpunkColors.cyan};
+    ${getTextGlow(CyberpunkColors.cyanRGBA(), 1)}
   ` : ''}
 `;
 
@@ -66,29 +66,29 @@ const CloseButton = styled.button`
   border: none;
   cursor: pointer;
   color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#00ffee';
-        }
-        return props.theme === 'dark' ? '#ccc' : '#666';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.cyan;
+    }
+    return props.theme === 'dark' ? '#ccc' : '#666';
+  }};
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
 
   ${props => props.theme === 'cyberpunk-turbo' ? `
-    ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
+    ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.5)}
   ` : ''}
 
   &:hover {
     color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#00ffee';
-        }
-        return props.theme === 'dark' ? '#fff' : '#000';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.cyan;
+    }
+    return props.theme === 'dark' ? '#fff' : '#000';
+  }};
     ${props => props.theme === 'cyberpunk-turbo' ? `
-      ${getTextGlow('rgba(0, 255, 238, ', 1)}
+      ${getTextGlow(CyberpunkColors.cyanRGBA(), 1)}
     ` : ''}
   }
 `;
@@ -108,8 +108,8 @@ const FormGroup = styled.div`
 const Label = styled.label`
   font-weight: 500;
   ${props => props.theme === 'cyberpunk-turbo' ? `
-    color: #ff00aa;
-    ${getTextGlow('rgba(255, 0, 170, ', 0.7)}
+    color: ${CyberpunkColors.magenta};
+    ${getTextGlow(CyberpunkColors.magentaRGBA(), 0.7)}
   ` : ''}
 `;
 
@@ -117,30 +117,30 @@ const Select = styled.select`
   padding: 8px;
   border-radius: 4px;
   border: 1px solid ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return 'rgba(0, 255, 238, 0.5)';
-        }
-        return props.theme === 'dark' ? '#555' : '#ddd';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.cyanRGBA(0.5);
+    }
+    return props.theme === 'dark' ? '#555' : '#ddd';
+  }};
   background-color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#0a0a12';
-        }
-        return props.theme === 'dark' ? '#2d2d2d' : '#fff';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.darkBlue;
+    }
+    return props.theme === 'dark' ? '#2d2d2d' : '#fff';
+  }};
   color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#00ffee';
-        }
-        return props.theme === 'dark' ? '#fff' : '#000';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.cyan;
+    }
+    return props.theme === 'dark' ? '#fff' : '#000';
+  }};
   ${props => props.theme === 'cyberpunk-turbo' ? `
-    ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
-    box-shadow: 0 0 5px rgba(0, 255, 238, 0.2);
+    ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.5)}
+    box-shadow: 0 0 5px ${CyberpunkColors.cyanRGBA(0.2)};
     &:focus {
       outline: none;
-      border-color: #00ffee;
-      box-shadow: 0 0 8px rgba(0, 255, 238, 0.4);
+      border-color: ${CyberpunkColors.cyan};
+      box-shadow: 0 0 8px ${CyberpunkColors.cyanRGBA(0.4)};
     }
   ` : ''}
 `;
@@ -149,33 +149,33 @@ const Input = styled.input`
   padding: 8px;
   border-radius: 4px;
   border: 1px solid ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return 'rgba(0, 255, 238, 0.5)';
-        }
-        return props.theme === 'dark' ? '#555' : '#ddd';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.cyanRGBA(0.5);
+    }
+    return props.theme === 'dark' ? '#555' : '#ddd';
+  }};
   background-color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#0a0a12';
-        }
-        return props.theme === 'dark' ? '#2d2d2d' : '#fff';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.darkBlue;
+    }
+    return props.theme === 'dark' ? '#2d2d2d' : '#fff';
+  }};
   color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#00ffee';
-        }
-        return props.theme === 'dark' ? '#fff' : '#000';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.cyan;
+    }
+    return props.theme === 'dark' ? '#fff' : '#000';
+  }};
   ${props => props.theme === 'cyberpunk-turbo' ? `
-    ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
-    box-shadow: 0 0 5px rgba(0, 255, 238, 0.2);
+    ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.5)}
+    box-shadow: 0 0 5px ${CyberpunkColors.cyanRGBA(0.2)};
     &:focus {
       outline: none;
-      border-color: #00ffee;
-      box-shadow: 0 0 8px rgba(0, 255, 238, 0.4);
+      border-color: ${CyberpunkColors.cyan};
+      box-shadow: 0 0 8px ${CyberpunkColors.cyanRGBA(0.4)};
     }
     &[type="checkbox"] {
-      accent-color: #00ffee;
+      accent-color: ${CyberpunkColors.cyan};
     }
   ` : ''}
 `;
@@ -202,299 +202,299 @@ const Button = styled.button`
   transition: all 0.2s ease;
 
   &.primary {
-    background-color: ${props => props.theme === 'cyberpunk-turbo' ? '#ff00aa' : '#0066cc'};
+    background-color: ${props => props.theme === 'cyberpunk-turbo' ? CyberpunkColors.magenta : '#0066cc'};
     color: white;
     ${props => props.theme === 'cyberpunk-turbo' ? `
-      border: 1px solid rgba(255, 0, 170, 0.5);
-      ${getTextGlow('rgba(255, 0, 170, ', 0.8)}
+      border: 1px solid ${CyberpunkColors.magentaRGBA(0.5)};
+      ${getTextGlow(CyberpunkColors.magentaRGBA(), 0.8)}
     ` : ''}
 
     &:hover {
       background-color: ${props => props.theme === 'cyberpunk-turbo' ? '#ff33bb' : '#0055aa'};
       ${props => props.theme === 'cyberpunk-turbo' ? `
-        ${getTextGlow('rgba(255, 0, 170, ', 1)}
-        box-shadow: 0 0 10px rgba(255, 0, 170, 0.3);
+        ${getTextGlow(CyberpunkColors.magentaRGBA(), 1)}
+        box-shadow: 0 0 10px ${CyberpunkColors.magentaRGBA(0.3)};
       ` : ''}
     }
   }
 
   &.secondary {
     background-color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#1a1a2e';
-        }
-        return props.theme === 'dark' ? '#555' : '#eee';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.mediumBlue;
+    }
+    return props.theme === 'dark' ? '#555' : '#eee';
+  }};
     color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#00ffee';
-        }
-        return props.theme === 'dark' ? '#fff' : '#000';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return CyberpunkColors.cyan;
+    }
+    return props.theme === 'dark' ? '#fff' : '#000';
+  }};
     ${props => props.theme === 'cyberpunk-turbo' ? `
-      border: 1px solid rgba(0, 255, 238, 0.3);
-      ${getTextGlow('rgba(0, 255, 238, ', 0.5)}
+      border: 1px solid ${CyberpunkColors.cyanRGBA(0.3)};
+      ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.5)}
     ` : ''}
 
     &:hover {
       background-color: ${props => {
-        if (props.theme === 'cyberpunk-turbo') {
-            return '#2a2a4e';
-        }
-        return props.theme === 'dark' ? '#666' : '#ddd';
-    }};
+    if (props.theme === 'cyberpunk-turbo') {
+      return '#2a2a4e';
+    }
+    return props.theme === 'dark' ? '#666' : '#ddd';
+  }};
       ${props => props.theme === 'cyberpunk-turbo' ? `
-        ${getTextGlow('rgba(0, 255, 238, ', 0.8)}
-        box-shadow: 0 0 10px rgba(0, 255, 238, 0.2);
+        ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.8)}
+        box-shadow: 0 0 10px ${CyberpunkColors.cyanRGBA(0.2)};
       ` : ''}
     }
   }
 `;
 
 const SettingsDialog = ({ isOpen, onClose, settings, onSaveSettings }) => {
-    const [formData, setFormData] = useState({
-        theme: 'light',
-        fontFamily: 'Consolas, monospace',
-        fontSize: 14,
-        tabSize: 2,
-        useTabs: false,
-        showLineNumbers: true,
-        wordWrap: true,
-        wrapColumn: 80,
-        autoSave: false,
-        autoSaveInterval: 60
+  const [formData, setFormData] = useState({
+    theme: 'light',
+    fontFamily: 'Consolas, monospace',
+    fontSize: 14,
+    tabSize: 2,
+    useTabs: false,
+    showLineNumbers: true,
+    wordWrap: true,
+    wrapColumn: 80,
+    autoSave: false,
+    autoSaveInterval: 60
+  });
+
+  // Initialize form data from settings
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        theme: settings.theme || 'light',
+        fontFamily: settings.font?.family || 'Consolas, monospace',
+        fontSize: settings.font?.size || 14,
+        tabSize: settings.tabSize || 2,
+        useTabs: settings.useTabs || false,
+        showLineNumbers: settings.showLineNumbers || true,
+        wordWrap: settings.wordWrap || true,
+        wrapColumn: settings.wrapColumn || 80,
+        autoSave: settings.autoSave || false,
+        autoSaveInterval: settings.autoSaveInterval ? settings.autoSaveInterval / 1000 : 60
+      });
+    }
+  }, [settings, isOpen]);
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
     });
+  };
 
-    // Initialize form data from settings
-    useEffect(() => {
-        if (settings) {
-            setFormData({
-                theme: settings.theme || 'light',
-                fontFamily: settings.font?.family || 'Consolas, monospace',
-                fontSize: settings.font?.size || 14,
-                tabSize: settings.tabSize || 2,
-                useTabs: settings.useTabs || false,
-                showLineNumbers: settings.showLineNumbers || true,
-                wordWrap: settings.wordWrap || true,
-                wrapColumn: settings.wrapColumn || 80,
-                autoSave: settings.autoSave || false,
-                autoSaveInterval: settings.autoSaveInterval ? settings.autoSaveInterval / 1000 : 60
-            });
-        }
-    }, [settings, isOpen]);
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    // Handle form input changes
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-
-        setFormData({
-            ...formData,
-            [name]: type === 'checkbox' ? checked : value
-        });
+    // Convert form data to settings format
+    const newSettings = {
+      theme: formData.theme,
+      font: {
+        family: formData.fontFamily,
+        size: Number(formData.fontSize)
+      },
+      tabSize: Number(formData.tabSize),
+      useTabs: formData.useTabs,
+      showLineNumbers: formData.showLineNumbers,
+      wordWrap: formData.wordWrap,
+      wrapColumn: Number(formData.wrapColumn),
+      autoSave: formData.autoSave,
+      autoSaveInterval: Number(formData.autoSaveInterval) * 1000 // Convert to milliseconds
     };
 
-    // Handle form submission
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    onSaveSettings(newSettings);
+    onClose();
+  };
 
-        // Convert form data to settings format
-        const newSettings = {
-            theme: formData.theme,
-            font: {
-                family: formData.fontFamily,
-                size: Number(formData.fontSize)
-            },
-            tabSize: Number(formData.tabSize),
-            useTabs: formData.useTabs,
-            showLineNumbers: formData.showLineNumbers,
-            wordWrap: formData.wordWrap,
-            wrapColumn: Number(formData.wrapColumn),
-            autoSave: formData.autoSave,
-            autoSaveInterval: Number(formData.autoSaveInterval) * 1000 // Convert to milliseconds
-        };
+  if (!isOpen) return null;
 
-        onSaveSettings(newSettings);
-        onClose();
-    };
+  return (
+    <DialogOverlay onClick={onClose}>
+      <DialogContent
+        theme={settings.theme}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <DialogHeader>
+          <DialogTitle theme={settings.theme}>Settings</DialogTitle>
+          <CloseButton theme={settings.theme} onClick={onClose}>
+            <FiX size={24} />
+          </CloseButton>
+        </DialogHeader>
 
-    if (!isOpen) return null;
-
-    return (
-        <DialogOverlay onClick={onClose}>
-            <DialogContent
-                theme={settings.theme}
-                onClick={(e) => e.stopPropagation()}
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label htmlFor="theme" theme={settings.theme}>Theme</Label>
+            <Select
+              id="theme"
+              name="theme"
+              value={formData.theme}
+              onChange={handleChange}
+              theme={settings.theme}
             >
-                <DialogHeader>
-                    <DialogTitle theme={settings.theme}>Settings</DialogTitle>
-                    <CloseButton theme={settings.theme} onClick={onClose}>
-                        <FiX size={24} />
-                    </CloseButton>
-                </DialogHeader>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="cyberpunk">Cyberpunk</option>
+              <option value="cyberpunk-turbo">Cyberpunk Turbo</option>
+            </Select>
+          </FormGroup>
 
-                <Form onSubmit={handleSubmit}>
-                    <FormGroup>
-                        <Label htmlFor="theme" theme={settings.theme}>Theme</Label>
-                        <Select
-                            id="theme"
-                            name="theme"
-                            value={formData.theme}
-                            onChange={handleChange}
-                            theme={settings.theme}
-                        >
-                            <option value="light">Light</option>
-                            <option value="dark">Dark</option>
-                            <option value="cyberpunk">Cyberpunk</option>
-                            <option value="cyberpunk-turbo">Cyberpunk Turbo</option>
-                        </Select>
-                    </FormGroup>
+          <FormGroup>
+            <Label htmlFor="fontFamily" theme={settings.theme}>Font Family</Label>
+            <Select
+              id="fontFamily"
+              name="fontFamily"
+              value={formData.fontFamily}
+              onChange={handleChange}
+              theme={settings.theme}
+            >
+              <option value="Consolas, monospace">Consolas</option>
+              <option value="'Courier New', monospace">Courier New</option>
+              <option value="'Source Code Pro', monospace">Source Code Pro</option>
+              <option value="'Fira Code', monospace">Fira Code</option>
+              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            </Select>
+          </FormGroup>
 
-                    <FormGroup>
-                        <Label htmlFor="fontFamily" theme={settings.theme}>Font Family</Label>
-                        <Select
-                            id="fontFamily"
-                            name="fontFamily"
-                            value={formData.fontFamily}
-                            onChange={handleChange}
-                            theme={settings.theme}
-                        >
-                            <option value="Consolas, monospace">Consolas</option>
-                            <option value="'Courier New', monospace">Courier New</option>
-                            <option value="'Source Code Pro', monospace">Source Code Pro</option>
-                            <option value="'Fira Code', monospace">Fira Code</option>
-                            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-                        </Select>
-                    </FormGroup>
+          <FormGroup>
+            <Label htmlFor="fontSize" theme={settings.theme}>Font Size</Label>
+            <Input
+              type="number"
+              id="fontSize"
+              name="fontSize"
+              value={formData.fontSize}
+              onChange={handleChange}
+              min="8"
+              max="32"
+              theme={settings.theme}
+            />
+          </FormGroup>
 
-                    <FormGroup>
-                        <Label htmlFor="fontSize" theme={settings.theme}>Font Size</Label>
-                        <Input
-                            type="number"
-                            id="fontSize"
-                            name="fontSize"
-                            value={formData.fontSize}
-                            onChange={handleChange}
-                            min="8"
-                            max="32"
-                            theme={settings.theme}
-                        />
-                    </FormGroup>
+          <FormGroup>
+            <Label htmlFor="tabSize" theme={settings.theme}>Tab Size</Label>
+            <Input
+              type="number"
+              id="tabSize"
+              name="tabSize"
+              value={formData.tabSize}
+              onChange={handleChange}
+              min="1"
+              max="8"
+              theme={settings.theme}
+            />
+          </FormGroup>
 
-                    <FormGroup>
-                        <Label htmlFor="tabSize" theme={settings.theme}>Tab Size</Label>
-                        <Input
-                            type="number"
-                            id="tabSize"
-                            name="tabSize"
-                            value={formData.tabSize}
-                            onChange={handleChange}
-                            min="1"
-                            max="8"
-                            theme={settings.theme}
-                        />
-                    </FormGroup>
+          <FormGroup>
+            <Checkbox>
+              <Input
+                type="checkbox"
+                id="useTabs"
+                name="useTabs"
+                checked={formData.useTabs}
+                onChange={handleChange}
+              />
+              <Label htmlFor="useTabs" theme={settings.theme}>Use Tabs Instead of Spaces</Label>
+            </Checkbox>
+          </FormGroup>
 
-                    <FormGroup>
-                        <Checkbox>
-                            <Input
-                                type="checkbox"
-                                id="useTabs"
-                                name="useTabs"
-                                checked={formData.useTabs}
-                                onChange={handleChange}
-                            />
-                            <Label htmlFor="useTabs" theme={settings.theme}>Use Tabs Instead of Spaces</Label>
-                        </Checkbox>
-                    </FormGroup>
+          <FormGroup>
+            <Checkbox>
+              <Input
+                type="checkbox"
+                id="showLineNumbers"
+                name="showLineNumbers"
+                checked={formData.showLineNumbers}
+                onChange={handleChange}
+              />
+              <Label htmlFor="showLineNumbers" theme={settings.theme}>Show Line Numbers</Label>
+            </Checkbox>
+          </FormGroup>
 
-                    <FormGroup>
-                        <Checkbox>
-                            <Input
-                                type="checkbox"
-                                id="showLineNumbers"
-                                name="showLineNumbers"
-                                checked={formData.showLineNumbers}
-                                onChange={handleChange}
-                            />
-                            <Label htmlFor="showLineNumbers" theme={settings.theme}>Show Line Numbers</Label>
-                        </Checkbox>
-                    </FormGroup>
+          <FormGroup>
+            <Checkbox>
+              <Input
+                type="checkbox"
+                id="wordWrap"
+                name="wordWrap"
+                checked={formData.wordWrap}
+                onChange={handleChange}
+              />
+              <Label htmlFor="wordWrap" theme={settings.theme}>Word Wrap</Label>
+            </Checkbox>
+          </FormGroup>
 
-                    <FormGroup>
-                        <Checkbox>
-                            <Input
-                                type="checkbox"
-                                id="wordWrap"
-                                name="wordWrap"
-                                checked={formData.wordWrap}
-                                onChange={handleChange}
-                            />
-                            <Label htmlFor="wordWrap" theme={settings.theme}>Word Wrap</Label>
-                        </Checkbox>
-                    </FormGroup>
+          {formData.wordWrap && (
+            <FormGroup>
+              <Label htmlFor="wrapColumn" theme={settings.theme}>Wrap Column</Label>
+              <Input
+                type="number"
+                id="wrapColumn"
+                name="wrapColumn"
+                value={formData.wrapColumn}
+                onChange={handleChange}
+                min="40"
+                max="200"
+                theme={settings.theme}
+              />
+            </FormGroup>
+          )}
 
-                    {formData.wordWrap && (
-                        <FormGroup>
-                            <Label htmlFor="wrapColumn" theme={settings.theme}>Wrap Column</Label>
-                            <Input
-                                type="number"
-                                id="wrapColumn"
-                                name="wrapColumn"
-                                value={formData.wrapColumn}
-                                onChange={handleChange}
-                                min="40"
-                                max="200"
-                                theme={settings.theme}
-                            />
-                        </FormGroup>
-                    )}
+          <FormGroup>
+            <Checkbox>
+              <Input
+                type="checkbox"
+                id="autoSave"
+                name="autoSave"
+                checked={formData.autoSave}
+                onChange={handleChange}
+              />
+              <Label htmlFor="autoSave" theme={settings.theme}>Auto Save</Label>
+            </Checkbox>
+          </FormGroup>
 
-                    <FormGroup>
-                        <Checkbox>
-                            <Input
-                                type="checkbox"
-                                id="autoSave"
-                                name="autoSave"
-                                checked={formData.autoSave}
-                                onChange={handleChange}
-                            />
-                            <Label htmlFor="autoSave" theme={settings.theme}>Auto Save</Label>
-                        </Checkbox>
-                    </FormGroup>
+          {formData.autoSave && (
+            <FormGroup>
+              <Label htmlFor="autoSaveInterval" theme={settings.theme}>Auto Save Interval (seconds)</Label>
+              <Input
+                type="number"
+                id="autoSaveInterval"
+                name="autoSaveInterval"
+                value={formData.autoSaveInterval}
+                onChange={handleChange}
+                min="5"
+                max="3600"
+                theme={settings.theme}
+              />
+            </FormGroup>
+          )}
 
-                    {formData.autoSave && (
-                        <FormGroup>
-                            <Label htmlFor="autoSaveInterval" theme={settings.theme}>Auto Save Interval (seconds)</Label>
-                            <Input
-                                type="number"
-                                id="autoSaveInterval"
-                                name="autoSaveInterval"
-                                value={formData.autoSaveInterval}
-                                onChange={handleChange}
-                                min="5"
-                                max="3600"
-                                theme={settings.theme}
-                            />
-                        </FormGroup>
-                    )}
-
-                    <ButtonGroup>
-                        <Button
-                            type="button"
-                            className="secondary"
-                            onClick={onClose}
-                            theme={settings.theme}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" className="primary" theme={settings.theme}>
-                            Save
-                        </Button>
-                    </ButtonGroup>
-                </Form>
-            </DialogContent>
-        </DialogOverlay>
-    );
+          <ButtonGroup>
+            <Button
+              type="button"
+              className="secondary"
+              onClick={onClose}
+              theme={settings.theme}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" className="primary" theme={settings.theme}>
+              Save
+            </Button>
+          </ButtonGroup>
+        </Form>
+      </DialogContent>
+    </DialogOverlay>
+  );
 };
 
 export default SettingsDialog;

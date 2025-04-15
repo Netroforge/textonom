@@ -40,8 +40,13 @@ export const CyberpunkTheme = {
 export const CyberpunkTurboTheme = {
     ...CyberpunkTheme,
     background: '#0a0a12',
-    primary: '#ff00aa',
-    accent: '#00ffee'
+    text: '#f0f0f0',
+    primary: '#ff00aa',    // Magenta (primary color for buttons, labels)
+    secondary: '#1a1a2e',   // Darker blue for secondary backgrounds
+    border: '#3a3a5a',      // Border color
+    accent: '#00ffee',      // Cyan (accent color for highlights, glows)
+    error: '#ff0055',       // Error color
+    success: '#00ff99'      // Success color
 };
 
 // Utility function for text glow in cyberpunk turbo theme
@@ -52,6 +57,23 @@ export const getTextGlow = (color, intensity = 1) => {
                  0 0 4px ${color}${intensity * 0.2},
                  0 0 8px ${color}${intensity * 0.1};
   `;
+};
+
+// Standard color values for consistent use throughout the app
+export const CyberpunkColors = {
+    // Main colors
+    cyan: '#00ffee',           // Accent color (for UI elements, glows)
+    cyanRGBA: (alpha = 1) => `rgba(0, 255, 238, ${alpha})`,
+    magenta: '#ff00aa',        // Primary color (for buttons, important UI)
+    magentaRGBA: (alpha = 1) => `rgba(255, 0, 170, ${alpha})`,
+
+    // Background colors
+    darkBlue: '#0a0a12',       // Main background
+    mediumBlue: '#1a1a2e',     // Secondary background (active elements)
+
+    // Text and borders
+    lightText: '#f0f0f0',      // Standard text color
+    borderColor: '#3a3a5a'     // Border color
 };
 
 // Global styles for each theme
@@ -81,7 +103,7 @@ export const GlobalStyles = createGlobalStyle`
   /* Apply text glow to all text elements in cyberpunk-turbo theme */
   ${props => props.theme === 'cyberpunk-turbo' ? `
     h1, h2, h3, h4, h5, h6, p, span, div, button, a {
-      ${getTextGlow('rgba(0, 255, 238, ', 0.8)}
+      ${getTextGlow(CyberpunkColors.cyanRGBA(), 0.8)}
     }
   ` : ''}
 
@@ -94,7 +116,7 @@ export const GlobalStyles = createGlobalStyle`
             case 'cyberpunk':
                 return '#ff00ff';
             case 'cyberpunk-turbo':
-                return '#ff00aa';
+                return CyberpunkColors.magenta;
             default:
                 return '#0066cc';
         }
@@ -122,7 +144,7 @@ export const GlobalStyles = createGlobalStyle`
             case 'cyberpunk':
                 return '#ff00ff';
             case 'cyberpunk-turbo':
-                return '#ff00aa';
+                return CyberpunkColors.magenta;
             default:
                 return '#cccccc';
         }
@@ -138,7 +160,7 @@ export const GlobalStyles = createGlobalStyle`
             case 'cyberpunk':
                 return '#ff55ff';
             case 'cyberpunk-turbo':
-                return '#ff55cc';
+                return '#ff55cc'; // Lighter version of magenta
             default:
                 return '#aaaaaa';
         }
