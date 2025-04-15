@@ -4,7 +4,6 @@ import { registerIpcEvent, registerWindowEvent } from '../utils/eventManager';
 import styled from 'styled-components';
 import { FiPlus, FiX } from 'react-icons/fi';
 import TextEditor from './TextEditor';
-import path from 'path';
 
 const TabsWrapper = styled.div`
   display: flex;
@@ -135,7 +134,7 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
         const { ipcRenderer } = window.electron;
 
         // Handle file open event
-        const handleFileOpened = (event, { filePath, content }) => {
+        const handleFileOpened = async (event, { filePath, content }) => {
             // Check if the file is already open
             const existingTabIndex = tabs.findIndex(tab => tab.filePath === filePath);
 
@@ -147,10 +146,13 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
                     updateTabContent(existingTabIndex, content);
                 }
             } else {
+                // Get the basename of the file path using the IPC handler
+                const title = await window.electron.ipcRenderer.invoke('path-basename', filePath);
+
                 // Add new tab for the opened file
                 const newTab = {
                     id: Date.now(),
-                    title: path.basename(filePath),
+                    title,
                     filePath,
                     content,
                     isModified: false
@@ -199,8 +201,11 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             });
 
             if (filePath) {
+                // Get the basename of the file path using the IPC handler
+                const title = await window.electron.ipcRenderer.invoke('path-basename', filePath);
+
                 updateTab(activeTabIndex, {
-                    title: path.basename(filePath),
+                    title,
                     filePath,
                     isModified: false
                 });
@@ -558,13 +563,6 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
         }
     }, []);
 
-    // Create a test tab for debugging
-    const createTestTab = () => {
-        const { ipcRenderer } = window.electron;
-        console.log('Sending create-test-tab event to main process');
-        ipcRenderer.send('create-test-tab');
-    };
-
     return (
         <TabsWrapper>
             <TabsHeader theme={settings.theme}>
@@ -592,13 +590,7 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
                 >
                     <FiPlus size={16} />
                 </NewTabButton>
-                <NewTabButton
-                    theme={settings.theme}
-                    onClick={createTestTab}
-                    title="Create Test Tab (Debug)"
-                >
-                    T
-                </NewTabButton>
+
             </TabsHeader>
 
             <TabContent>

@@ -528,7 +528,10 @@ ipcMain.handle('get-tabs-state', () => {
   return tabsState;
 });
 
-
+// Path utilities
+ipcMain.handle('path-basename', (event, filePath) => {
+  return path.basename(filePath);
+});
 
 // Listen for console logs from the renderer process
 ipcMain.on('console-log', (event, ...args) => {
@@ -571,30 +574,6 @@ app.on('before-quit', () => {
   // We don't need to do anything here as the tabs state is saved whenever it changes
   // This is just a hook in case we need to add additional cleanup in the future
   console.log('App is quitting, current tabs state:', JSON.stringify(tabsState, null, 2));
-});
-
-// Create a test tab for debugging
-ipcMain.on('create-test-tab', () => {
-  console.log('Creating test tab');
-  const testTab = {
-    id: Date.now(),
-    title: 'Test Tab',
-    filePath: null,
-    content: 'This is a test tab',
-    isModified: false
-  };
-
-  tabsState = {
-    tabs: [testTab],
-    activeTabIndex: 0
-  };
-
-  try {
-    fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
-    console.log('Test tab saved successfully');
-  } catch (error) {
-    console.error('Error saving test tab:', error);
-  }
 });
 
 app.on('window-all-closed', () => {
