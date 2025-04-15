@@ -124,250 +124,250 @@ const Button = styled.button`
   }
 `;
 
-const SettingsDialog = ({ isOpen, onClose, settings, onSaveSettings }) => {
-  const [formData, setFormData] = useState({
-    theme: 'light',
-    fontFamily: 'Consolas, monospace',
-    fontSize: 14,
-    tabSize: 2,
-    useTabs: false,
-    showLineNumbers: true,
-    wordWrap: true,
-    wrapColumn: 80,
-    autoSave: false,
-    autoSaveInterval: 60
-  });
-
-  // Initialize form data from settings
-  useEffect(() => {
-    if (settings) {
-      setFormData({
-        theme: settings.theme || 'light',
-        fontFamily: settings.font?.family || 'Consolas, monospace',
-        fontSize: settings.font?.size || 14,
-        tabSize: settings.tabSize || 2,
-        useTabs: settings.useTabs || false,
-        showLineNumbers: settings.showLineNumbers || true,
-        wordWrap: settings.wordWrap || true,
-        wrapColumn: settings.wrapColumn || 80,
-        autoSave: settings.autoSave || false,
-        autoSaveInterval: settings.autoSaveInterval ? settings.autoSaveInterval / 1000 : 60
-      });
-    }
-  }, [settings, isOpen]);
-
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
+const SettingsDialog = ({isOpen, onClose, settings, onSaveSettings}) => {
+    const [formData, setFormData] = useState({
+        theme: 'light',
+        fontFamily: 'Consolas, monospace',
+        fontSize: 14,
+        tabSize: 2,
+        useTabs: false,
+        showLineNumbers: true,
+        wordWrap: true,
+        wrapColumn: 80,
+        autoSave: false,
+        autoSaveInterval: 60
     });
-  };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    // Initialize form data from settings
+    useEffect(() => {
+        if (settings) {
+            setFormData({
+                theme: settings.theme || 'light',
+                fontFamily: settings.font?.family || 'Consolas, monospace',
+                fontSize: settings.font?.size || 14,
+                tabSize: settings.tabSize || 2,
+                useTabs: settings.useTabs || false,
+                showLineNumbers: settings.showLineNumbers || true,
+                wordWrap: settings.wordWrap || true,
+                wrapColumn: settings.wrapColumn || 80,
+                autoSave: settings.autoSave || false,
+                autoSaveInterval: settings.autoSaveInterval ? settings.autoSaveInterval / 1000 : 60
+            });
+        }
+    }, [settings, isOpen]);
 
-    // Convert form data to settings format
-    const newSettings = {
-      theme: formData.theme,
-      font: {
-        family: formData.fontFamily,
-        size: Number(formData.fontSize)
-      },
-      tabSize: Number(formData.tabSize),
-      useTabs: formData.useTabs,
-      showLineNumbers: formData.showLineNumbers,
-      wordWrap: formData.wordWrap,
-      wrapColumn: Number(formData.wrapColumn),
-      autoSave: formData.autoSave,
-      autoSaveInterval: Number(formData.autoSaveInterval) * 1000 // Convert to milliseconds
+    // Handle form input changes
+    const handleChange = (e) => {
+        const {name, value, type, checked} = e.target;
+
+        setFormData({
+            ...formData,
+            [name]: type === 'checkbox' ? checked : value
+        });
     };
 
-    onSaveSettings(newSettings);
-    onClose();
-  };
+    // Handle form submission
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-  if (!isOpen) return null;
+        // Convert form data to settings format
+        const newSettings = {
+            theme: formData.theme,
+            font: {
+                family: formData.fontFamily,
+                size: Number(formData.fontSize)
+            },
+            tabSize: Number(formData.tabSize),
+            useTabs: formData.useTabs,
+            showLineNumbers: formData.showLineNumbers,
+            wordWrap: formData.wordWrap,
+            wrapColumn: Number(formData.wrapColumn),
+            autoSave: formData.autoSave,
+            autoSaveInterval: Number(formData.autoSaveInterval) * 1000 // Convert to milliseconds
+        };
 
-  return (
-    <DialogOverlay onClick={onClose}>
-      <DialogContent
-        theme={settings.theme}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-          <CloseButton theme={settings.theme} onClick={onClose}>
-            <FiX size={24} />
-          </CloseButton>
-        </DialogHeader>
+        onSaveSettings(newSettings);
+        onClose();
+    };
 
-        <Form onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label htmlFor="theme">Theme</Label>
-            <Select
-              id="theme"
-              name="theme"
-              value={formData.theme}
-              onChange={handleChange}
-              theme={settings.theme}
-            >
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="cyberpunk">Cyberpunk</option>
-              <option value="cyberpunk-turbo">Cyberpunk Turbo</option>
-            </Select>
-          </FormGroup>
+    if (!isOpen) return null;
 
-          <FormGroup>
-            <Label htmlFor="fontFamily">Font Family</Label>
-            <Select
-              id="fontFamily"
-              name="fontFamily"
-              value={formData.fontFamily}
-              onChange={handleChange}
-              theme={settings.theme}
-            >
-              <option value="Consolas, monospace">Consolas</option>
-              <option value="'Courier New', monospace">Courier New</option>
-              <option value="'Source Code Pro', monospace">Source Code Pro</option>
-              <option value="'Fira Code', monospace">Fira Code</option>
-              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-            </Select>
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="fontSize">Font Size</Label>
-            <Input
-              type="number"
-              id="fontSize"
-              name="fontSize"
-              value={formData.fontSize}
-              onChange={handleChange}
-              min="8"
-              max="32"
-              theme={settings.theme}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="tabSize">Tab Size</Label>
-            <Input
-              type="number"
-              id="tabSize"
-              name="tabSize"
-              value={formData.tabSize}
-              onChange={handleChange}
-              min="1"
-              max="8"
-              theme={settings.theme}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Checkbox>
-              <Input
-                type="checkbox"
-                id="useTabs"
-                name="useTabs"
-                checked={formData.useTabs}
-                onChange={handleChange}
-              />
-              <Label htmlFor="useTabs">Use Tabs Instead of Spaces</Label>
-            </Checkbox>
-          </FormGroup>
-
-          <FormGroup>
-            <Checkbox>
-              <Input
-                type="checkbox"
-                id="showLineNumbers"
-                name="showLineNumbers"
-                checked={formData.showLineNumbers}
-                onChange={handleChange}
-              />
-              <Label htmlFor="showLineNumbers">Show Line Numbers</Label>
-            </Checkbox>
-          </FormGroup>
-
-          <FormGroup>
-            <Checkbox>
-              <Input
-                type="checkbox"
-                id="wordWrap"
-                name="wordWrap"
-                checked={formData.wordWrap}
-                onChange={handleChange}
-              />
-              <Label htmlFor="wordWrap">Word Wrap</Label>
-            </Checkbox>
-          </FormGroup>
-
-          {formData.wordWrap && (
-            <FormGroup>
-              <Label htmlFor="wrapColumn">Wrap Column</Label>
-              <Input
-                type="number"
-                id="wrapColumn"
-                name="wrapColumn"
-                value={formData.wrapColumn}
-                onChange={handleChange}
-                min="40"
-                max="200"
+    return (
+        <DialogOverlay onClick={onClose}>
+            <DialogContent
                 theme={settings.theme}
-              />
-            </FormGroup>
-          )}
-
-          <FormGroup>
-            <Checkbox>
-              <Input
-                type="checkbox"
-                id="autoSave"
-                name="autoSave"
-                checked={formData.autoSave}
-                onChange={handleChange}
-              />
-              <Label htmlFor="autoSave">Auto Save</Label>
-            </Checkbox>
-          </FormGroup>
-
-          {formData.autoSave && (
-            <FormGroup>
-              <Label htmlFor="autoSaveInterval">Auto Save Interval (seconds)</Label>
-              <Input
-                type="number"
-                id="autoSaveInterval"
-                name="autoSaveInterval"
-                value={formData.autoSaveInterval}
-                onChange={handleChange}
-                min="5"
-                max="3600"
-                theme={settings.theme}
-              />
-            </FormGroup>
-          )}
-
-          <ButtonGroup>
-            <Button
-              type="button"
-              className="secondary"
-              onClick={onClose}
-              theme={settings.theme}
+                onClick={(e) => e.stopPropagation()}
             >
-              Cancel
-            </Button>
-            <Button type="submit" className="primary">
-              Save
-            </Button>
-          </ButtonGroup>
-        </Form>
-      </DialogContent>
-    </DialogOverlay>
-  );
+                <DialogHeader>
+                    <DialogTitle>Settings</DialogTitle>
+                    <CloseButton theme={settings.theme} onClick={onClose}>
+                        <FiX size={24}/>
+                    </CloseButton>
+                </DialogHeader>
+
+                <Form onSubmit={handleSubmit}>
+                    <FormGroup>
+                        <Label htmlFor="theme">Theme</Label>
+                        <Select
+                            id="theme"
+                            name="theme"
+                            value={formData.theme}
+                            onChange={handleChange}
+                            theme={settings.theme}
+                        >
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="cyberpunk">Cyberpunk</option>
+                            <option value="cyberpunk-turbo">Cyberpunk Turbo</option>
+                        </Select>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="fontFamily">Font Family</Label>
+                        <Select
+                            id="fontFamily"
+                            name="fontFamily"
+                            value={formData.fontFamily}
+                            onChange={handleChange}
+                            theme={settings.theme}
+                        >
+                            <option value="Consolas, monospace">Consolas</option>
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                            <option value="'Fira Code', monospace">Fira Code</option>
+                            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                        </Select>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="fontSize">Font Size</Label>
+                        <Input
+                            type="number"
+                            id="fontSize"
+                            name="fontSize"
+                            value={formData.fontSize}
+                            onChange={handleChange}
+                            min="8"
+                            max="32"
+                            theme={settings.theme}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="tabSize">Tab Size</Label>
+                        <Input
+                            type="number"
+                            id="tabSize"
+                            name="tabSize"
+                            value={formData.tabSize}
+                            onChange={handleChange}
+                            min="1"
+                            max="8"
+                            theme={settings.theme}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Checkbox>
+                            <Input
+                                type="checkbox"
+                                id="useTabs"
+                                name="useTabs"
+                                checked={formData.useTabs}
+                                onChange={handleChange}
+                            />
+                            <Label htmlFor="useTabs">Use Tabs Instead of Spaces</Label>
+                        </Checkbox>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Checkbox>
+                            <Input
+                                type="checkbox"
+                                id="showLineNumbers"
+                                name="showLineNumbers"
+                                checked={formData.showLineNumbers}
+                                onChange={handleChange}
+                            />
+                            <Label htmlFor="showLineNumbers">Show Line Numbers</Label>
+                        </Checkbox>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Checkbox>
+                            <Input
+                                type="checkbox"
+                                id="wordWrap"
+                                name="wordWrap"
+                                checked={formData.wordWrap}
+                                onChange={handleChange}
+                            />
+                            <Label htmlFor="wordWrap">Word Wrap</Label>
+                        </Checkbox>
+                    </FormGroup>
+
+                    {formData.wordWrap && (
+                        <FormGroup>
+                            <Label htmlFor="wrapColumn">Wrap Column</Label>
+                            <Input
+                                type="number"
+                                id="wrapColumn"
+                                name="wrapColumn"
+                                value={formData.wrapColumn}
+                                onChange={handleChange}
+                                min="40"
+                                max="200"
+                                theme={settings.theme}
+                            />
+                        </FormGroup>
+                    )}
+
+                    <FormGroup>
+                        <Checkbox>
+                            <Input
+                                type="checkbox"
+                                id="autoSave"
+                                name="autoSave"
+                                checked={formData.autoSave}
+                                onChange={handleChange}
+                            />
+                            <Label htmlFor="autoSave">Auto Save</Label>
+                        </Checkbox>
+                    </FormGroup>
+
+                    {formData.autoSave && (
+                        <FormGroup>
+                            <Label htmlFor="autoSaveInterval">Auto Save Interval (seconds)</Label>
+                            <Input
+                                type="number"
+                                id="autoSaveInterval"
+                                name="autoSaveInterval"
+                                value={formData.autoSaveInterval}
+                                onChange={handleChange}
+                                min="5"
+                                max="3600"
+                                theme={settings.theme}
+                            />
+                        </FormGroup>
+                    )}
+
+                    <ButtonGroup>
+                        <Button
+                            type="button"
+                            className="secondary"
+                            onClick={onClose}
+                            theme={settings.theme}
+                        >
+                            Cancel
+                        </Button>
+                        <Button type="submit" className="primary">
+                            Save
+                        </Button>
+                    </ButtonGroup>
+                </Form>
+            </DialogContent>
+        </DialogOverlay>
+    );
 };
 
 export default SettingsDialog;

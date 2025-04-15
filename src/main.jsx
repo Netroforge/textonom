@@ -4,7 +4,7 @@ import App from './App.jsx'
 import {TransformationProvider} from './contexts/TransformationContext'
 
 createRoot(document.getElementById('root')).render(
-  <TransformationProvider>
-    <App />
-  </TransformationProvider>
+    <TransformationProvider>
+        <App/>
+    </TransformationProvider>
 )

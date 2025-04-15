@@ -22,61 +22,61 @@ import {randomBool, randomInt} from './effectUtils';
  * @param {number} probability - Probability of glitches occurring (0-1)
  */
 export const drawRandomGlitches = (ctx, width, height, probability = 0.015) => {
-  // Only draw glitches occasionally based on probability
-  if (!randomBool(probability)) return;
+    // Only draw glitches occasionally based on probability
+    if (!randomBool(probability)) return;
 
-  // Potentially draw multiple glitch effects at once for more intense effect
-  const glitchCount = randomBool(0.3) ? randomInt(2, 4) : 1;
+    // Potentially draw multiple glitch effects at once for more intense effect
+    const glitchCount = randomBool(0.3) ? randomInt(2, 4) : 1;
 
-  for (let i = 0; i < glitchCount; i++) {
-    // Determine glitch type - more variety with new effects
-    const glitchType = randomInt(0, 8);
+    for (let i = 0; i < glitchCount; i++) {
+        // Determine glitch type - more variety with new effects
+        const glitchType = randomInt(0, 8);
 
-    switch (glitchType) {
-      case 0:
-        drawHorizontalGlitchLines(ctx, width, height);
-        break;
-      case 1:
-        drawColorShift(ctx, width, height);
-        break;
-      case 2:
-        drawStaticNoise(ctx, width, height);
-        break;
-      case 3:
-        drawVerticalSyncLoss(ctx, width, height);
-        break;
-      case 4:
-        drawSignalJitter(ctx, width, height);
-        break;
-      case 5:
-        drawDigitalCorruption(ctx, width, height);
-        break;
-      case 6:
-        drawScanDistortion(ctx, width, height);
-        break;
-      case 7:
-        drawTextCorruption(ctx, width, height);
-        break;
-      case 8:
-        drawPixelDisplacement(ctx, width, height);
-        break;
+        switch (glitchType) {
+            case 0:
+                drawHorizontalGlitchLines(ctx, width, height);
+                break;
+            case 1:
+                drawColorShift(ctx, width, height);
+                break;
+            case 2:
+                drawStaticNoise(ctx, width, height);
+                break;
+            case 3:
+                drawVerticalSyncLoss(ctx, width, height);
+                break;
+            case 4:
+                drawSignalJitter(ctx, width, height);
+                break;
+            case 5:
+                drawDigitalCorruption(ctx, width, height);
+                break;
+            case 6:
+                drawScanDistortion(ctx, width, height);
+                break;
+            case 7:
+                drawTextCorruption(ctx, width, height);
+                break;
+            case 8:
+                drawPixelDisplacement(ctx, width, height);
+                break;
+        }
     }
-  }
 };
 
 // Export all effects
 export {
-  drawHorizontalGlitchLines,
-  drawColorShift,
-  drawStaticNoise,
-  drawVerticalSyncLoss,
-  drawSignalJitter,
-  drawDigitalCorruption,
-  drawScanDistortion,
-  drawTextCorruption,
-  drawPixelDisplacement,
-  drawRgbSeparation,
-  drawScanlines,
-  drawEdgeDarkening,
-  drawScreenGlow
+    drawHorizontalGlitchLines,
+    drawColorShift,
+    drawStaticNoise,
+    drawVerticalSyncLoss,
+    drawSignalJitter,
+    drawDigitalCorruption,
+    drawScanDistortion,
+    drawTextCorruption,
+    drawPixelDisplacement,
+    drawRgbSeparation,
+    drawScanlines,
+    drawEdgeDarkening,
+    drawScreenGlow
 };
