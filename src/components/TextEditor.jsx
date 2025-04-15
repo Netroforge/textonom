@@ -1,7 +1,7 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
-import {registerIpcEvent} from '../utils/eventManager';
+import { registerIpcEvent } from '../utils/eventManager';
 
 const EditorContainer = styled.div`
   height: 100%;
@@ -24,11 +24,11 @@ const getMonacoTheme = (theme) => {
 };
 
 const TextEditor = ({
-                        content,
-                        onChange,
-                        filePath,
-                        settings = {}
-                    }) => {
+    content,
+    onChange,
+    filePath,
+    settings = {}
+}) => {
     // Reference to the Monaco editor instance
     const editorRef = useRef(null);
     // Reference to the Monaco editor model
@@ -49,11 +49,11 @@ const TextEditor = ({
             base: 'vs-dark',
             inherit: true,
             rules: [
-                {token: 'comment', foreground: '#6272a4'},
-                {token: 'string', foreground: '#ff79c6'},
-                {token: 'keyword', foreground: '#ff00ff'},
-                {token: 'number', foreground: '#bd93f9'},
-                {token: 'operator', foreground: '#00ffff'}
+                { token: 'comment', foreground: '#6272a4' },
+                { token: 'string', foreground: '#ff79c6' },
+                { token: 'keyword', foreground: '#ff00ff' },
+                { token: 'number', foreground: '#bd93f9' },
+                { token: 'operator', foreground: '#00ffff' }
             ],
             colors: {
                 'editor.background': '#0c0c14',
@@ -71,11 +71,11 @@ const TextEditor = ({
             base: 'vs-dark',
             inherit: true,
             rules: [
-                {token: 'comment', foreground: '#6272a4'},
-                {token: 'string', foreground: '#ff55cc'},
-                {token: 'keyword', foreground: '#ff00aa'},
-                {token: 'number', foreground: '#bd93f9'},
-                {token: 'operator', foreground: '#00ffee'}
+                { token: 'comment', foreground: '#6272a4' },
+                { token: 'string', foreground: '#ff55cc' },
+                { token: 'keyword', foreground: '#ff00aa' },
+                { token: 'number', foreground: '#bd93f9' },
+                { token: 'operator', foreground: '#00ffee' }
             ],
             colors: {
                 'editor.background': '#0a0a12',
@@ -99,7 +99,7 @@ const TextEditor = ({
         wrappingStrategy: 'advanced',
         wrappingIndent: 'indent',
         wordWrapColumn: settings.wrapColumn || 80,
-        minimap: {enabled: true},
+        minimap: { enabled: true },
         scrollBeyondLastLine: false,
         automaticLayout: true
     });
@@ -115,7 +115,7 @@ const TextEditor = ({
     useEffect(() => {
         if (!window.electron) return;
 
-        const {ipcRenderer} = window.electron;
+        const { ipcRenderer } = window.electron;
 
         // Handle undo event
         const handleUndo = () => {
@@ -146,35 +146,63 @@ const TextEditor = ({
 
     // Method to apply text transformation while preserving undo history
     const applyTransformation = (newContent) => {
-        if (!editorRef.current || !modelRef.current) return;
+        console.log('TextEditor.applyTransformation called with content length:', newContent.length);
 
-        // Create an edit operation that replaces the entire content
-        // This will be added to the undo stack as a single operation
-        editorRef.current.executeEdits('transformation', [
-            {
-                range: modelRef.current.getFullModelRange(),
-                text: newContent,
-                forceMoveMarkers: true
-            }
-        ]);
+        if (!editorRef.current || !modelRef.current) {
+            console.error('Editor or model reference is null');
+            return;
+        }
+
+        try {
+            // Get the current range of the model
+            const fullRange = modelRef.current.getFullModelRange();
+            console.log('Current model range:', fullRange);
+
+            // Create an edit operation that replaces the entire content
+            // This will be added to the undo stack as a single operation
+            console.log('Executing editor edit operation');
+            editorRef.current.executeEdits('transformation', [
+                {
+                    range: fullRange,
+                    text: newContent,
+                    forceMoveMarkers: true
+                }
+            ]);
+            console.log('Edit operation completed successfully');
+        } catch (error) {
+            console.error('Error applying transformation:', error);
+            console.error('Stack trace:', error.stack);
+        }
     };
 
     // Listen for transformation results
     useEffect(() => {
         const handleTransformationResult = (event) => {
-            const {content: newContent} = event.detail;
+            console.log('TextEditor received transformation-result event');
+            const { content: newContent, tabIndex } = event.detail;
+
+            console.log(`Event details - tabIndex: ${tabIndex}, content length: ${newContent ? newContent.length : 0}`);
 
             if (newContent && editorRef.current) {
                 console.log('Applying transformation with undo preservation');
                 applyTransformation(newContent);
+            } else {
+                if (!newContent) {
+                    console.error('Transformation result has no content');
+                }
+                if (!editorRef.current) {
+                    console.error('Editor reference is null');
+                }
             }
         };
 
         // Add event listener
+        console.log('Adding transformation-result event listener');
         window.addEventListener('transformation-result', handleTransformationResult);
 
         // Clean up
         return () => {
+            console.log('Removing transformation-result event listener');
             window.removeEventListener('transformation-result', handleTransformationResult);
         };
     }, []);

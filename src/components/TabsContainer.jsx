@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {useTransformation} from '../contexts/TransformationContext';
-import {registerIpcEvent, registerWindowEvent} from '../utils/eventManager';
+import React, { useEffect, useState } from 'react';
+import { useTransformation } from '../contexts/TransformationContext';
+import { registerIpcEvent, registerWindowEvent } from '../utils/eventManager';
 import styled from 'styled-components';
-import {FiPlus, FiX} from 'react-icons/fi';
+import { FiPlus, FiX } from 'react-icons/fi';
 import TextEditor from './TextEditor';
 import path from 'path';
 
@@ -35,11 +35,11 @@ const Tab = styled.div`
   gap: 8px;
   cursor: pointer;
   background-color: ${props => props.active
-    ? (props.theme === 'dark' ? '#2d2d2d' : '#fff')
-    : (props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0')};
+        ? (props.theme === 'dark' ? '#2d2d2d' : '#fff')
+        : (props.theme === 'dark' ? '#1e1e1e' : '#f0f0f0')};
   color: ${props => props.active
-    ? (props.theme === 'dark' ? '#fff' : '#000')
-    : (props.theme === 'dark' ? '#ccc' : '#666')};
+        ? (props.theme === 'dark' ? '#fff' : '#000')
+        : (props.theme === 'dark' ? '#ccc' : '#666')};
   border-right: 1px solid ${props => props.theme === 'dark' ? '#333' : '#ddd'};
   min-width: 10%;
   max-width: 20%;
@@ -89,21 +89,19 @@ const TabContent = styled.div`
   position: relative;
 `;
 
-const TabsContainer = ({settings, onOpenFile, onSaveFile}) => {
+const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
     const [tabs, setTabs] = useState([]);
     const [activeTabIndex, setActiveTabIndex] = useState(0);
 
     // Get transformation context
-    console.log('TabsContainer: Getting transformation context');
-    const {setActiveTabContent, setActiveTabIndex: setTransformationTabIndex} = useTransformation();
-    console.log('TabsContainer: Got transformation context');
+    const { setActiveTabContent, setActiveTabIndex: setTransformationTabIndex } = useTransformation();
 
     // Listen for IPC events from the main process
     useEffect(() => {
-        const {ipcRenderer} = window.electron;
+        const { ipcRenderer } = window.electron;
 
         // Handle file open event
-        const handleFileOpened = (event, {filePath, content}) => {
+        const handleFileOpened = (event, { filePath, content }) => {
             // Check if the file is already open
             const existingTabIndex = tabs.findIndex(tab => tab.filePath === filePath);
 
@@ -246,7 +244,7 @@ const TabsContainer = ({settings, onOpenFile, onSaveFile}) => {
             console.log(`TabsContainer: Updating transformation context with tab ${index}`);
             console.log(`TabsContainer: Tab content length: ${tabs[index].content ? tabs[index].content.length : 0}`);
             setTransformationTabIndex(index);
-            setActiveTabContent(tabs[index].content);
+            setActiveTabContent(tabs[index].content || '');
         } else {
             console.log(`TabsContainer: Tab ${index} not found`);
         }
@@ -301,8 +299,7 @@ const TabsContainer = ({settings, onOpenFile, onSaveFile}) => {
         });
 
         // Update transformation context
-        console.log('TabsContainer: Updating transformation context with new content');
-        setActiveTabContent(content);
+        setActiveTabContent(content || '');
     };
 
     // Listen for transformation results to update tab state
@@ -310,7 +307,7 @@ const TabsContainer = ({settings, onOpenFile, onSaveFile}) => {
     useEffect(() => {
         const handleTransformationResult = (event) => {
             console.log('TabsContainer received transformation-result event');
-            const {tabIndex, content} = event.detail;
+            const { tabIndex, content } = event.detail;
 
             if (tabIndex === activeTabIndex && content) {
                 console.log('Marking tab as modified after transformation');
@@ -354,7 +351,7 @@ const TabsContainer = ({settings, onOpenFile, onSaveFile}) => {
                             theme={settings.theme}
                             onClick={(e) => closeTab(index, e)}
                         >
-                            <FiX size={12}/>
+                            <FiX size={12} />
                         </CloseButton>
                     </Tab>
                 ))}
@@ -362,7 +359,7 @@ const TabsContainer = ({settings, onOpenFile, onSaveFile}) => {
                     theme={settings.theme}
                     onClick={addNewTab}
                 >
-                    <FiPlus size={16}/>
+                    <FiPlus size={16} />
                 </NewTabButton>
             </TabsHeader>
 

@@ -160,15 +160,49 @@ export const xmlCompact = (text) => {
 
 // Line operations
 export const sortLines = (text) => {
-    return text.split('\\n').sort().join('\\n');
+    // Detect line ending type (\n, \r, or \r\n)
+    let lineEnding = '\n';
+    if (text.includes('\r\n')) {
+        lineEnding = '\r\n';
+    } else if (text.includes('\r') && !text.includes('\n')) {
+        lineEnding = '\r';
+    }
+
+    // Split by detected line ending, sort, and join back
+    const lines = text.split(lineEnding);
+    const sortedLines = lines.sort();
+    const result = sortedLines.join(lineEnding);
+    return result;
 };
 
 export const deduplicateLines = (text) => {
-    return [...new Set(text.split('\\n'))].join('\\n');
+    // Detect line ending type (\n, \r, or \r\n)
+    let lineEnding = '\n';
+    if (text.includes('\r\n')) {
+        lineEnding = '\r\n';
+    } else if (text.includes('\r') && !text.includes('\n')) {
+        lineEnding = '\r';
+    }
+
+    // Split by detected line ending, deduplicate, and join back
+    const lines = text.split(lineEnding);
+    const uniqueLines = [...new Set(lines)];
+    return uniqueLines.join(lineEnding);
 };
 
 export const reverseLines = (text) => {
-    return text.split('\\n').reverse().join('\\n');
+    // Detect line ending type (\n, \r, or \r\n)
+    let lineEnding = '\n';
+    if (text.includes('\r\n')) {
+        lineEnding = '\r\n';
+    } else if (text.includes('\r') && !text.includes('\n')) {
+        lineEnding = '\r';
+    }
+
+    // Split by detected line ending, reverse, and join back
+    const lines = text.split(lineEnding);
+    const reversedLines = lines.reverse();
+    return reversedLines.join(lineEnding);
 };
 
 // HTML transformations
