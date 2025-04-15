@@ -96,6 +96,40 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
     // Get transformation context
     const { setActiveTabContent, setActiveTabIndex: setTransformationTabIndex } = useTransformation();
 
+    // Save tabs state whenever tabs or active tab changes
+    useEffect(() => {
+        // Only save if we have tabs (avoid saving empty state during initialization)
+        if (tabs.length > 0) {
+            const { ipcRenderer } = window.electron;
+
+            console.log('TabsContainer: Saving tabs state, tabs count:', tabs.length);
+
+            // Create a tabs state object to save
+            // For files with paths, we don't need to save the content as it can be loaded from disk
+            // For unsaved files, we need to save the content
+            const tabsToSave = tabs.map(tab => ({
+                id: tab.id,
+                title: tab.title,
+                filePath: tab.filePath,
+                // Only save content for unsaved files
+                content: tab.filePath ? undefined : tab.content,
+                isModified: tab.isModified
+            }));
+
+            const tabsState = {
+                tabs: tabsToSave,
+                activeTabIndex
+            };
+
+            console.log('TabsContainer: Saving tabs state:', JSON.stringify(tabsState, null, 2));
+
+            // Save tabs state to main process
+            ipcRenderer.invoke('save-tabs-state', tabsState)
+                .then(result => console.log('TabsContainer: Tabs state saved successfully:', result))
+                .catch(error => console.error('Failed to save tabs state:', error));
+        }
+    }, [tabs, activeTabIndex]);
+
     // Listen for IPC events from the main process
     useEffect(() => {
         const { ipcRenderer } = window.electron;
@@ -173,11 +207,21 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             }
         };
 
+        // Handle load tabs state event
+        const handleLoadTabsState = async (event, tabsState) => {
+            console.log('Received tabs state from main process:', tabsState);
+            return await loadTabsFromState(tabsState);
+        };
+
         // Register event listeners using the event manager
         const cleanupFileOpened = registerIpcEvent(ipcRenderer, 'file-opened', handleFileOpened);
         const cleanupNewTab = registerIpcEvent(ipcRenderer, 'menu-new-tab', handleNewTab);
         const cleanupSave = registerIpcEvent(ipcRenderer, 'menu-save', handleSave);
         const cleanupSaveAs = registerIpcEvent(ipcRenderer, 'menu-save-as', handleSaveAs);
+        const cleanupLoadTabsState = registerIpcEvent(ipcRenderer, 'load-tabs-state', handleLoadTabsState);
+
+        // Log that we're ready to receive events
+        console.log('TabsContainer: Registered all event listeners');
 
         // Clean up event listeners
         return () => {
@@ -185,6 +229,7 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             cleanupNewTab();
             cleanupSave();
             cleanupSaveAs();
+            cleanupLoadTabsState();
         };
     }, [tabs, activeTabIndex]);
 
@@ -198,8 +243,30 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             isModified: false
         };
 
-        setTabs([...tabs, newTab]);
+        const newTabs = [...tabs, newTab];
+        setTabs(newTabs);
         setActiveTabIndex(tabs.length);
+
+        // Explicitly save the tabs state when adding a new tab
+        const { ipcRenderer } = window.electron;
+        const tabsToSave = newTabs.map(tab => ({
+            id: tab.id,
+            title: tab.title,
+            filePath: tab.filePath,
+            // Only save content for unsaved files
+            content: tab.filePath ? undefined : tab.content,
+            isModified: tab.isModified
+        }));
+
+        const tabsState = {
+            tabs: tabsToSave,
+            activeTabIndex: tabs.length // This will be the index of the new tab
+        };
+
+        console.log('TabsContainer: Explicitly saving tabs state after adding new tab:', JSON.stringify(tabsState, null, 2));
+        ipcRenderer.invoke('save-tabs-state', tabsState)
+            .then(result => console.log('TabsContainer: Tabs state saved successfully after adding new tab:', result))
+            .catch(error => console.error('Failed to save tabs state after adding new tab:', error));
     };
 
     // Close a tab
@@ -208,14 +275,34 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
 
         // If it's the last tab, add a new empty one
         if (tabs.length === 1) {
-            setTabs([{
+            const newTab = {
                 id: Date.now(),
                 title: 'Untitled',
                 filePath: null,
                 content: '',
                 isModified: false
-            }]);
+            };
+            setTabs([newTab]);
             setActiveTabIndex(0);
+
+            // Explicitly save the tabs state when replacing with a new tab
+            const { ipcRenderer } = window.electron;
+            const tabsState = {
+                tabs: [{
+                    id: newTab.id,
+                    title: newTab.title,
+                    filePath: newTab.filePath,
+                    content: newTab.content,
+                    isModified: newTab.isModified
+                }],
+                activeTabIndex: 0
+            };
+
+            console.log('TabsContainer: Explicitly saving tabs state after closing last tab:', JSON.stringify(tabsState, null, 2));
+            ipcRenderer.invoke('save-tabs-state', tabsState)
+                .then(result => console.log('TabsContainer: Tabs state saved successfully after closing last tab:', result))
+                .catch(error => console.error('Failed to save tabs state after closing last tab:', error));
+
             return;
         }
 
@@ -225,13 +312,37 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
         setTabs(newTabs);
 
         // Adjust active tab index
+        let newActiveIndex = activeTabIndex;
         if (index === activeTabIndex) {
             // If we closed the active tab, activate the previous one or the next one
-            setActiveTabIndex(Math.min(index, newTabs.length - 1));
+            newActiveIndex = Math.min(index, newTabs.length - 1);
+            setActiveTabIndex(newActiveIndex);
         } else if (index < activeTabIndex) {
             // If we closed a tab before the active one, adjust the index
-            setActiveTabIndex(activeTabIndex - 1);
+            newActiveIndex = activeTabIndex - 1;
+            setActiveTabIndex(newActiveIndex);
         }
+
+        // Explicitly save the tabs state when closing a tab
+        const { ipcRenderer } = window.electron;
+        const tabsToSave = newTabs.map(tab => ({
+            id: tab.id,
+            title: tab.title,
+            filePath: tab.filePath,
+            // Only save content for unsaved files
+            content: tab.filePath ? undefined : tab.content,
+            isModified: tab.isModified
+        }));
+
+        const tabsState = {
+            tabs: tabsToSave,
+            activeTabIndex: newActiveIndex
+        };
+
+        console.log('TabsContainer: Explicitly saving tabs state after closing tab:', JSON.stringify(tabsState, null, 2));
+        ipcRenderer.invoke('save-tabs-state', tabsState)
+            .then(result => console.log('TabsContainer: Tabs state saved successfully after closing tab:', result))
+            .catch(error => console.error('Failed to save tabs state after closing tab:', error));
     };
 
     // Switch to a tab
@@ -253,10 +364,12 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
     // Update tab content
     const updateTabContent = (index, content) => {
         const newTabs = [...tabs];
+        const currentContent = newTabs[index].content;
         newTabs[index] = {
             ...newTabs[index],
             content,
-            isModified: newTabs[index].filePath !== null // Only mark as modified if it's a file
+            // Mark as modified if it's a file and content has changed, or always for unsaved files
+            isModified: newTabs[index].filePath ? (content !== currentContent) : true
         };
         setTabs(newTabs);
     };
@@ -290,9 +403,10 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
         }
 
         const currentTab = tabs[activeTabIndex];
-        const isModified = currentTab.filePath !== null && content !== currentTab.content;
+        // Mark as modified if it's a file and content has changed, or always for unsaved files
+        const isModified = currentTab.filePath ? (content !== currentTab.content) : true;
 
-        console.log(`TabsContainer: Updating tab ${activeTabIndex} with new content`);
+        console.log(`TabsContainer: Updating tab ${activeTabIndex} with new content, isModified: ${isModified}`);
         updateTab(activeTabIndex, {
             content,
             isModified
@@ -327,12 +441,129 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
         return cleanup;
     }, [activeTabIndex, tabs]);
 
-    // Initialize with an empty tab if there are no tabs
+    // Function to load tabs from saved state
+    const loadTabsFromState = async (tabsState) => {
+        const { ipcRenderer } = window.electron;
+
+        if (tabsState && tabsState.tabs && tabsState.tabs.length > 0) {
+            // Load tabs from saved state
+            const loadedTabs = await Promise.all(tabsState.tabs.map(async (tab) => {
+                // If it's a file with a path, try to load its content from disk
+                if (tab.filePath) {
+                    try {
+                        // Check if file exists and load its content
+                        const content = await ipcRenderer.invoke('get-file-content', tab.filePath)
+                            .catch(() => null);
+
+                        if (content !== null) {
+                            // File exists and was loaded successfully
+                            return {
+                                ...tab,
+                                content,
+                                isModified: false // Reset modified flag for loaded files
+                            };
+                        } else {
+                            // File doesn't exist or couldn't be loaded
+                            // Return null to filter it out later
+                            console.log(`File not found: ${tab.filePath}`);
+                            return null;
+                        }
+                    } catch (error) {
+                        console.error(`Error loading file ${tab.filePath}:`, error);
+                        return null;
+                    }
+                } else {
+                    // It's an unsaved file, use the saved content
+                    return {
+                        ...tab,
+                        content: tab.content || '',
+                        id: tab.id || Date.now() // Ensure it has an ID
+                    };
+                }
+            }));
+
+            // Filter out any null tabs (files that couldn't be loaded)
+            const validTabs = loadedTabs.filter(tab => tab !== null);
+
+            if (validTabs.length > 0) {
+                // Set the loaded tabs
+                setTabs(validTabs);
+
+                // Set active tab index, ensuring it's valid
+                const newActiveIndex = Math.min(tabsState.activeTabIndex || 0, validTabs.length - 1);
+                setActiveTabIndex(newActiveIndex);
+                return true;
+            }
+        }
+        return false;
+    };
+
+    // Initialize tabs - load saved tabs from main process
     useEffect(() => {
+        // Register for the load-tabs-state event
+        const handleLoadTabsState = async (event, tabsState) => {
+            console.log('TabsContainer: Received tabs state from main process:', JSON.stringify(tabsState, null, 2));
+            if (tabsState && tabsState.tabs && tabsState.tabs.length > 0) {
+                try {
+                    // Process the tabs state
+                    console.log('TabsContainer: Loading saved tabs...');
+                    const result = await loadTabsFromState(tabsState);
+                    console.log('TabsContainer: Result of loading saved tabs:', result);
+                    if (!result) {
+                        // If loading tabs failed, create a new empty tab
+                        console.log('TabsContainer: Failed to load saved tabs, creating new tab');
+                        addNewTab();
+                    }
+                } catch (error) {
+                    console.error('Error loading tabs:', error);
+                    // Fallback to creating a new tab
+                    addNewTab();
+                }
+            } else {
+                // No saved tabs, create a new empty tab
+                console.log('TabsContainer: No saved tabs found, creating new tab');
+                addNewTab();
+            }
+        };
+
+        const { ipcRenderer } = window.electron;
+        const cleanup = registerIpcEvent(ipcRenderer, 'load-tabs-state', handleLoadTabsState);
+
+        return () => {
+            cleanup();
+        };
+    }, []);
+
+    // Request tabs state from main process when component mounts
+    useEffect(() => {
+        const requestTabsState = async () => {
+            const { ipcRenderer } = window.electron;
+            try {
+                console.log('TabsContainer: Requesting tabs state from main process');
+                const tabsState = await ipcRenderer.invoke('get-tabs-state');
+                console.log('TabsContainer: Received tabs state during initialization:', JSON.stringify(tabsState, null, 2));
+
+                // We don't need to process the state here as it will be handled by the load-tabs-state event handler
+                // Just send the event to trigger the handler
+                ipcRenderer.send('load-tabs-state', tabsState);
+            } catch (error) {
+                console.error('Error requesting tabs state:', error);
+                // Fallback to creating a new tab
+                addNewTab();
+            }
+        };
+
         if (tabs.length === 0) {
-            addNewTab();
+            requestTabsState();
         }
     }, []);
+
+    // Create a test tab for debugging
+    const createTestTab = () => {
+        const { ipcRenderer } = window.electron;
+        console.log('Sending create-test-tab event to main process');
+        ipcRenderer.send('create-test-tab');
+    };
 
     return (
         <TabsWrapper>
@@ -360,6 +591,13 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
                     onClick={addNewTab}
                 >
                     <FiPlus size={16} />
+                </NewTabButton>
+                <NewTabButton
+                    theme={settings.theme}
+                    onClick={createTestTab}
+                    title="Create Test Tab (Debug)"
+                >
+                    T
                 </NewTabButton>
             </TabsHeader>
 

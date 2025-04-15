@@ -11,6 +11,7 @@ if (require('electron-squirrel-startup')) {
 // Store settings in user's home directory
 const userDataPath = path.join(os.homedir(), '.textonom');
 const settingsPath = path.join(userDataPath, 'settings.json');
+const tabsPath = path.join(userDataPath, 'tabs.json');
 
 // Ensure the directory exists
 if (!fs.existsSync(userDataPath)) {
@@ -47,6 +48,43 @@ try {
   settings = defaultSettings;
 }
 
+// Default tabs state with one empty tab
+const defaultTabsState = {
+  tabs: [{
+    id: Date.now(),
+    title: 'Untitled',
+    filePath: null,
+    content: '',
+    isModified: false
+  }],
+  activeTabIndex: 0
+};
+
+// Load tabs state or create default one
+let tabsState;
+try {
+  if (fs.existsSync(tabsPath)) {
+    const loadedState = JSON.parse(fs.readFileSync(tabsPath, 'utf8'));
+    // Ensure we have at least one tab
+    if (loadedState && loadedState.tabs && loadedState.tabs.length > 0) {
+      tabsState = loadedState;
+      console.log('Loaded tabs state from file:', JSON.stringify(tabsState, null, 2));
+    } else {
+      console.log('Loaded tabs state is empty, using default');
+      tabsState = defaultTabsState;
+      fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
+    }
+  } else {
+    console.log('No tabs state file found, creating default');
+    tabsState = defaultTabsState;
+    fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
+  }
+} catch (error) {
+  console.error('Error loading tabs state:', error);
+  tabsState = defaultTabsState;
+  fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
+}
+
 // Keep a global reference of the window object to prevent garbage collection
 let mainWindow;
 
@@ -77,6 +115,14 @@ function createWindow() {
 
   // Create application menu
   createMenu();
+
+  // Send the saved tabs state to the renderer process after it's loaded
+  mainWindow.webContents.on('did-finish-load', () => {
+    if (tabsState && tabsState.tabs && tabsState.tabs.length > 0) {
+      console.log('Sending saved tabs state to renderer process');
+      mainWindow.webContents.send('load-tabs-state', tabsState);
+    }
+  });
 
   // Emitted when the window is closed
   mainWindow.on('closed', () => {
@@ -443,10 +489,43 @@ ipcMain.handle('save-settings', (event, newSettings) => {
   }
 });
 
+// Get file content
+ipcMain.handle('get-file-content', (event, filePath) => {
+  try {
+    if (fs.existsSync(filePath)) {
+      return fs.readFileSync(filePath, 'utf8');
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error reading file ${filePath}:`, error);
+    return null;
+  }
+});
+
 ipcMain.handle('show-error', (event, { title, message }) => {
   console.error(`Error: ${title} - ${message}`);
   dialog.showErrorBox(title, message);
   return true;
+});
+
+// Save tabs state
+ipcMain.handle('save-tabs-state', (event, newTabsState) => {
+  console.log('Main process: Received tabs state to save:', JSON.stringify(newTabsState, null, 2));
+  tabsState = newTabsState;
+  try {
+    fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
+    console.log('Main process: Tabs state saved successfully to', tabsPath);
+    return true;
+  } catch (error) {
+    console.error('Error saving tabs state:', error);
+    return false;
+  }
+});
+
+// Get tabs state
+ipcMain.handle('get-tabs-state', () => {
+  console.log('Main process: Returning tabs state:', JSON.stringify(tabsState, null, 2));
+  return tabsState;
 });
 
 
@@ -460,6 +539,22 @@ ipcMain.on('console-error', (event, ...args) => {
   console.error('Renderer error:', ...args);
 });
 
+// Handle load-tabs-state event from renderer
+ipcMain.on('load-tabs-state', (event, receivedTabsState) => {
+  console.log('Main process: Received load-tabs-state event');
+  // If we received a state from the renderer, use it (this is for debugging)
+  if (receivedTabsState && receivedTabsState.tabs) {
+    console.log('Main process: Using received tabs state');
+    // We don't update our tabsState here as we want to use what's in the file
+  }
+
+  // Send the current tabs state back to the renderer
+  if (mainWindow) {
+    console.log('Main process: Sending tabs state to renderer:', JSON.stringify(tabsState, null, 2));
+    mainWindow.webContents.send('load-tabs-state', tabsState);
+  }
+});
+
 // App lifecycle events
 app.whenReady().then(() => {
   createWindow();
@@ -469,6 +564,37 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+// Save tabs state before quitting
+app.on('before-quit', () => {
+  // We don't need to do anything here as the tabs state is saved whenever it changes
+  // This is just a hook in case we need to add additional cleanup in the future
+  console.log('App is quitting, current tabs state:', JSON.stringify(tabsState, null, 2));
+});
+
+// Create a test tab for debugging
+ipcMain.on('create-test-tab', () => {
+  console.log('Creating test tab');
+  const testTab = {
+    id: Date.now(),
+    title: 'Test Tab',
+    filePath: null,
+    content: 'This is a test tab',
+    isModified: false
+  };
+
+  tabsState = {
+    tabs: [testTab],
+    activeTabIndex: 0
+  };
+
+  try {
+    fs.writeFileSync(tabsPath, JSON.stringify(tabsState, null, 2));
+    console.log('Test tab saved successfully');
+  } catch (error) {
+    console.error('Error saving test tab:', error);
+  }
 });
 
 app.on('window-all-closed', () => {
