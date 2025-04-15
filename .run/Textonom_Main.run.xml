@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Textonom Main" type="NodeJSConfigurationType" node-parameters="." path-to-js-file="node_modules/.bin/electron" working-dir="$PROJECT_DIR$">
+    <method v="2">
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/package.json" />
+        <command value="run" />
+        <scripts>
+          <script value="build" />
+        </scripts>
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+    </method>
+    <envs>
+      <env name="ELECTRON_DEBUG" value="true" />
+    </envs>
+    <arguments value="--remote-debugging-port=9222" />
+  </configuration>
+</component>

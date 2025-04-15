@@ -59,7 +59,6 @@ The following table outlines the detailed functional requirements of Textonom ap
 |----------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | FR020          | File dialog defaults                                                            | As a user, I want file dialogs to show all files by default                               | File dialogs should show all files with all extensions by default                                                                                                                                                              |
 | FR020.1        | File extension handling                                                         | As a user, I want appropriate file extensions to be selected when saving                  | When saving files, the app should select the extension of the file that was opened, and use 'txt' as the default extension for new files                                                                                       |
-| FR021          | File management library                                                         | As a developer, I want to use a reliable file management library                          | The app should use FileKit library (version 0.8.8) for file operations and dialogs                                                                                                                                             |
 
 ## Visual Effects
 
@@ -75,7 +74,7 @@ The following table outlines the detailed functional requirements of Textonom ap
 ## Summary and Version Information
 
 Textonom is a text editor application that performs popular routine transformations of a text on the local machine.
-The application is built using Kotlin Multiplatform targeting Desktop platforms.
+The application is built using NPM, Electron, React, JavaScript targeting Desktop platforms.
 
 | Application Information | Value                                                                                     |
 |-------------------------|-------------------------------------------------------------------------------------------|
@@ -84,4 +83,4 @@ The application is built using Kotlin Multiplatform targeting Desktop platforms.
 | Description             | A text editor that performs popular routine transformations of text on your local machine |
 | Vendor                  | Netroforge                                                                                |
 | Target Platforms        | Windows (MSI), macOS (DMG), Linux (DEB, AppImage)                                         |
-| Technology Stack        | Kotlin Multiplatform, Compose Multiplatform                                               |
+| Technology Stack        | NPM, Electron, React, JavaScript                                                          |

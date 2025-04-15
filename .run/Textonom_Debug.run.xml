@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Textonom Debug" type="CompoundRunConfigurationType">
+    <toRun name="Textonom Main" type="NodeJSConfigurationType" />
+    <toRun name="Textonom Renderer" type="JavascriptDebugType" />
+    <method v="2" />
+  </configuration>
+</component>
