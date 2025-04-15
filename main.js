@@ -31,7 +31,8 @@ const defaultSettings = {
   wordWrap: true,
   wrapColumn: 80,
   autoSave: false,
-  autoSaveInterval: 60000 // 1 minute
+  autoSaveInterval: 60000, // 1 minute
+  lastOpenDirectory: app.getPath('documents') // Default to documents folder
 };
 
 // Load settings or create default ones
@@ -399,17 +400,24 @@ function createMenu() {
 
 // Open file dialog
 async function openFile() {
+  // Use the last open directory from settings if available
+  const defaultPath = settings.lastOpenDirectory || app.getPath('documents');
+
   const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
     properties: ['openFile'],
     filters: [
       { name: 'All Files', extensions: ['*'] }
     ],
-    defaultPath: app.getPath('documents')
+    defaultPath: defaultPath
   });
 
   if (!canceled && filePaths.length > 0) {
     const filePath = filePaths[0];
     try {
+      // Update the last open directory setting
+      const directoryPath = getDirectoryFromFilePath(filePath);
+      updateLastOpenDirectory(directoryPath);
+
       const content = fs.readFileSync(filePath, 'utf8');
       mainWindow.webContents.send('file-opened', { filePath, content });
     } catch (error) {
@@ -422,14 +430,21 @@ async function openFile() {
 async function saveFileAs(content, suggestedFilePath = null) {
   // Determine default extension based on the file that was opened
   let defaultExtension = 'txt';
-  let defaultPath = app.getPath('documents');
+  let defaultPath;
 
   if (suggestedFilePath) {
+    // If we have a suggested file path, use it
     defaultPath = suggestedFilePath;
     const ext = path.extname(suggestedFilePath).slice(1);
     if (ext) {
       defaultExtension = ext;
     }
+  } else {
+    // Otherwise use the last open directory from settings if available
+    // or fall back to documents folder
+    defaultPath = settings.lastOpenDirectory || app.getPath('documents');
+    // Append a default filename with the default extension
+    defaultPath = path.join(defaultPath, `untitled.${defaultExtension}`);
   }
 
   const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
@@ -443,6 +458,11 @@ async function saveFileAs(content, suggestedFilePath = null) {
   if (!canceled && filePath) {
     try {
       fs.writeFileSync(filePath, content, 'utf8');
+
+      // Update the last open directory setting
+      const directoryPath = getDirectoryFromFilePath(filePath);
+      updateLastOpenDirectory(directoryPath);
+
       return filePath;
     } catch (error) {
       dialog.showErrorBox('Error', `Failed to save file: ${error.message}`);
@@ -452,10 +472,33 @@ async function saveFileAs(content, suggestedFilePath = null) {
   return null;
 }
 
+// Helper function to extract directory path from file path
+function getDirectoryFromFilePath(filePath) {
+  return path.dirname(filePath);
+}
+
+// Helper function to update last open directory in settings
+function updateLastOpenDirectory(directoryPath) {
+  if (directoryPath && directoryPath !== settings.lastOpenDirectory) {
+    settings.lastOpenDirectory = directoryPath;
+    try {
+      fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+      console.log('Updated last open directory:', directoryPath);
+    } catch (error) {
+      console.error('Error saving last open directory:', error);
+    }
+  }
+}
+
 // Save file with known path
 function saveFile(filePath, content) {
   try {
     fs.writeFileSync(filePath, content, 'utf8');
+
+    // Update last open directory
+    const directoryPath = getDirectoryFromFilePath(filePath);
+    updateLastOpenDirectory(directoryPath);
+
     return true;
   } catch (error) {
     dialog.showErrorBox('Error', `Failed to save file: ${error.message}`);
@@ -567,13 +610,6 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-});
-
-// Save tabs state before quitting
-app.on('before-quit', () => {
-  // We don't need to do anything here as the tabs state is saved whenever it changes
-  // This is just a hook in case we need to add additional cleanup in the future
-  console.log('App is quitting, current tabs state:', JSON.stringify(tabsState, null, 2));
 });
 
 app.on('window-all-closed', () => {
