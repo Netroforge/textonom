@@ -1,6 +1,6 @@
-# **Functional Requirements Document: Textonom app**
+# **Project Requirements Document: Textonom app**
 
-The following table outlines the detailed functional requirements of Textonom app.
+The following table outlines the detailed project requirements of Textonom app.
 
 ## Core Functionality
 
@@ -70,3 +70,6 @@ The following table outlines the detailed functional requirements of Textonom ap
 | FR022.3        | Glitch effects     | As a user, I want occasional glitch effects for authenticity                  | The CRT effect should display occasional glitch effects (horizontal lines, color shifts, static noise, etc.) with appropriate frequency |
 | FR022.4        | Edge darkening     | As a user, I want realistic edge darkening without circular curvature         | The CRT effect should include edge darkening without circular screen curvature                                                          |
 | FR022.5        | Screen glow        | As a user, I want a subtle screen glow effect                                 | The CRT effect should include a subtle cyan glow effect to enhance the cyberpunk aesthetic                                              |
+
+## Tech stack
+TypeScript, React, Electron, electron-vite, monaco-editor, zustand
