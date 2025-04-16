@@ -1,7 +1,7 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import {drawEdgeDarkening, drawRandomGlitches, drawRgbSeparation, drawScanlines, drawScreenGlow} from './effects';
-import {clearCanvas} from './effects/effectUtils';
+import { drawEdgeDarkening, drawRandomGlitches, drawRgbSeparation, drawScanlines, drawScreenGlow } from './effects';
+import { clearCanvas } from './effects/effectUtils';
 
 const CRTContainer = styled.div`
   position: absolute;
@@ -84,7 +84,7 @@ const CRTEffect = () => {
         drawStaticEffects(staticCtx, staticCanvas.width, staticCanvas.height);
 
         // Draw dynamic glitch effects
-        function drawGlitchEffects(ctx, width, height, time) {
+        function drawGlitchEffects(ctx, width, height) {
             clearCanvas(ctx, width, height);
 
             // Draw RGB separation (chromatic aberration)
@@ -148,35 +148,45 @@ const CRTEffect = () => {
             }
         };
 
-        // Animation loop with reduced frequency
-        let frameCount = 0;
+        // Animation loop with reduced frequency and throttling
+        let lastGlitchTime = 0;
+        let lastFlickerTime = 0;
+
         const animate = (time) => {
             if (timeRef.current === 0) {
                 timeRef.current = time;
+                lastGlitchTime = time;
+                lastFlickerTime = time;
             }
 
-            const elapsed = time - timeRef.current;
+            // Update the current time reference
             timeRef.current = time;
 
-            // Only draw glitch effects every few frames to reduce frequency
-            frameCount++;
-            if (frameCount % 60 === 0) { // Only update every 8th frame
-                drawGlitchEffects(glitchCtx, glitchCanvas.width, glitchCanvas.height, time);
+            // Only draw glitch effects every 2 seconds to significantly reduce CPU usage
+            if (time - lastGlitchTime > 2000) {
+                drawGlitchEffects(glitchCtx, glitchCanvas.width, glitchCanvas.height);
+                lastGlitchTime = time;
             }
 
-            // Flicker effect
-            if (elapsed > 300) {
+            // Flicker effect with reduced frequency
+            if (time - lastFlickerTime > 1000) { // Check for flicker only every second
                 flicker();
+                lastFlickerTime = time;
             }
 
-            requestRef.current = requestAnimationFrame(animate);
+            // Use a longer timeout for the animation frame to reduce CPU usage
+            requestRef.current = setTimeout(() => {
+                requestAnimationFrame(animate);
+            }, 100); // 10 fps instead of 60 fps
         };
 
         requestRef.current = requestAnimationFrame(animate);
 
         // Clean up
         return () => {
-            cancelAnimationFrame(requestRef.current);
+            if (requestRef.current) {
+                clearTimeout(requestRef.current);
+            }
             window.removeEventListener('resize', resizeCanvas);
             if (flickerElementRef.current && flickerElementRef.current.parentNode) {
                 flickerElementRef.current.parentNode.removeChild(flickerElementRef.current);
@@ -186,8 +196,8 @@ const CRTEffect = () => {
 
     return (
         <CRTContainer>
-            <StaticEffectsCanvas ref={staticCanvasRef}/>
-            <GlitchCanvas ref={glitchCanvasRef}/>
+            <StaticEffectsCanvas ref={staticCanvasRef} />
+            <GlitchCanvas ref={glitchCanvasRef} />
         </CRTContainer>
     );
 };
