@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { registerIpcEvent } from './utils/eventManager';
-import TabsContainer from './components/TabsContainer';
+import TabsContainer from './components/tabs/TabsContainer';
 import SettingsDialog from './components/SettingsDialog';
 import CRTEffect from './components/CRTEffect';
 import { getThemeByName, GlobalStyles } from './styles/themes';
-import MonacoWrapper from './components/MonacoWrapper';
 import TransformationHandler from './components/TransformationHandler';
+import { logError } from './utils/logger';
 
 const AppContainer = styled.div`
   display: flex;
@@ -39,7 +39,7 @@ function App() {
         const loadSettings = async () => {
             try {
                 if (!window.electron) {
-                    console.error('Electron APIs not available');
+                    logError('App', 'Electron APIs not available');
                     return;
                 }
                 const { ipcRenderer } = window.electron;
@@ -48,7 +48,7 @@ function App() {
                     setSettings(savedSettings);
                 }
             } catch (error) {
-                console.error('Failed to load settings:', error);
+                logError('App', `Failed to load settings: ${error.message}`);
             }
         };
 
@@ -81,7 +81,7 @@ function App() {
                 setSettings(newSettings);
             }
         } catch (error) {
-            console.error('Failed to save settings:', error);
+            logError('App', `Failed to save settings: ${error.message}`);
         }
     };
 
@@ -92,23 +92,21 @@ function App() {
         <ThemeProvider theme={theme}>
             <GlobalStyles theme={settings.theme} fontFamily={settings.font?.family}
                 fontSize={settings.font?.size + 'px'} />
-            <MonacoWrapper>
-                <AppContainer>
-                    <TabsContainer settings={settings} />
-                    <TransformationHandler />
+            <AppContainer>
+                <TabsContainer settings={settings} />
+                <TransformationHandler />
 
-                    {isSettingsOpen && (
-                        <SettingsDialog
-                            isOpen={isSettingsOpen}
-                            onClose={() => setIsSettingsOpen(false)}
-                            settings={settings}
-                            onSaveSettings={handleSaveSettings}
-                        />
-                    )}
+                {isSettingsOpen && (
+                    <SettingsDialog
+                        isOpen={isSettingsOpen}
+                        onClose={() => setIsSettingsOpen(false)}
+                        settings={settings}
+                        onSaveSettings={handleSaveSettings}
+                    />
+                )}
 
-                    {settings.theme === 'cyberpunk-turbo' && <CRTEffect />}
-                </AppContainer>
-            </MonacoWrapper>
+                {settings.theme === 'cyberpunk-turbo' && <CRTEffect />}
+            </AppContainer>
         </ThemeProvider>
     );
 }
