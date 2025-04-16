@@ -1,4 +1,4 @@
-# **Project Requirements Document: Textonom app**
+# **Functional Requirements Document: Textonom app**
 
 The following table outlines the detailed functional requirements of Textonom app.
 
@@ -70,17 +70,3 @@ The following table outlines the detailed functional requirements of Textonom ap
 | FR022.3        | Glitch effects     | As a user, I want occasional glitch effects for authenticity                  | The CRT effect should display occasional glitch effects (horizontal lines, color shifts, static noise, etc.) with appropriate frequency |
 | FR022.4        | Edge darkening     | As a user, I want realistic edge darkening without circular curvature         | The CRT effect should include edge darkening without circular screen curvature                                                          |
 | FR022.5        | Screen glow        | As a user, I want a subtle screen glow effect                                 | The CRT effect should include a subtle cyan glow effect to enhance the cyberpunk aesthetic                                              |
-
-## Summary and Version Information
-
-Textonom is a text editor application that performs popular routine transformations of a text on the local machine.
-The application is built using NPM, Electron, React, JavaScript targeting Desktop platforms.
-
-| Application Information | Value                                                                                     |
-|-------------------------|-------------------------------------------------------------------------------------------|
-| Application Name        | Textonom                                                                                  |
-| Version                 | 1.0.0                                                                                     |
-| Description             | A text editor that performs popular routine transformations of text on your local machine |
-| Vendor                  | Netroforge                                                                                |
-| Target Platforms        | Windows (MSI), macOS (DMG), Linux (DEB, AppImage)                                         |
-| Technology Stack        | NPM, Electron, React, JavaScript                                                          |

@@ -1,6 +1,6 @@
 # Textonom
 
-A text editor application that performs popular routine transformations of text on your local machine.
+A text editor that performs popular routine transformations of text on your local machine
 
 ## Features
 
