@@ -6,6 +6,7 @@ import SettingsDialog from './components/SettingsDialog';
 import CRTEffect from './components/CRTEffect';
 import { getThemeByName, GlobalStyles } from './styles/themes';
 import MonacoWrapper from './components/MonacoWrapper';
+import TransformationHandler from './components/TransformationHandler';
 
 const AppContainer = styled.div`
   display: flex;
@@ -94,6 +95,7 @@ function App() {
             <MonacoWrapper>
                 <AppContainer>
                     <TabsContainer settings={settings} />
+                    <TransformationHandler />
 
                     {isSettingsOpen && (
                         <SettingsDialog

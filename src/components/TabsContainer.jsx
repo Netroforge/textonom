@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useTransformation } from '../contexts/TransformationContext';
 import { registerIpcEvent, registerWindowEvent } from '../utils/eventManager';
 import styled from 'styled-components';
 import { FiPlus, FiX } from 'react-icons/fi';
 import TextEditor from './TextEditor';
 import { getTextGlow, CyberpunkColors } from '../styles/themes';
+import useTransformationStore from '../stores/transformationStore';
 
 const TabsWrapper = styled.div`
   display: flex;
@@ -185,8 +185,9 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
     const [tabs, setTabs] = useState([]);
     const [activeTabIndex, setActiveTabIndex] = useState(0);
 
-    // Get transformation context
-    const { setActiveTabContent, setActiveTabIndex: setTransformationTabIndex } = useTransformation();
+    // Get transformation store actions
+    const setActiveTabContent = useTransformationStore(state => state.setActiveTabContent);
+    const setTransformationTabIndex = useTransformationStore(state => state.setActiveTabIndex);
 
     // Save tabs state whenever tabs or active tab changes
     useEffect(() => {
@@ -230,9 +231,15 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             if (existingTabIndex !== -1) {
                 // File is already open, switch to that tab
                 setActiveTabIndex(existingTabIndex);
+                // Update transformation context
+                setTransformationTabIndex(existingTabIndex);
+
                 // Update content if it has changed
                 if (tabs[existingTabIndex].content !== content) {
                     updateTabContent(existingTabIndex, content);
+                    setActiveTabContent(content || '');
+                } else {
+                    setActiveTabContent(tabs[existingTabIndex].content || '');
                 }
             } else {
                 // Get the basename of the file path using the IPC handler
@@ -248,7 +255,12 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
                 };
 
                 setTabs([...tabs, newTab]);
-                setActiveTabIndex(tabs.length);
+                const newTabIndex = tabs.length;
+                setActiveTabIndex(newTabIndex);
+
+                // Update transformation context for the new tab
+                setTransformationTabIndex(newTabIndex);
+                setActiveTabContent(content || '');
             }
         };
 
@@ -335,7 +347,12 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
 
         const newTabs = [...tabs, newTab];
         setTabs(newTabs);
-        setActiveTabIndex(tabs.length);
+        const newTabIndex = tabs.length;
+        setActiveTabIndex(newTabIndex);
+
+        // Update transformation context for the new tab
+        setTransformationTabIndex(newTabIndex);
+        setActiveTabContent(newTab.content || '');
 
         // Explicitly save the tabs state when adding a new tab
         const { ipcRenderer } = window.electron;
@@ -350,7 +367,7 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
 
         const tabsState = {
             tabs: tabsToSave,
-            activeTabIndex: tabs.length // This will be the index of the new tab
+            activeTabIndex: newTabIndex // This will be the index of the new tab
         };
 
         ipcRenderer.invoke('save-tabs-state', tabsState)
@@ -373,6 +390,10 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             };
             setTabs([newTab]);
             setActiveTabIndex(0);
+
+            // Update transformation context for the new tab
+            setTransformationTabIndex(0);
+            setActiveTabContent(newTab.content || '');
 
             // Explicitly save the tabs state when replacing with a new tab
             const { ipcRenderer } = window.electron;
@@ -405,6 +426,12 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             // If we closed the active tab, activate the previous one or the next one
             newActiveIndex = Math.min(index, newTabs.length - 1);
             setActiveTabIndex(newActiveIndex);
+
+            // Update transformation context for the new active tab
+            if (newTabs[newActiveIndex]) {
+                setTransformationTabIndex(newActiveIndex);
+                setActiveTabContent(newTabs[newActiveIndex].content || '');
+            }
         } else if (index < activeTabIndex) {
             // If we closed a tab before the active one, adjust the index
             newActiveIndex = activeTabIndex - 1;
@@ -495,34 +522,38 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
         setActiveTabContent(content || '');
     };
 
-    // Listen for transformation results to update tab state
-    // Note: The actual content update is now handled by the TextEditor component
+    // Listen for tab modified events from transformations
     useEffect(() => {
-        const handleTransformationResult = (event) => {
-            const { tabIndex, content } = event.detail;
+        // Handle tab modified event (from direct editor transformation)
+        const handleTabModified = (event) => {
+            const { tabIndex } = event.detail;
 
-            if (tabIndex === activeTabIndex && content) {
-                // Only update the modified status, not the content
-                // This prevents breaking the undo history
+            console.log('[TabsContainer] Tab modified event received for tab:', tabIndex);
+            if (tabIndex === activeTabIndex) {
                 const currentTab = tabs[activeTabIndex];
-                if (currentTab.filePath) {
+                if (currentTab && currentTab.filePath) {
+                    console.log('[TabsContainer] Marking tab as modified:', activeTabIndex);
                     updateTabModifiedStatus(activeTabIndex, true);
                 }
             }
         };
 
-        // Register event listener using the event manager
-        const cleanup = registerWindowEvent('transformation-result', handleTransformationResult);
+        // Register event listener
+        const cleanup = registerWindowEvent('tab-modified', handleTabModified);
 
         // Clean up event listener
-        return cleanup;
+        return () => {
+            cleanup();
+        };
     }, [activeTabIndex, tabs]);
 
     // Function to load tabs from saved state
     const loadTabsFromState = async (tabsState) => {
+        console.log('[TabsContainer] loadTabsFromState called');
         const { ipcRenderer } = window.electron;
 
         if (tabsState && tabsState.tabs && tabsState.tabs.length > 0) {
+            console.log('[TabsContainer] Loading tabs from state, count:', tabsState.tabs.length);
             // Load tabs from saved state
             const loadedTabs = await Promise.all(tabsState.tabs.map(async (tab) => {
                 // If it's a file with a path, try to load its content from disk
@@ -534,6 +565,7 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
 
                         if (content !== null) {
                             // File exists and was loaded successfully
+                            console.log('[TabsContainer] Loaded file content for:', tab.title, 'length:', content.length);
                             return {
                                 ...tab,
                                 content,
@@ -541,14 +573,17 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
                             };
                         } else {
                             // File doesn't exist or couldn't be loaded
+                            console.log('[TabsContainer] Failed to load file content for:', tab.title);
                             // Return null to filter it out later
                             return null;
                         }
                     } catch (error) {
+                        console.error('[TabsContainer] Error loading file:', error);
                         return null;
                     }
                 } else {
                     // It's an unsaved file, use the saved content
+                    console.log('[TabsContainer] Using saved content for unsaved tab:', tab.title);
                     return {
                         ...tab,
                         content: tab.content || '',
@@ -559,17 +594,26 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
 
             // Filter out any null tabs (files that couldn't be loaded)
             const validTabs = loadedTabs.filter(tab => tab !== null);
+            console.log('[TabsContainer] Valid tabs after loading:', validTabs.length);
 
             if (validTabs.length > 0) {
                 // Set the loaded tabs
+                console.log('[TabsContainer] Setting tabs state with loaded tabs');
                 setTabs(validTabs);
 
                 // Set active tab index, ensuring it's valid
                 const newActiveIndex = Math.min(tabsState.activeTabIndex || 0, validTabs.length - 1);
+                console.log('[TabsContainer] Setting active tab index to:', newActiveIndex);
                 setActiveTabIndex(newActiveIndex);
+
+                // We don't need to update the transformation context here anymore
+                // It will be handled by the dedicated effect that watches tabs and activeTabIndex
+                console.log('[TabsContainer] Transformation context will be updated by the tabs/activeTabIndex effect');
+
                 return true;
             }
         }
+        console.log('[TabsContainer] No valid tabs to load');
         return false;
     };
 
@@ -585,6 +629,7 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
                         // If loading tabs failed, create a new empty tab
                         addNewTab();
                     }
+                    // We'll handle the transformation context update in a separate effect
                 } catch (error) {
                     console.error('Error loading tabs:', error);
                     // Fallback to creating a new tab
@@ -603,6 +648,25 @@ const TabsContainer = ({ settings, onOpenFile, onSaveFile }) => {
             cleanup();
         };
     }, []);
+
+    // This effect ensures the transformation context is updated whenever tabs or activeTabIndex changes
+    useEffect(() => {
+        console.log('[TabsContainer] tabs/activeTabIndex effect triggered');
+        console.log('[TabsContainer] tabs length:', tabs.length);
+        console.log('[TabsContainer] activeTabIndex:', activeTabIndex);
+
+        if (tabs.length > 0 && activeTabIndex >= 0 && activeTabIndex < tabs.length) {
+            console.log('[TabsContainer] Updating transformation context');
+            console.log('[TabsContainer] Tab content length:', tabs[activeTabIndex].content ? tabs[activeTabIndex].content.length : 0);
+
+            // Update transformation context
+            setTransformationTabIndex(activeTabIndex);
+            setActiveTabContent(tabs[activeTabIndex].content || '');
+            console.log('[TabsContainer] Transformation context updated');
+        } else {
+            console.log('[TabsContainer] Not updating transformation context - conditions not met');
+        }
+    }, [tabs, activeTabIndex]);
 
     // Request tabs state from main process when component mounts
     useEffect(() => {
