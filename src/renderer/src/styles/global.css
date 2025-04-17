@@ -29,6 +29,12 @@
   --menuBorder: #495057;
   --scrollbarThumb: #6c757d;
   --scrollbarTrack: #343a40;
+
+  /* Title bar variables */
+  --titleBarBackground: #343a40;
+  --titleBarText: #f8f9fa;
+  --titleBarControlHover: rgba(255, 255, 255, 0.1);
+  --titleBarCloseHover: #e81123;
 }
 
 /* Global Reset */

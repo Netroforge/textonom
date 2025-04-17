@@ -6,7 +6,7 @@ import TopNavBar from './components/TopNavBar.vue'
 import StatusBar from './components/StatusBar.vue'
 import Settings from './components/Settings.vue'
 import CRTEffect from './components/CRTEffect.vue'
-import { useTabsStore } from './store/tabsStore'
+import TitleBar from './components/TitleBar.vue'
 import { useSettingsStore } from './store/settingsStore'
 import { applyTheme } from './styles/themes'
 
@@ -14,8 +14,7 @@ import { applyTheme } from './styles/themes'
 const editorRef = ref(null)
 const showSettings = ref(false)
 
-// Get stores
-const tabsStore = useTabsStore()
+// Get settings store
 const settingsStore = useSettingsStore()
 
 // Handle menu actions
@@ -114,6 +113,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="app-container">
     <CRTEffect>
+      <TitleBar />
       <TopNavBar @menu-action="handleMenuAction" @transformation="handleTransformation"
         @open-settings="showSettings = true" />
       <TabBar />

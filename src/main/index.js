@@ -15,6 +15,7 @@ function createWindow() {
     height: 800,
     show: false,
     autoHideMenuBar: false,
+    frame: false, // Remove default frame for custom title bar
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -54,6 +55,38 @@ app.whenReady().then(() => {
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
+  })
+
+  // Window control IPC handlers
+  ipcMain.handle('window-minimize', () => {
+    const window = BrowserWindow.getFocusedWindow()
+    if (window) window.minimize()
+    return true
+  })
+
+  ipcMain.handle('window-maximize', () => {
+    const window = BrowserWindow.getFocusedWindow()
+    if (window) {
+      if (window.isMaximized()) {
+        window.unmaximize()
+        return false
+      } else {
+        window.maximize()
+        return true
+      }
+    }
+    return false
+  })
+
+  ipcMain.handle('window-close', () => {
+    const window = BrowserWindow.getFocusedWindow()
+    if (window) window.close()
+    return true
+  })
+
+  ipcMain.handle('window-is-maximized', () => {
+    const window = BrowserWindow.getFocusedWindow()
+    return window ? window.isMaximized() : false
   })
 
   // File operations IPC handlers
