@@ -172,15 +172,24 @@ export const xmlCompact = (text) => {
 
 // Line operations
 export const sortLines = (text) => {
-  return text.split('\\n').sort().join('\\n')
+  if (!text) return text
+  // Handle different types of newlines (CR, LF, CRLF)
+  const lines = text.split(/\r\n|\r|\n/)
+  return lines.sort().join('\n')
 }
 
 export const deduplicateLines = (text) => {
-  return [...new Set(text.split('\\n'))].join('\\n')
+  if (!text) return text
+  // Handle different types of newlines (CR, LF, CRLF)
+  const lines = text.split(/\r\n|\r|\n/)
+  return [...new Set(lines)].join('\n')
 }
 
 export const reverseLines = (text) => {
-  return text.split('\\n').reverse().join('\\n')
+  if (!text) return text
+  // Handle different types of newlines (CR, LF, CRLF)
+  const lines = text.split(/\r\n|\r|\n/)
+  return lines.reverse().join('\n')
 }
 
 // HTML transformations
@@ -250,7 +259,9 @@ export const yamlToJson = (text) => {
 // Spring Boot properties conversion
 export const propertiesFileToYaml = (text) => {
   try {
-    const lines = text.split('\\n')
+    if (!text) return ''
+    // Handle different types of newlines (CR, LF, CRLF)
+    const lines = text.split(/\r\n|\r|\n/)
     const result = {}
 
     for (const line of lines) {
@@ -305,7 +316,7 @@ export const yamlToPropertiesFile = (text) => {
     }
 
     flattenObject(parsed)
-    return lines.join('\\n')
+    return lines.join('\n')
   } catch (error) {
     console.error('Error converting YAML to properties:', error)
     throw new Error('Failed to convert YAML to properties: ' + error.message)
