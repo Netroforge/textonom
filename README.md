@@ -1,8 +1,8 @@
 ![Static Badge](https://img.shields.io/badge/vibe_coded-8A2BE2?style=for-the-badge&logo=musicbrainz&logoColor=white)
 
-# texonom
+# textonom
 
-An Electron application with Vue
+A text editor that performs popular routine transformations of text on your local machine
 
 ## Recommended IDE Setup
 

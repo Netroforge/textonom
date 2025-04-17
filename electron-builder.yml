@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: texonom
+appId: com.github.netroforge
+productName: textonom
 directories:
   buildResources: build
 files:
@@ -11,7 +11,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: texonom
+  executableName: textonom
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
