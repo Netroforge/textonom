@@ -68,7 +68,7 @@ export const toLowerCase = (text) => text.toLowerCase()
 export const toTitleCase = (text) => {
   return text
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ')
 }
 
@@ -97,7 +97,10 @@ export const xmlPrettify = (text) => {
         }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         const hasChildren = node.hasChildNodes()
-        const hasTextOnly = hasChildren && node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE
+        const hasTextOnly =
+          hasChildren &&
+          node.childNodes.length === 1 &&
+          node.childNodes[0].nodeType === Node.TEXT_NODE
 
         if (!hasTextOnly) {
           formatted += indent + '<' + node.nodeName

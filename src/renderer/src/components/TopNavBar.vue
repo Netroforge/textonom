@@ -2,8 +2,11 @@
   <div class="top-nav">
     <!-- File Menu -->
     <div class="menu-container">
-      <div class="top-nav-item" @click="toggleMenu('file')"
-        @mouseenter="activeMenu === '' ? activeMenu = 'file' : null">
+      <div
+        class="top-nav-item"
+        @click="toggleMenu('file')"
+        @mouseenter="activeMenu === '' ? (activeMenu = 'file') : null"
+      >
         File
       </div>
       <div v-if="activeMenu === 'file'" class="menu">
@@ -18,8 +21,11 @@
 
     <!-- Edit Menu -->
     <div class="menu-container">
-      <div class="top-nav-item" @click="toggleMenu('edit')"
-        @mouseenter="activeMenu === '' ? activeMenu = 'edit' : null">
+      <div
+        class="top-nav-item"
+        @click="toggleMenu('edit')"
+        @mouseenter="activeMenu === '' ? (activeMenu = 'edit') : null"
+      >
         Edit
       </div>
       <div v-if="activeMenu === 'edit'" class="menu">
@@ -34,14 +40,20 @@
 
     <!-- Transformations Menu -->
     <div class="menu-container">
-      <div class="top-nav-item" @click="toggleMenu('transform')"
-        @mouseenter="activeMenu === '' ? activeMenu = 'transform' : null">
+      <div
+        class="top-nav-item"
+        @click="toggleMenu('transform')"
+        @mouseenter="activeMenu === '' ? (activeMenu = 'transform') : null"
+      >
         Transformations
       </div>
       <div v-if="activeMenu === 'transform'" class="menu">
         <!-- Base64 -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'base64'"
-          @mouseleave="activeSubmenu === 'base64' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'base64'"
+          @mouseleave="activeSubmenu === 'base64' ? (activeSubmenu = '') : null"
+        >
           Base64
           <span>▶</span>
           <div v-if="activeSubmenu === 'base64'" class="submenu">
@@ -51,8 +63,11 @@
         </div>
 
         <!-- JSON -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'json'"
-          @mouseleave="activeSubmenu === 'json' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'json'"
+          @mouseleave="activeSubmenu === 'json' ? (activeSubmenu = '') : null"
+        >
           JSON
           <span>▶</span>
           <div v-if="activeSubmenu === 'json'" class="submenu">
@@ -62,8 +77,11 @@
         </div>
 
         <!-- URL -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'url'"
-          @mouseleave="activeSubmenu === 'url' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'url'"
+          @mouseleave="activeSubmenu === 'url' ? (activeSubmenu = '') : null"
+        >
           URL
           <span>▶</span>
           <div v-if="activeSubmenu === 'url'" class="submenu">
@@ -73,8 +91,11 @@
         </div>
 
         <!-- Case -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'case'"
-          @mouseleave="activeSubmenu === 'case' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'case'"
+          @mouseleave="activeSubmenu === 'case' ? (activeSubmenu = '') : null"
+        >
           Case
           <span>▶</span>
           <div v-if="activeSubmenu === 'case'" class="submenu">
@@ -85,8 +106,11 @@
         </div>
 
         <!-- XML -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'xml'"
-          @mouseleave="activeSubmenu === 'xml' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'xml'"
+          @mouseleave="activeSubmenu === 'xml' ? (activeSubmenu = '') : null"
+        >
           XML
           <span>▶</span>
           <div v-if="activeSubmenu === 'xml'" class="submenu">
@@ -96,20 +120,28 @@
         </div>
 
         <!-- Line Operations -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'lines'"
-          @mouseleave="activeSubmenu === 'lines' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'lines'"
+          @mouseleave="activeSubmenu === 'lines' ? (activeSubmenu = '') : null"
+        >
           Line Operations
           <span>▶</span>
           <div v-if="activeSubmenu === 'lines'" class="submenu">
             <div class="menu-item" @click="handleTransformation('sortLines')">Sort Lines</div>
-            <div class="menu-item" @click="handleTransformation('deduplicateLines')">Remove Duplicates</div>
+            <div class="menu-item" @click="handleTransformation('deduplicateLines')">
+              Remove Duplicates
+            </div>
             <div class="menu-item" @click="handleTransformation('reverseLines')">Reverse Lines</div>
           </div>
         </div>
 
         <!-- HTML -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'html'"
-          @mouseleave="activeSubmenu === 'html' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'html'"
+          @mouseleave="activeSubmenu === 'html' ? (activeSubmenu = '') : null"
+        >
           HTML
           <span>▶</span>
           <div v-if="activeSubmenu === 'html'" class="submenu">
@@ -119,8 +151,11 @@
         </div>
 
         <!-- Hash -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'hash'"
-          @mouseleave="activeSubmenu === 'hash' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'hash'"
+          @mouseleave="activeSubmenu === 'hash' ? (activeSubmenu = '') : null"
+        >
           Hash
           <span>▶</span>
           <div v-if="activeSubmenu === 'hash'" class="submenu">
@@ -132,8 +167,11 @@
         </div>
 
         <!-- Unicode -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'unicode'"
-          @mouseleave="activeSubmenu === 'unicode' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'unicode'"
+          @mouseleave="activeSubmenu === 'unicode' ? (activeSubmenu = '') : null"
+        >
           Unicode
           <span>▶</span>
           <div v-if="activeSubmenu === 'unicode'" class="submenu">
@@ -143,8 +181,11 @@
         </div>
 
         <!-- JSON/YAML -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'jsonYaml'"
-          @mouseleave="activeSubmenu === 'jsonYaml' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'jsonYaml'"
+          @mouseleave="activeSubmenu === 'jsonYaml' ? (activeSubmenu = '') : null"
+        >
           JSON/YAML
           <span>▶</span>
           <div v-if="activeSubmenu === 'jsonYaml'" class="submenu">
@@ -154,13 +195,20 @@
         </div>
 
         <!-- Spring Boot Properties -->
-        <div class="menu-item has-submenu" @mouseenter="activeSubmenu = 'springBoot'"
-          @mouseleave="activeSubmenu === 'springBoot' ? activeSubmenu = '' : null">
+        <div
+          class="menu-item has-submenu"
+          @mouseenter="activeSubmenu = 'springBoot'"
+          @mouseleave="activeSubmenu === 'springBoot' ? (activeSubmenu = '') : null"
+        >
           Spring Boot
           <span>▶</span>
           <div v-if="activeSubmenu === 'springBoot'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('propertiesFileToYaml')">Properties to YAML</div>
-            <div class="menu-item" @click="handleTransformation('yamlToPropertiesFile')">YAML to Properties</div>
+            <div class="menu-item" @click="handleTransformation('propertiesFileToYaml')">
+              Properties to YAML
+            </div>
+            <div class="menu-item" @click="handleTransformation('yamlToPropertiesFile')">
+              YAML to Properties
+            </div>
           </div>
         </div>
       </div>
@@ -169,15 +217,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import transformations from '../transformations.js'
+import { ref } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
 
-// Debug: Log transformations on mount
-onMounted(() => {
-})
-
 // Define props and emits
+defineProps({
+  editorRef: Object
+})
 const emit = defineEmits(['menu-action', 'transformation', 'open-settings'])
 
 // State
@@ -216,26 +262,8 @@ const handleTransformation = (transformation) => {
     return
   }
 
-  // Get the transformation function
-  const transformFn = transformations[transformation]
-  if (!transformFn) {
-    console.error(`Transformation ${transformation} not found`)
-    return
-  }
-
-  try {
-    // Apply the transformation
-    const result = transformFn(activeTab.content)
-
-    // Update the tab content
-    tabsStore.updateTabContent(activeTab.id, result, true)
-
-    // Emit the transformation event
-    emit('transformation', { type: transformation, success: true })
-  } catch (error) {
-    console.error(`Error applying transformation ${transformation}:`, error)
-    emit('transformation', { type: transformation, success: false, error: error.message })
-  }
+  // Emit the transformation event to be handled by App.vue
+  emit('transformation', { type: transformation, success: true })
 }
 
 // Close menus when clicking outside

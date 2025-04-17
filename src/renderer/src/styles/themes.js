@@ -150,20 +150,22 @@ export const getThemeByName = (themeName) => {
 
 // Generate CSS variables from theme
 export const generateCssVariables = (theme) => {
-  return Object.entries(theme).map(([key, value]) => `--${key}: ${value};`).join('\\n')
+  return Object.entries(theme)
+    .map(([key, value]) => `--${key}: ${value};`)
+    .join('\\n')
 }
 
 // Apply theme to document
 export const applyTheme = (themeName) => {
   const theme = getThemeByName(themeName)
   const root = document.documentElement
-  
+
   Object.entries(theme).forEach(([key, value]) => {
     if (typeof value === 'string') {
       root.style.setProperty(`--${key}`, value)
     }
   })
-  
+
   // Set data attributes for special effects
   root.setAttribute('data-theme', themeName)
   root.setAttribute('data-crt-effect', theme.crtEffect ? 'true' : 'false')

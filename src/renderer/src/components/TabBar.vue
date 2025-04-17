@@ -1,10 +1,13 @@
 <template>
   <div class="tabs">
-    <div v-for="tab in tabs" :key="tab.id" class="tab" :class="{ active: tab.id === activeTabId }"
-      @click="setActiveTab(tab.id)">
-      <div class="tab-title">
-        {{ tab.title }}{{ tab.isUnsaved ? '*' : '' }}
-      </div>
+    <div
+      v-for="tab in tabs"
+      :key="tab.id"
+      class="tab"
+      :class="{ active: tab.id === activeTabId }"
+      @click="setActiveTab(tab.id)"
+    >
+      <div class="tab-title">{{ tab.title }}{{ tab.isUnsaved ? '*' : '' }}</div>
       <div class="tab-close" @click.stop="closeTab(tab.id)">✕</div>
     </div>
     <button class="new-tab-button" @click="createNewTab">+</button>

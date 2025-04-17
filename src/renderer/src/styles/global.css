@@ -119,41 +119,45 @@ textarea:focus {
 }
 
 /* Text Glow Effect for Cyberpunk Themes */
-[data-text-glow="true"] .glow-text {
-  text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary), 0 0 15px var(--primary);
+[data-text-glow='true'] .glow-text {
+  text-shadow:
+    0 0 5px var(--primary),
+    0 0 10px var(--primary),
+    0 0 15px var(--primary);
 }
 
 /* CRT Effect for Cyberpunk Turbo Theme */
-[data-crt-effect="true"] .crt-container {
+[data-crt-effect='true'] .crt-container {
   position: relative;
   overflow: hidden;
 }
 
-[data-crt-effect="true"] .crt-container::before {
-  content: "";
+[data-crt-effect='true'] .crt-container::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
-      rgba(0, 0, 0, 0.25) 50%);
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
   background-size: 100% 4px;
   z-index: 2;
   pointer-events: none;
 }
 
-[data-crt-effect="true"] .crt-container::after {
-  content: "";
+[data-crt-effect='true'] .crt-container::after {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at center,
-      rgba(10, 10, 22, 0) 0%,
-      rgba(10, 10, 22, 0.2) 80%,
-      rgba(10, 10, 22, 0.4) 100%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(10, 10, 22, 0) 0%,
+    rgba(10, 10, 22, 0.2) 80%,
+    rgba(10, 10, 22, 0.4) 100%
+  );
   z-index: 3;
   pointer-events: none;
 }
@@ -205,7 +209,7 @@ textarea:focus {
   }
 }
 
-[data-crt-effect="true"] .crt-flicker {
+[data-crt-effect='true'] .crt-flicker {
   animation: flicker 5s infinite;
 }
 
@@ -247,11 +251,11 @@ textarea:focus {
   }
 }
 
-[data-crt-effect="true"] .crt-glitch {
+[data-crt-effect='true'] .crt-glitch {
   position: relative;
 }
 
-[data-crt-effect="true"] .crt-glitch::before {
+[data-crt-effect='true'] .crt-glitch::before {
   content: attr(data-text);
   position: absolute;
   top: 0;
@@ -268,7 +272,6 @@ textarea:focus {
 
 /* Blinking cursor for text fields */
 @keyframes blink {
-
   0%,
   100% {
     opacity: 1;

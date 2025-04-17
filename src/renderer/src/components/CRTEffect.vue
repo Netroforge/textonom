@@ -151,11 +151,11 @@ const createColorShift = (duration) => {
   // Choose which color channel to shift
   const colorIndex = Math.floor(Math.random() * 5)
   const colors = [
-    'rgba(255, 0, 0, 0.25)',    // Red
-    'rgba(0, 255, 0, 0.25)',    // Green
-    'rgba(0, 0, 255, 0.25)',    // Blue
-    'rgba(0, 255, 255, 0.25)',  // Cyan
-    'rgba(255, 0, 255, 0.25)'   // Magenta
+    'rgba(255, 0, 0, 0.25)', // Red
+    'rgba(0, 255, 0, 0.25)', // Green
+    'rgba(0, 0, 255, 0.25)', // Blue
+    'rgba(0, 255, 255, 0.25)', // Cyan
+    'rgba(255, 0, 255, 0.25)' // Magenta
   ]
   const shiftColor = colors[colorIndex]
 
@@ -174,11 +174,11 @@ const createColorShift = (duration) => {
   // Add complementary color shift
   if (Math.random() < 0.7) {
     const complementaryColors = [
-      'rgba(0, 255, 255, 0.2)',  // Cyan (complement to Red)
-      'rgba(255, 0, 255, 0.2)',  // Magenta (complement to Green)
-      'rgba(255, 255, 0, 0.2)',  // Yellow (complement to Blue)
-      'rgba(255, 0, 0, 0.2)',    // Red (complement to Cyan)
-      'rgba(0, 255, 0, 0.2)'     // Green (complement to Magenta)
+      'rgba(0, 255, 255, 0.2)', // Cyan (complement to Red)
+      'rgba(255, 0, 255, 0.2)', // Magenta (complement to Green)
+      'rgba(255, 255, 0, 0.2)', // Yellow (complement to Blue)
+      'rgba(255, 0, 0, 0.2)', // Red (complement to Cyan)
+      'rgba(0, 255, 0, 0.2)' // Green (complement to Magenta)
     ]
     const compColor = complementaryColors[colorIndex]
 
@@ -210,7 +210,8 @@ onMounted(() => {
     if (glitchInterval) clearInterval(glitchInterval)
 
     glitchInterval = setInterval(() => {
-      if (Math.random() < 0.50) { // 50% chance of glitch
+      if (Math.random() < 0.5) {
+        // 50% chance of glitch
         createGlitch()
       }
     }, 1000) // Check every 1 second
@@ -238,10 +239,12 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.03) 50%,
-      rgba(255, 255, 255, 0) 51%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0) 51%
+  );
   background-size: 100% 4px;
   z-index: 2;
   pointer-events: none;
@@ -269,11 +272,7 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 65%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 65%, rgba(0, 0, 0, 0.2) 100%);
   z-index: 3;
   pointer-events: none;
 }
@@ -321,7 +320,9 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  transition: transform 0.1s, clip-path 0.1s;
+  transition:
+    transform 0.1s,
+    clip-path 0.1s;
   pointer-events: none;
   z-index: 2;
 }

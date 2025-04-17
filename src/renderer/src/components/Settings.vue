@@ -96,7 +96,14 @@
         <div class="settings-row">
           <label class="settings-label">Auto Save Interval (ms)</label>
           <div class="settings-control">
-            <input v-model="autoSaveInterval" type="number" min="1000" max="60000" step="1000" :disabled="!autoSave" />
+            <input
+              v-model="autoSaveInterval"
+              type="number"
+              min="1000"
+              max="60000"
+              step="1000"
+              :disabled="!autoSave"
+            />
           </div>
         </div>
       </div>

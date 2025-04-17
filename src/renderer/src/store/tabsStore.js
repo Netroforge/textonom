@@ -9,9 +9,9 @@ const loadTabs = () => {
 
       // Initialize savedContent for existing tabs if it doesn't exist
       if (parsedTabs.tabs) {
-        parsedTabs.tabs.forEach(tab => {
+        parsedTabs.tabs.forEach((tab) => {
           if (!Object.prototype.hasOwnProperty.call(tab, 'savedContent')) {
-            // If tab is not marked as unsaved, set savedContent to current content
+            // If the tab is not marked as unsaved, a set savedContent to current content
             // Otherwise, set it to null
             tab.savedContent = tab.isUnsaved ? null : tab.content
           }
@@ -121,11 +121,12 @@ export const useTabsStore = defineStore('tabs', {
         const currentTab = this.tabs[tabIndex]
 
         // Check if anything has actually changed to prevent recursive updates
-        if (currentTab.filePath !== filePath ||
-            currentTab.title !== title ||
-            currentTab.savedContent !== currentTab.content ||
-            currentTab.isUnsaved !== false) {
-
+        if (
+          currentTab.filePath !== filePath ||
+          currentTab.title !== title ||
+          currentTab.savedContent !== currentTab.content ||
+          currentTab.isUnsaved !== false
+        ) {
           // Create a new tab object with updated properties
           const updatedTab = {
             ...currentTab,
@@ -152,10 +153,13 @@ export const useTabsStore = defineStore('tabs', {
 
     // Save tabs to localStorage
     saveTabs() {
-      localStorage.setItem('textonom-tabs', JSON.stringify({
-        tabs: this.tabs,
-        activeTabId: this.activeTabId
-      }))
+      localStorage.setItem(
+        'textonom-tabs',
+        JSON.stringify({
+          tabs: this.tabs,
+          activeTabId: this.activeTabId
+        })
+      )
     }
   },
 

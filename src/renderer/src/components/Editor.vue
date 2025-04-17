@@ -17,7 +17,7 @@ import * as monaco from 'monaco-editor'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { applyTheme } from '../styles/themes'
-import { base64Encode } from '../transformations/index'
+import transformations from '../transformations'
 
 // Refs
 const editorContainer = ref(null)
@@ -123,10 +123,235 @@ const redo = async () => {
 
 const processBase64encode = async () => {
   try {
-    const newContent = base64Encode(editor.getModel().getValue())
+    const newContent = transformations.base64Encode(editor.getModel().getValue())
     editor.getModel().setValue(newContent)
   } catch (error) {
     console.error('Base64 encoding failed:', error)
+  }
+}
+
+const processBase64decode = async () => {
+  try {
+    const newContent = transformations.base64Decode(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Base64 decoding failed:', error)
+  }
+}
+
+const processJsonPrettify = async () => {
+  try {
+    const newContent = transformations.jsonPrettify(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('JSON prettify failed:', error)
+  }
+}
+
+const processJsonCompact = async () => {
+  try {
+    const newContent = transformations.jsonCompact(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('JSON compact failed:', error)
+  }
+}
+
+const processUrlEncode = async () => {
+  try {
+    const newContent = transformations.urlEncode(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('URL encoding failed:', error)
+  }
+}
+
+const processUrlDecode = async () => {
+  try {
+    const newContent = transformations.urlDecode(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('URL decoding failed:', error)
+  }
+}
+
+const processToUpperCase = async () => {
+  try {
+    const newContent = transformations.toUpperCase(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('To uppercase failed:', error)
+  }
+}
+
+const processToLowerCase = async () => {
+  try {
+    const newContent = transformations.toLowerCase(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('To lowercase failed:', error)
+  }
+}
+
+const processToTitleCase = async () => {
+  try {
+    const newContent = transformations.toTitleCase(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('To title case failed:', error)
+  }
+}
+
+const processXmlPrettify = async () => {
+  try {
+    const newContent = transformations.xmlPrettify(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('XML prettify failed:', error)
+  }
+}
+
+const processXmlCompact = async () => {
+  try {
+    const newContent = transformations.xmlCompact(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('XML compact failed:', error)
+  }
+}
+
+const processSortLines = async () => {
+  try {
+    const newContent = transformations.sortLines(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Sort lines failed:', error)
+  }
+}
+
+const processDeduplicateLines = async () => {
+  try {
+    const newContent = transformations.deduplicateLines(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Deduplicate lines failed:', error)
+  }
+}
+
+const processReverseLines = async () => {
+  try {
+    const newContent = transformations.reverseLines(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Reverse lines failed:', error)
+  }
+}
+
+const processHtmlEncode = async () => {
+  try {
+    const newContent = transformations.htmlEncode(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('HTML encoding failed:', error)
+  }
+}
+
+const processHtmlDecode = async () => {
+  try {
+    const newContent = transformations.htmlDecode(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('HTML decoding failed:', error)
+  }
+}
+
+const processMd5Hash = async () => {
+  try {
+    const newContent = transformations.md5Hash(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('MD5 hash failed:', error)
+  }
+}
+
+const processSha1Hash = async () => {
+  try {
+    const newContent = transformations.sha1Hash(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('SHA-1 hash failed:', error)
+  }
+}
+
+const processSha256Hash = async () => {
+  try {
+    const newContent = transformations.sha256Hash(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('SHA-256 hash failed:', error)
+  }
+}
+
+const processBcryptHash = async () => {
+  try {
+    const newContent = transformations.bcryptHash(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Bcrypt hash failed:', error)
+  }
+}
+
+const processUnicodeEscape = async () => {
+  try {
+    const newContent = transformations.unicodeEscape(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Unicode escape failed:', error)
+  }
+}
+
+const processUnicodeUnescape = async () => {
+  try {
+    const newContent = transformations.unicodeUnescape(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Unicode unescape failed:', error)
+  }
+}
+
+const processJsonToYaml = async () => {
+  try {
+    const newContent = transformations.jsonToYaml(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('JSON to YAML conversion failed:', error)
+  }
+}
+
+const processYamlToJson = async () => {
+  try {
+    const newContent = transformations.yamlToJson(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('YAML to JSON conversion failed:', error)
+  }
+}
+
+const processPropertiesToYaml = async () => {
+  try {
+    const newContent = transformations.propertiesFileToYaml(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Properties to YAML conversion failed:', error)
+  }
+}
+
+const processYamlToProperties = async () => {
+  try {
+    const newContent = transformations.yamlToPropertiesFile(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('YAML to Properties conversion failed:', error)
   }
 }
 
@@ -350,7 +575,32 @@ defineExpose({
   createNewTab,
   undo,
   redo,
-  processBase64encode
+  processBase64encode,
+  processBase64decode,
+  processJsonPrettify,
+  processJsonCompact,
+  processUrlEncode,
+  processUrlDecode,
+  processToUpperCase,
+  processToLowerCase,
+  processToTitleCase,
+  processXmlPrettify,
+  processXmlCompact,
+  processSortLines,
+  processDeduplicateLines,
+  processReverseLines,
+  processHtmlEncode,
+  processHtmlDecode,
+  processMd5Hash,
+  processSha1Hash,
+  processSha256Hash,
+  processBcryptHash,
+  processUnicodeEscape,
+  processUnicodeUnescape,
+  processJsonToYaml,
+  processYamlToJson,
+  processPropertiesToYaml,
+  processYamlToProperties
 })
 </script>
 
