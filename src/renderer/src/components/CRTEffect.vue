@@ -1,8 +1,9 @@
 <template>
   <div class="crt-container crt-flicker" :class="{ 'crt-active': isCRTActive }">
-    <div class="crt-glitch" data-text="GLITCH">
+    <div class="crt-content">
       <slot></slot>
     </div>
+    <div class="crt-glitch-overlay" data-text="GLITCH"></div>
     <div class="crt-scanlines"></div>
     <div class="crt-glow"></div>
     <div class="crt-flicker-overlay"></div>
@@ -28,7 +29,7 @@ let glitchInterval = null
 const createGlitch = () => {
   if (!isCRTActive.value) return
 
-  const glitchElement = document.querySelector('.crt-glitch')
+  const glitchElement = document.querySelector('.crt-glitch-overlay')
   if (!glitchElement) return
 
   // Apply random transform
@@ -115,21 +116,33 @@ onUnmounted(() => {
   animation: flicker 5s infinite;
 }
 
-.crt-glitch {
+.crt-content {
   position: relative;
   width: 100%;
   height: 100%;
+  z-index: 1;
+}
+
+.crt-glitch-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   transition: transform 0.1s, clip-path 0.1s;
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* Only apply effects when active */
 .crt-container:not(.crt-active) .crt-scanlines,
 .crt-container:not(.crt-active) .crt-glow,
-.crt-container:not(.crt-active) .crt-flicker-overlay {
+.crt-container:not(.crt-active) .crt-flicker-overlay,
+.crt-container:not(.crt-active) .crt-glitch-overlay {
   display: none;
 }
 
-.crt-container:not(.crt-active) .crt-glitch {
+.crt-container:not(.crt-active) .crt-glitch-overlay {
   transform: none !important;
   clip-path: none !important;
 }

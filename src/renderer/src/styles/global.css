@@ -257,6 +257,7 @@ textarea:focus {
   animation-delay: 0.5s;
   z-index: 1;
   opacity: 0.8;
+  pointer-events: none;
 }
 
 /* Blinking cursor for text fields */
