@@ -73,4 +73,4 @@ The following table outlines the detailed project requirements of Textonom app.
 | FR022.5        | Screen glow        | As a user, I want a subtle screen glow effect                                 | The CRT effect should include a subtle cyan glow effect to enhance the cyberpunk aesthetic                                              |
 
 ## Tech stack
-JavaScript, React, Tauri 2.0, vite, monaco-editor
+JavaScript, Vue, Electron, electron-vite, monaco-editor
