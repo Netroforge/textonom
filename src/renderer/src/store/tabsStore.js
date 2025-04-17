@@ -77,14 +77,10 @@ export const useTabsStore = defineStore('tabs', {
 
     // Update tab content
     updateTabContent(tabId, content, saveToLocalStorage = true) {
-      console.log('Updating tab content:', { tabId, contentLength: content?.length, saveToLocalStorage })
-
       // Find the tab index
       const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
 
       if (tabIndex !== -1) {
-        console.log('Found tab to update at index:', tabIndex)
-
         const currentTab = this.tabs[tabIndex]
 
         // Ensure savedContent is initialized
@@ -94,34 +90,25 @@ export const useTabsStore = defineStore('tabs', {
 
         // Check if content has changed from saved content
         const hasChanged = currentTab.savedContent === null || content !== currentTab.savedContent
-        console.log('Content changed check:', {
-          hasChanged,
-          savedContentExists: currentTab.savedContent !== null,
-          contentLength: content?.length,
-          savedContentLength: currentTab.savedContent?.length,
-          contentMatchesSaved: content === currentTab.savedContent
-        })
 
-        // Create a new tab object with updated content
-        const updatedTab = {
-          ...currentTab,
-          content,
-          isUnsaved: hasChanged
+        // Only update if content has actually changed to prevent recursive updates
+        if (currentTab.content !== content || currentTab.isUnsaved !== hasChanged) {
+          // Create a new tab object with updated content
+          const updatedTab = {
+            ...currentTab,
+            content,
+            isUnsaved: hasChanged
+          }
+
+          // Replace the tab in the array
+          this.tabs.splice(tabIndex, 1, updatedTab)
+
+          // Only save to localStorage if explicitly requested
+          // This prevents unnecessary updates that can cause cursor position issues
+          if (saveToLocalStorage) {
+            this.saveTabs()
+          }
         }
-
-        // Replace the tab in the array
-        this.tabs.splice(tabIndex, 1, updatedTab)
-
-        console.log('Tab replaced in array, isUnsaved:', hasChanged)
-
-        // Only save to localStorage if explicitly requested
-        // This prevents unnecessary updates that can cause cursor position issues
-        if (saveToLocalStorage) {
-          console.log('Saving tabs to localStorage')
-          this.saveTabs()
-        }
-
-        console.log('Tab content updated successfully')
       } else {
         console.error('Tab not found for ID:', tabId)
       }
@@ -131,23 +118,28 @@ export const useTabsStore = defineStore('tabs', {
     updateTabAfterSave(tabId, filePath, title) {
       const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
       if (tabIndex !== -1) {
-        console.log('Updating tab after save:', { tabId, filePath, title })
         const currentTab = this.tabs[tabIndex]
 
-        // Create a new tab object with updated properties
-        const updatedTab = {
-          ...currentTab,
-          filePath,
-          title,
-          savedContent: currentTab.content, // Store the saved content
-          isUnsaved: false
+        // Check if anything has actually changed to prevent recursive updates
+        if (currentTab.filePath !== filePath ||
+            currentTab.title !== title ||
+            currentTab.savedContent !== currentTab.content ||
+            currentTab.isUnsaved !== false) {
+
+          // Create a new tab object with updated properties
+          const updatedTab = {
+            ...currentTab,
+            filePath,
+            title,
+            savedContent: currentTab.content, // Store the saved content
+            isUnsaved: false
+          }
+
+          // Replace the tab in the array
+          this.tabs.splice(tabIndex, 1, updatedTab)
+
+          this.saveTabs()
         }
-
-        // Replace the tab in the array
-        this.tabs.splice(tabIndex, 1, updatedTab)
-
-        console.log('Tab updated after save, savedContent set to:', updatedTab.savedContent)
-        this.saveTabs()
       }
     },
 
@@ -168,7 +160,7 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   getters: {
-    // Get active tab
+    // Get an active tab
     getActiveTab() {
       return this.tabs.find((tab) => tab.id === this.activeTabId)
     },

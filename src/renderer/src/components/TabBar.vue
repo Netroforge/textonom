@@ -12,8 +12,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, defineProps } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
+
+// Define props
+const props = defineProps({
+  editorRef: Object
+})
 
 // Get the tabs store
 const tabsStore = useTabsStore()
@@ -32,11 +37,15 @@ const closeTab = (tabId) => {
 }
 
 const createNewTab = () => {
-  tabsStore.addTab({
-    title: 'Untitled',
-    content: '',
-    isUnsaved: true
-  })
+  if (props.editorRef) {
+    props.editorRef.createNewTab()
+  } else {
+    tabsStore.addTab({
+      title: 'Untitled',
+      content: '',
+      isUnsaved: true
+    })
+  }
 }
 </script>
 

@@ -17,6 +17,7 @@ import * as monaco from 'monaco-editor'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { applyTheme } from '../styles/themes'
+import { base64Encode } from '../transformations/index'
 
 // Refs
 const editorContainer = ref(null)
@@ -63,7 +64,6 @@ const saveFile = async () => {
   if (!activeTab.value) return
 
   try {
-    console.log('Saving file...')
     const content = editor.getValue()
     const result = await window.api.saveFile({
       filePath: activeTab.value.filePath,
@@ -71,7 +71,6 @@ const saveFile = async () => {
     })
 
     if (result.success) {
-      console.log('File saved successfully')
       const fileName = result.filePath.split('/').pop()
       tabsStore.updateTabAfterSave(activeTab.value.id, result.filePath, fileName)
 
@@ -92,7 +91,6 @@ const saveFileAs = async () => {
   if (!activeTab.value) return
 
   try {
-    console.log('Saving file as...')
     const content = editor.getValue()
     const result = await window.api.saveFileAs({
       content,
@@ -100,7 +98,6 @@ const saveFileAs = async () => {
     })
 
     if (result.success) {
-      console.log('File saved as successfully')
       const fileName = result.filePath.split('/').pop()
       tabsStore.updateTabAfterSave(activeTab.value.id, result.filePath, fileName)
 
@@ -113,6 +110,23 @@ const saveFileAs = async () => {
     }
   } catch (error) {
     console.error('Error saving file as:', error)
+  }
+}
+
+const undo = async () => {
+  await editor.trigger('undo...', 'undo')
+}
+
+const redo = async () => {
+  await editor.trigger('redo...', 'redo')
+}
+
+const processBase64encode = async () => {
+  try {
+    const newContent = base64Encode(editor.getModel().getValue())
+    editor.getModel().setValue(newContent)
+  } catch (error) {
+    console.error('Base64 encoding failed:', error)
   }
 }
 
@@ -139,7 +153,8 @@ const initEditor = () => {
     scrollbar: {
       vertical: 'visible',
       horizontal: 'visible'
-    }
+    },
+    quickSuggestions: false
   })
 
   // Listen for content changes
@@ -164,7 +179,7 @@ const initEditor = () => {
   setupAutoSave()
 
   // Focus the editor
-  editor.focus()
+  //editor.focus()
 }
 
 // Set up auto-save
@@ -252,54 +267,21 @@ onUnmounted(() => {
 watch(
   activeTab,
   (newTab, oldTab) => {
-    console.log('Active tab changed:', {
-      newTabId: newTab?.id,
-      oldTabId: oldTab?.id,
-      newTabContent: newTab?.content?.substring(0, 50) + (newTab?.content?.length > 50 ? '...' : '')
-    })
-
     // If we're switching from one tab to another, ensure the old tab's content is saved
     if (oldTab && editor) {
       // Save the content of the previous tab before switching
       const content = editor.getValue()
-      console.log('Saving old tab content:', { tabId: oldTab.id, contentLength: content.length })
       tabsStore.updateTabContent(oldTab.id, content, true)
     }
 
     if (!editor) {
-      console.log('Editor not initialized, initializing now')
       if (newTab) {
         initEditor()
       }
       return
     }
 
-    if (newTab) {
-      console.log('Updating editor content with new tab content')
-      // Save current cursor position and selection
-      const currentPosition = editor.getPosition()
-      const currentSelection = editor.getSelection()
-
-      // Update content
-      const model = editor.getModel()
-      console.log('Current model content length:', model.getValueLength())
-      console.log('New tab content length:', (newTab.content || '').length)
-
-      model.pushEditOperations(
-        [],
-        [{ range: model.getFullModelRange(), text: newTab.content || '' }],
-        () => null
-      )
-      console.log('Model content updated')
-
-      // Restore cursor position and selection if they were valid
-      if (currentPosition && currentPosition.lineNumber <= model.getLineCount()) {
-        editor.setPosition(currentPosition)
-        if (currentSelection) {
-          editor.setSelection(currentSelection)
-        }
-      }
-
+    if (oldTab !== newTab) {
       editor.focus()
     }
   },
@@ -312,12 +294,7 @@ watch(
   (newContent, oldContent) => {
     if (!editor || !activeTab.value || !newContent) return
 
-    console.log('Tab content changed, updating editor:', {
-      tabId: activeTab.value.id,
-      oldContentLength: oldContent?.length,
-      newContentLength: newContent.length
-    })
-
+    console.log('newContent', newContent)
     // Save current cursor position and selection
     const currentPosition = editor.getPosition()
     const currentSelection = editor.getSelection()
@@ -327,13 +304,8 @@ watch(
     const currentValue = model.getValue()
 
     if (currentValue !== newContent) {
-      console.log('Content differs, updating model')
-      console.log('Current model value:', currentValue)
-      console.log('New content:', newContent)
-
       // Force update the model content
       model.setValue(newContent)
-      console.log('Model content updated using setValue')
 
       // Restore cursor position and selection if they were valid
       if (currentPosition && currentPosition.lineNumber <= model.getLineCount()) {
@@ -342,8 +314,6 @@ watch(
           editor.setSelection(currentSelection)
         }
       }
-    } else {
-      console.log('Content is the same, no update needed')
     }
   }
 )
@@ -377,7 +347,10 @@ defineExpose({
   saveFile,
   saveFileAs,
   openFile,
-  createNewTab
+  createNewTab,
+  undo,
+  redo,
+  processBase64encode
 })
 </script>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import {ref, onMounted, onBeforeUnmount} from 'vue'
 import TabBar from './components/TabBar.vue'
 import Editor from './components/Editor.vue'
 import TopNavBar from './components/TopNavBar.vue'
@@ -7,8 +7,8 @@ import StatusBar from './components/StatusBar.vue'
 import Settings from './components/Settings.vue'
 import CRTEffect from './components/CRTEffect.vue'
 import TitleBar from './components/TitleBar.vue'
-import { useSettingsStore } from './store/settingsStore'
-import { applyTheme } from './styles/themes'
+import {useSettingsStore} from './store/settingsStore'
+import {applyTheme} from './styles/themes'
 
 // Refs
 const editorRef = ref(null)
@@ -39,7 +39,11 @@ const handleMenuAction = (action) => {
       window.close()
       break
     case 'undo':
+      editorRef.value?.undo()
+      break
     case 'redo':
+      editorRef.value?.redo()
+      break
     case 'cut':
     case 'copy':
     case 'paste':
@@ -51,9 +55,14 @@ const handleMenuAction = (action) => {
 
 // Handle transformation result
 const handleTransformation = (result) => {
-  console.log('Transformation event received in App.vue:', result)
-  if (!result.success) {
-    alert(`Error: ${result.error}`)
+  switch (result.type) {
+    case 'base64Encode':
+      console.log('base64Encode', result)
+      editorRef.value?.processBase64encode()
+      break
+    default:
+      // No specific handling needed for transformation results yet
+      break
   }
 }
 
@@ -114,13 +123,17 @@ onBeforeUnmount(() => {
   <div class="app-container">
     <CRTEffect>
       <TitleBar />
-      <TopNavBar @menu-action="handleMenuAction" @transformation="handleTransformation"
-        @open-settings="showSettings = true" />
-      <TabBar />
-      <Editor ref="editorRef" />
+      <TopNavBar
+        :editor-ref="editorRef"
+        @menu-action="handleMenuAction"
+        @transformation="handleTransformation"
+        @open-settings="showSettings = true"
+      />
+      <TabBar :editor-ref="editorRef"/>
+      <Editor ref="editorRef"/>
       <StatusBar />
 
-      <Settings v-if="showSettings" @close="closeSettings" />
+      <Settings v-if="showSettings" @close="closeSettings"/>
     </CRTEffect>
   </div>
 </template>

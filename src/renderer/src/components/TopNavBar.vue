@@ -175,8 +175,6 @@ import { useTabsStore } from '../store/tabsStore'
 
 // Debug: Log transformations on mount
 onMounted(() => {
-  console.log('TopNavBar mounted')
-  console.log('Imported transformations:', transformations)
 })
 
 // Define props and emits
@@ -211,18 +209,14 @@ const handleMenuAction = (action) => {
 const handleTransformation = (transformation) => {
   closeMenus()
 
-  console.log('Handling transformation:', transformation)
-
   // Get the active tab
   const activeTab = tabsStore.getActiveTab
-  console.log('Active tab:', activeTab)
   if (!activeTab) {
     console.error('No active tab found')
     return
   }
 
   // Get the transformation function
-  console.log('Available transformations:', Object.keys(transformations))
   const transformFn = transformations[transformation]
   if (!transformFn) {
     console.error(`Transformation ${transformation} not found`)
@@ -230,14 +224,11 @@ const handleTransformation = (transformation) => {
   }
 
   try {
-    console.log('Applying transformation to content:', activeTab.content)
     // Apply the transformation
     const result = transformFn(activeTab.content)
-    console.log('Transformation result:', result)
 
     // Update the tab content
     tabsStore.updateTabContent(activeTab.id, result, true)
-    console.log('Tab content updated')
 
     // Emit the transformation event
     emit('transformation', { type: transformation, success: true })
