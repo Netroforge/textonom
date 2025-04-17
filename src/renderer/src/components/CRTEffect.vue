@@ -210,10 +210,10 @@ onMounted(() => {
     if (glitchInterval) clearInterval(glitchInterval)
 
     glitchInterval = setInterval(() => {
-      if (Math.random() < 0.1) { // 10% chance of glitch
+      if (Math.random() < 0.50) { // 50% chance of glitch
         createGlitch()
       }
-    }, 2000) // Check every 2 seconds
+    }, 1000) // Check every 1 second
   }
 
   setupGlitchInterval()
