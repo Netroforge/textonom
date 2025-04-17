@@ -1,101 +1,49 @@
 {
-  "name": "textonom",
-  "private": true,
+  "name": "texonom",
   "version": "1.0.0",
-  "description": "A text editor that performs popular routine transformations of text on your local machine",
-  "author": "Netroforge",
-  "main": "main.js",
+  "description": "An Electron application with React and TypeScript",
+  "main": "./out/main/index.js",
+  "author": "example.com",
+  "homepage": "https://electron-vite.org",
   "scripts": {
-    "lint": "eslint .",
-    "dev": "vite",
-    "build": "vite build",
-    "electron:dev": "vite build && electron .",
-    "electron:build": "vite build && electron-builder",
-    "electron:make": "npx vite build && electron-forge make",
-    "electron:make:win": "electron-forge make --platform win32",
-    "electron:make:mac": "electron-forge make --platform darwin",
-    "electron:make:linux": "electron-forge make --platform linux",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "preview": "vite preview",
-    "test": "mocha tests --recursive",
-    "debug:main": "vite build && electron --inspect=9229 .",
-    "debug:main:brk": "vite build && electron --inspect-brk=9229 ."
+    "format": "prettier --write .",
+    "lint": "eslint --cache .",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:unpack": "npm run build && electron-builder --dir",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
-    "@monaco-editor/react": "^4.7.0",
-    "ace-builds": "^1.39.1",
-    "concurrently": "^9.1.2",
-    "cross-env": "^7.0.3",
-    "crypto-js": "^4.2.0",
-    "electron-squirrel-startup": "^1.0.1",
-    "js-yaml": "^4.1.0",
-    "monaco-editor": "^0.52.2",
-    "react": "^19.1.0",
-    "react-ace": "^14.0.1",
-    "react-dom": "^19.1.0",
-    "react-icons": "^5.5.0",
-    "react-router-dom": "^7.5.0",
-    "styled-components": "^6.1.17",
-    "wait-on": "^8.0.3",
-    "zustand": "^5.0.3"
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^4.0.0",
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.10",
-    "@babel/preset-env": "^7.26.9",
-    "@babel/register": "^7.25.9",
-    "@electron-forge/cli": "^7.8.0",
-    "@electron-forge/maker-deb": "^7.8.0",
-    "@electron-forge/maker-rpm": "^7.8.0",
-    "@electron-forge/maker-squirrel": "^7.8.0",
-    "@electron-forge/maker-zip": "^7.8.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.8.0",
-    "@electron-forge/plugin-fuses": "^7.8.0",
-    "@electron/fuses": "^1.8.0",
-    "@eslint/js": "^9.24.0",
-    "@types/react": "^19.1.2",
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.0.0",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.3.4",
-    "chai": "^5.2.0",
     "electron": "^35.1.5",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^3.1.0",
     "eslint": "^9.24.0",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
-    "fs-extra": "^11.3.0",
-    "globals": "^16.0.0",
-    "mocha": "^11.1.0",
-    "playwright": "^1.51.1",
-    "sinon": "^20.0.0",
-    "vite": "^6.2.6",
-    "vite-plugin-electron": "^0.29.0"
-  },
-  "build": {
-    "appId": "com.netroforge.textonom",
-    "productName": "Textonom",
-    "files": [
-      "dist/**/*",
-      "src/**/*"
-    ],
-    "directories": {
-      "buildResources": "assets",
-      "output": "release"
-    },
-    "mac": {
-      "target": [
-        "dmg"
-      ]
-    },
-    "win": {
-      "target": [
-        "msi"
-      ]
-    },
-    "linux": {
-      "target": [
-        "deb",
-        "AppImage"
-      ]
-    }
+    "prettier": "^3.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.6"
   }
 }
