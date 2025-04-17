@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 
 // Load tabs from localStorage if available
 const loadTabs = () => {
@@ -11,7 +10,7 @@ const loadTabs = () => {
       // Initialize savedContent for existing tabs if it doesn't exist
       if (parsedTabs.tabs) {
         parsedTabs.tabs.forEach(tab => {
-          if (!tab.hasOwnProperty('savedContent')) {
+          if (!Object.prototype.hasOwnProperty.call(tab, 'savedContent')) {
             // If tab is not marked as unsaved, set savedContent to current content
             // Otherwise, set it to null
             tab.savedContent = tab.isUnsaved ? null : tab.content
@@ -130,14 +129,24 @@ export const useTabsStore = defineStore('tabs', {
 
     // Update tab after save
     updateTabAfterSave(tabId, filePath, title) {
-      const tab = this.tabs.find((tab) => tab.id === tabId)
-      if (tab) {
+      const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
+      if (tabIndex !== -1) {
         console.log('Updating tab after save:', { tabId, filePath, title })
-        tab.filePath = filePath
-        tab.title = title
-        tab.savedContent = tab.content // Store the saved content
-        tab.isUnsaved = false
-        console.log('Tab updated after save, savedContent set to:', tab.savedContent)
+        const currentTab = this.tabs[tabIndex]
+
+        // Create a new tab object with updated properties
+        const updatedTab = {
+          ...currentTab,
+          filePath,
+          title,
+          savedContent: currentTab.content, // Store the saved content
+          isUnsaved: false
+        }
+
+        // Replace the tab in the array
+        this.tabs.splice(tabIndex, 1, updatedTab)
+
+        console.log('Tab updated after save, savedContent set to:', updatedTab.savedContent)
         this.saveTabs()
       }
     },
