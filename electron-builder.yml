@@ -1,5 +1,5 @@
 appId: com.github.netroforge
-productName: textonom
+productName: Textonom
 directories:
   buildResources: build
 files:
@@ -11,7 +11,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: textonom
+  executableName: Textonom
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -32,7 +32,7 @@ linux:
     - AppImage
     - snap
     - deb
-  maintainer: electronjs.org
+  maintainer: Netroforge
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}
