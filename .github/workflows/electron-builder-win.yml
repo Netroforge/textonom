@@ -17,4 +17,4 @@ jobs:
           node-version: 23
       - name: Build
         run: |
-          npm build:win
+          npm publish:win

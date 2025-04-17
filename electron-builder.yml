@@ -32,6 +32,7 @@ linux:
     - AppImage
     - snap
     - deb
+    - rpm
   maintainer: Netroforge
   category: Utility
 appImage:

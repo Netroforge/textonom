@@ -17,4 +17,4 @@ jobs:
           node-version: 23
       - name: Build
         run: |
-          npm build:mac
+          npm publish:mac
