@@ -1,0 +1,120 @@
+:root {
+  /* Light theme (default) */
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --primary-color: #4a86e8;
+  --secondary-color: #6aa84f;
+  --accent-color: #e69138;
+  --border-color: #cccccc;
+  --tab-bg: #f5f5f5;
+  --tab-active-bg: #ffffff;
+  --menu-bg: #f5f5f5;
+  --editor-bg: #ffffff;
+  --scrollbar-thumb: #cccccc;
+  --scrollbar-track: #f5f5f5;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1e1e1e;
+  --text-color: #e0e0e0;
+  --primary-color: #4a86e8;
+  --secondary-color: #6aa84f;
+  --accent-color: #e69138;
+  --border-color: #444444;
+  --tab-bg: #2d2d2d;
+  --tab-active-bg: #1e1e1e;
+  --menu-bg: #2d2d2d;
+  --editor-bg: #1e1e1e;
+  --scrollbar-thumb: #444444;
+  --scrollbar-track: #2d2d2d;
+}
+
+[data-theme="cyberpunk"] {
+  --bg-color: #0b0b1a;
+  --text-color: #00ffff;
+  --primary-color: #ff00ff;
+  --secondary-color: #00ff00;
+  --accent-color: #ffff00;
+  --border-color: #00ffff;
+  --tab-bg: #1a1a2e;
+  --tab-active-bg: #0b0b1a;
+  --menu-bg: #1a1a2e;
+  --editor-bg: #0b0b1a;
+  --scrollbar-thumb: #00ffff;
+  --scrollbar-track: #1a1a2e;
+}
+
+[data-theme="cyberpunk-turbo"] {
+  --bg-color: #0b0b1a;
+  --text-color: #00ffff;
+  --primary-color: #ff00ff;
+  --secondary-color: #00ff00;
+  --accent-color: #ffff00;
+  --border-color: #00ffff;
+  --tab-bg: #1a1a2e;
+  --tab-active-bg: #0b0b1a;
+  --menu-bg: #1a1a2e;
+  --editor-bg: #0b0b1a;
+  --scrollbar-thumb: #00ffff;
+  --scrollbar-track: #1a1a2e;
+  /* CRT effect variables will be used in the CRT effect component */
+  --scanline-opacity: 0.15;
+  --flicker-opacity: 0.1;
+  --glitch-frequency: 0.05;
+  --edge-darkness: 0.3;
+  --glow-color: rgba(0, 255, 255, 0.2);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Blinking cursor */
+.monaco-editor .cursor {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

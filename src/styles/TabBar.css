@@ -1,0 +1,106 @@
+.tab-container {
+  display: flex;
+  align-items: center;
+  background-color: var(--tab-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 1%;
+  height: 5%;
+  min-height: 40px;
+  overflow-x: auto;
+}
+
+.tabs {
+  display: flex;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 0 1%;
+  height: 80%;
+  min-width: 120px;
+  max-width: 200px;
+  margin-right: 0.5%;
+  background-color: var(--tab-bg);
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.tab.active {
+  background-color: var(--tab-active-bg);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+
+.tab-close {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 0.5%;
+  margin-left: 0.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.tab-close:hover {
+  opacity: 1;
+  color: var(--accent-color);
+}
+
+.add-tab-button {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 1.2em;
+  cursor: pointer;
+  height: 80%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  margin-left: 0.5%;
+}
+
+.add-tab-button:hover {
+  background-color: var(--tab-active-bg);
+  color: var(--primary-color);
+}
+
+/* Ensure horizontal scrolling works properly */
+.tab-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tab-container::-webkit-scrollbar-track {
+  background: var(--tab-bg);
+}
+
+.tab-container::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.tab-container::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}

@@ -1,0 +1,36 @@
+{
+  "identifier": "com.textonom.dev",
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173"
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "fs": {
+      "scope": {
+        "allow": ["**"]
+      }
+    },
+    "dialog": {
+      "all": true
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 800,
+        "resizable": true,
+        "title": "Textonom",
+        "width": 1200
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}

@@ -1,0 +1,145 @@
+.menu-container {
+  width: 100%;
+  background-color: var(--menu-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5% 1%;
+  z-index: 10;
+  position: relative;
+}
+
+.menu-bar {
+  display: flex;
+  align-items: center;
+  gap: 1%;
+}
+
+.menu-item {
+  position: relative;
+}
+
+.menu-item > button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  padding: 0.5em 1em;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 4px;
+}
+
+.menu-item > button:hover {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+
+.menu-item > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 150px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  padding: 0.5em 1em;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.dropdown-menu button:hover {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+
+.dropdown-menu button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Submenu styling */
+.submenu-item {
+  position: relative;
+  padding: 0.5em 1em;
+  cursor: pointer;
+}
+
+.submenu-item > span {
+  display: block;
+  position: relative;
+  padding-right: 1.5em;
+}
+
+.submenu-item > span::after {
+  content: '▶';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 101;
+  min-width: 150px;
+}
+
+.submenu-item:hover > .submenu {
+  display: block;
+}
+
+/* Menu backdrop for closing menus when clicking outside */
+.menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+}
+
+/* Cyberpunk theme specific styling */
+[data-theme="cyberpunk"] .menu-item > button:hover,
+[data-theme="cyberpunk"] .dropdown-menu button:hover,
+[data-theme="cyberpunk-turbo"] .menu-item > button:hover,
+[data-theme="cyberpunk-turbo"] .dropdown-menu button:hover {
+  background-color: rgba(0, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .menu-bar {
+    gap: 0.5%;
+  }
+
+  .menu-item > button {
+    padding: 0.4em 0.8em;
+    font-size: 0.9em;
+  }
+
+  .dropdown-menu {
+    min-width: 120px;
+  }
+}
