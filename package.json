@@ -1,7 +1,7 @@
 {
   "name": "textonom",
   "version": "1.0.0",
-  "description": "An Electron application with Vue",
+  "description": "A text editor that performs popular routine transformations of a text on your local machine",
   "main": "./out/main/index.js",
   "author": "Netroforge",
   "homepage": "https://github.com/Netroforge/textonom",
