@@ -26,13 +26,19 @@ A text editor that performs popular routine transformations of text on your loca
   - Line numbers
   - Word wrap
   - Auto-save
+- Special visual effects:
+  - CRT monitor effect in Cyberpunk Turbo theme
+  - Scanlines, screen flicker, glitch effects
+  - Edge darkening and screen glow
 
 ## Development
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v16 or higher)
 - npm or yarn
+- Rust (for Tauri)
+- System libraries for Tauri (see [DEPENDENCIES.md](DEPENDENCIES.md) for details)
 
 ### Installation
 
@@ -49,32 +55,35 @@ npm install
 
 ```bash
 # Run in development mode
-npm run electron:dev
+npm run dev
 
 # Build for production
-npm run electron:build
+npm run build
 
-# Package for specific platforms
-npm run electron:package:win    # Windows
-npm run electron:package:mac    # macOS
-npm run electron:package:linux  # Linux
+# Package the application
+npm run tauri build
 ```
 
-### Debugging
+> **Note:** Building the application requires system libraries. See [DEPENDENCIES.md](DEPENDENCIES.md) for installation instructions if you encounter build errors.
 
-This project includes VS Code debugging configurations. To debug the application:
+### Keyboard Shortcuts
 
-1. Open the project in VS Code
-2. Go to the Run and Debug view
-3. Select "Main + renderer" from the dropdown
-4. Press F5 to start debugging
+The application supports standard keyboard shortcuts:
+
+- Ctrl+N / Cmd+N: New file
+- Ctrl+O / Cmd+O: Open file
+- Ctrl+S / Cmd+S: Save file
+- Ctrl+Shift+S / Cmd+Shift+S: Save file as
+- Ctrl+W / Cmd+W: Close current tab
+- Ctrl+Tab / Cmd+Tab: Cycle through tabs
+- Ctrl+, / Cmd+,: Open settings
 
 ## Technologies
 
-- Electron
+- Tauri 2.0
 - React
 - Monaco Editor
-- Styled Components
+- Zustand (for state management)
 
 ## License
 

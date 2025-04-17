@@ -10,6 +10,7 @@ The following table outlines the detailed project requirements of Textonom app.
 | FR002          | Each file should be opened in separate tab                                      | As a user, I wanna see each file in separate tab                                          | The app should provide navigation system trough the tabs and each tab is opened file                                                                                                                                           |
 | FR003          | Possibility to create new tab and input text there without saving on local disk | As a user, I can quicly click on plus button and create new tab there and start edit text | The app should provide possibility for user to start working on text without saving it on disk, there should be displayed plus button near tabs that will allow to create new virtual tab that is not bind to the file on disk |
 | FR004          | Possibility to save file on disk                                                | As a user I should have possibility to save file on disk                                  | The app should provide should save file dialog where user can select folder, file name(including format e.g. file extension) and save current context on disk                                                                  |
+| FR004          | Support standard hotkeys                                                        | As a user I should be able to use hotkeys in order to perform operations                  |                                                                                                                                                                                                                                |
 
 ## Text Transformations
 
@@ -72,4 +73,4 @@ The following table outlines the detailed project requirements of Textonom app.
 | FR022.5        | Screen glow        | As a user, I want a subtle screen glow effect                                 | The CRT effect should include a subtle cyan glow effect to enhance the cyberpunk aesthetic                                              |
 
 ## Tech stack
-TypeScript, React, Electron, electron-vite, monaco-editor, zustand
+JavaScript, React, Tauri 2.0, vite, monaco-editor
