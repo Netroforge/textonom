@@ -1,12 +1,13 @@
 name: Electron Builder Win
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -15,6 +16,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 23
-      - name: Build
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          npm publish:win
+          npm install
+          npm run publish:win

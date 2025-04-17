@@ -1,12 +1,13 @@
 name: Electron Builder Linux
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -15,6 +16,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 23
-      - name: Build
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          npm publish:linux
+          sudo apt-get update && sudo apt-get install -y rpm
+          sudo snap install snapcraft --classic
+          npm install
+          #To generate SNAP_TOKEN run `snapcraft export-login [FILE]` and login with your snapcraft credentials. It is used now without login
+          npm run publish:linux

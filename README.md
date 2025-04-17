@@ -2,11 +2,7 @@
 
 # textonom
 
-A text editor that performs popular routine transformations of a text on your local machine
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+A text editor that performs popular routine transformations of a text on your local machine.
 
 ## Project Setup
 
@@ -33,4 +29,11 @@ $ npm run build:mac
 
 # For Linux
 $ npm run build:linux
+```
+
+### Snapcraft
+
+https://snapcraft.io/docs/releasing-your-app
+```shell
+snapcraft login
 ```
