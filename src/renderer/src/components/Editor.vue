@@ -1,5 +1,5 @@
 <template>
-  <div class="editor-container" ref="editorContainer">
+  <div ref="editorContainer" class="editor-container">
     <div v-if="!activeTab" class="empty-editor">
       <div class="empty-message">
         <p>No open files</p>
@@ -8,6 +8,15 @@
       </div>
     </div>
     <div v-else ref="monacoContainer" class="monaco-container"></div>
+
+    <!-- Error Popup -->
+    <div v-if="showErrorPopup" class="error-popup">
+      <div class="error-popup-content">
+        <h3>Error</h3>
+        <p>{{ errorMessage }}</p>
+        <button @click="closeErrorPopup">Close</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -32,6 +41,10 @@ const settingsStore = useSettingsStore()
 
 // Computed properties
 const activeTab = computed(() => tabsStore.getActiveTab)
+
+// Show error
+const showErrorPopup = ref(false)
+const errorMessage = ref('')
 
 // Create a new tab
 const createNewTab = () => {
@@ -254,7 +267,14 @@ const processTransformation = (transformFn) => {
     }
   } catch (error) {
     console.error('Transformation failed:', error)
+    showErrorPopup.value = true
+    errorMessage.value = error.message
   }
+}
+
+const closeErrorPopup = () => {
+  showErrorPopup.value = false
+  errorMessage.value = ''
 }
 
 // Initialize the editor
@@ -471,6 +491,8 @@ watch(
 
 // Expose methods to parent components
 defineExpose({
+  showErrorPopup,
+  errorMessage,
   saveFile,
   saveFileAs,
   openFile,
@@ -510,6 +532,7 @@ defineExpose({
 .editor-container {
   height: 100%;
   width: 100%;
+  position: relative;
 }
 
 .monaco-container {
@@ -536,5 +559,47 @@ defineExpose({
 
 .empty-message button {
   margin: 0.5rem;
+}
+
+/* Error Popup Styles */
+.error-popup {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 80%;
+  min-width: 300px;
+}
+
+.error-popup-content {
+  color: #721c24;
+}
+
+.error-popup h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.error-popup p {
+  margin-bottom: 15px;
+}
+
+.error-popup button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-popup button:hover {
+  background-color: #c82333;
 }
 </style>
