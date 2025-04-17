@@ -20,7 +20,13 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
-    "electron-updater": "^6.3.9"
+    "bcryptjs": "^3.0.2",
+    "crypto-js": "^4.2.0",
+    "electron-updater": "^6.3.9",
+    "js-base64": "^3.7.7",
+    "js-yaml": "^4.1.0",
+    "monaco-editor": "^0.52.2",
+    "pinia": "^3.0.2"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^2.0.0",

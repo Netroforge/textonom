@@ -1,19 +1,26 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import fs from 'fs'
+import path from 'path'
+
+// Store the last directory used for file operations
+let lastDirectory = app.getPath('documents')
 
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 1200,
+    height: 800,
     show: false,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false
     }
   })
 
@@ -49,8 +56,98 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  // File operations IPC handlers
+  ipcMain.handle('open-file', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [{ name: 'All Files', extensions: ['*'] }],
+      defaultPath: lastDirectory
+    })
+
+    if (!canceled && filePaths.length > 0) {
+      const filePath = filePaths[0]
+      lastDirectory = path.dirname(filePath)
+
+      try {
+        const content = fs.readFileSync(filePath, 'utf8')
+        return {
+          success: true,
+          filePath,
+          content
+        }
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message
+        }
+      }
+    }
+
+    return { success: false, canceled: true }
+  })
+
+  ipcMain.handle('save-file', async (_, { filePath, content }) => {
+    let savePath = filePath
+
+    if (!savePath) {
+      const { canceled, filePath: selectedPath } = await dialog.showSaveDialog({
+        filters: [{ name: 'Text Files', extensions: ['txt'] }],
+        defaultPath: path.join(lastDirectory, 'untitled.txt')
+      })
+
+      if (canceled || !selectedPath) {
+        return { success: false, canceled: true }
+      }
+
+      savePath = selectedPath
+      lastDirectory = path.dirname(savePath)
+    }
+
+    try {
+      fs.writeFileSync(savePath, content, 'utf8')
+      return {
+        success: true,
+        filePath: savePath
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message
+      }
+    }
+  })
+
+  ipcMain.handle('save-file-as', async (_, { content, currentPath }) => {
+    const defaultPath = currentPath || path.join(lastDirectory, 'untitled.txt')
+    const defaultExtension = path.extname(defaultPath).slice(1) || 'txt'
+
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      filters: [
+        { name: 'Current Type', extensions: [defaultExtension] },
+        { name: 'All Files', extensions: ['*'] }
+      ],
+      defaultPath
+    })
+
+    if (canceled || !filePath) {
+      return { success: false, canceled: true }
+    }
+
+    lastDirectory = path.dirname(filePath)
+
+    try {
+      fs.writeFileSync(filePath, content, 'utf8')
+      return {
+        success: true,
+        filePath
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message
+      }
+    }
+  })
 
   createWindow()
 
