@@ -1,15 +1,17 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import fs from 'fs'
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 1024,
+    height: 768,
     show: false,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
+    title: 'Textonom',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -47,6 +49,74 @@ app.whenReady().then(() => {
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
+  })
+
+  // IPC handlers for file operations
+  ipcMain.handle('file:open', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [{ name: 'All Files', extensions: ['*'] }],
+      defaultPath: app.getPath('documents')
+    })
+
+    if (canceled || filePaths.length === 0) {
+      return undefined
+    }
+
+    const filePath = filePaths[0]
+    const content = fs.readFileSync(filePath, 'utf8')
+
+    return { filePath, content }
+  })
+
+  ipcMain.handle('file:save', async (_, { content, defaultPath }) => {
+    if (!defaultPath) {
+      return ipcMain.emit('file:saveAs', _, { content })
+    }
+
+    fs.writeFileSync(defaultPath, content, 'utf8')
+    return defaultPath
+  })
+
+  ipcMain.handle('file:saveAs', async (_, { content, defaultPath }) => {
+    // Determine default extension
+    let defaultExtension = 'txt'
+    let defaultName = 'untitled'
+
+    if (defaultPath) {
+      const pathParts = defaultPath.split('/')
+      const fileName = pathParts[pathParts.length - 1]
+      if (fileName.includes('.')) {
+        const parts = fileName.split('.')
+        defaultExtension = parts[parts.length - 1]
+        defaultName = parts.slice(0, -1).join('.')
+      } else {
+        defaultName = fileName
+      }
+    }
+
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      defaultPath: defaultPath || `${app.getPath('documents')}/${defaultName}.${defaultExtension}`,
+      filters: [
+        { name: 'Text Files', extensions: ['txt'] },
+        { name: 'JavaScript', extensions: ['js'] },
+        { name: 'TypeScript', extensions: ['ts'] },
+        { name: 'JSON', extensions: ['json'] },
+        { name: 'XML', extensions: ['xml'] },
+        { name: 'HTML', extensions: ['html', 'htm'] },
+        { name: 'CSS', extensions: ['css'] },
+        { name: 'YAML', extensions: ['yaml', 'yml'] },
+        { name: 'Properties', extensions: ['properties'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    })
+
+    if (canceled || !filePath) {
+      return undefined
+    }
+
+    fs.writeFileSync(filePath, content, 'utf8')
+    return filePath
   })
 
   // IPC test
