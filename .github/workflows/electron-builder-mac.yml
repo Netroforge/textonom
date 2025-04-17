@@ -1,4 +1,4 @@
-name: Electron Builder CI (MAC)
+name: Electron Builder Mac
 
 on:
   push:

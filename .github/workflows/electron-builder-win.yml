@@ -1,4 +1,4 @@
-name: Electron Builder CI (WIN)
+name: Electron Builder Win
 
 on:
   push:
