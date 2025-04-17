@@ -1,3 +1,5 @@
+![Static Badge](https://img.shields.io/badge/vibe_coded-8A2BE2?style=for-the-badge&logo=musicbrainz&logoColor=white)
+
 # texonom
 
 An Electron application with Vue

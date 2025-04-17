@@ -57,8 +57,8 @@
           Base64
           <span>▶</span>
           <div v-if="activeSubmenu === 'base64'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('base64Encode')">Encode</div>
-            <div class="menu-item" @click="handleTransformation('base64Decode')">Decode</div>
+            <div class="menu-item" @click="handleMenuAction('base64Encode')">Encode</div>
+            <div class="menu-item" @click="handleMenuAction('base64Decode')">Decode</div>
           </div>
         </div>
 
@@ -71,8 +71,8 @@
           JSON
           <span>▶</span>
           <div v-if="activeSubmenu === 'json'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('jsonPrettify')">Prettify</div>
-            <div class="menu-item" @click="handleTransformation('jsonCompact')">Compact</div>
+            <div class="menu-item" @click="handleMenuAction('jsonPrettify')">Prettify</div>
+            <div class="menu-item" @click="handleMenuAction('jsonCompact')">Compact</div>
           </div>
         </div>
 
@@ -85,8 +85,8 @@
           URL
           <span>▶</span>
           <div v-if="activeSubmenu === 'url'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('urlEncode')">Encode</div>
-            <div class="menu-item" @click="handleTransformation('urlDecode')">Decode</div>
+            <div class="menu-item" @click="handleMenuAction('urlEncode')">Encode</div>
+            <div class="menu-item" @click="handleMenuAction('urlDecode')">Decode</div>
           </div>
         </div>
 
@@ -99,9 +99,9 @@
           Case
           <span>▶</span>
           <div v-if="activeSubmenu === 'case'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('toUpperCase')">UPPERCASE</div>
-            <div class="menu-item" @click="handleTransformation('toLowerCase')">lowercase</div>
-            <div class="menu-item" @click="handleTransformation('toTitleCase')">Title Case</div>
+            <div class="menu-item" @click="handleMenuAction('toUpperCase')">UPPERCASE</div>
+            <div class="menu-item" @click="handleMenuAction('toLowerCase')">lowercase</div>
+            <div class="menu-item" @click="handleMenuAction('toTitleCase')">Title Case</div>
           </div>
         </div>
 
@@ -114,8 +114,8 @@
           XML
           <span>▶</span>
           <div v-if="activeSubmenu === 'xml'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('xmlPrettify')">Prettify</div>
-            <div class="menu-item" @click="handleTransformation('xmlCompact')">Compact</div>
+            <div class="menu-item" @click="handleMenuAction('xmlPrettify')">Prettify</div>
+            <div class="menu-item" @click="handleMenuAction('xmlCompact')">Compact</div>
           </div>
         </div>
 
@@ -128,11 +128,11 @@
           Line Operations
           <span>▶</span>
           <div v-if="activeSubmenu === 'lines'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('sortLines')">Sort Lines</div>
-            <div class="menu-item" @click="handleTransformation('deduplicateLines')">
+            <div class="menu-item" @click="handleMenuAction('sortLines')">Sort Lines</div>
+            <div class="menu-item" @click="handleMenuAction('deduplicateLines')">
               Remove Duplicates
             </div>
-            <div class="menu-item" @click="handleTransformation('reverseLines')">Reverse Lines</div>
+            <div class="menu-item" @click="handleMenuAction('reverseLines')">Reverse Lines</div>
           </div>
         </div>
 
@@ -145,8 +145,8 @@
           HTML
           <span>▶</span>
           <div v-if="activeSubmenu === 'html'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('htmlEncode')">Encode</div>
-            <div class="menu-item" @click="handleTransformation('htmlDecode')">Decode</div>
+            <div class="menu-item" @click="handleMenuAction('htmlEncode')">Encode</div>
+            <div class="menu-item" @click="handleMenuAction('htmlDecode')">Decode</div>
           </div>
         </div>
 
@@ -159,10 +159,10 @@
           Hash
           <span>▶</span>
           <div v-if="activeSubmenu === 'hash'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('md5Hash')">MD5</div>
-            <div class="menu-item" @click="handleTransformation('sha1Hash')">SHA-1</div>
-            <div class="menu-item" @click="handleTransformation('sha256Hash')">SHA-256</div>
-            <div class="menu-item" @click="handleTransformation('bcryptHash')">Bcrypt</div>
+            <div class="menu-item" @click="handleMenuAction('md5Hash')">MD5</div>
+            <div class="menu-item" @click="handleMenuAction('sha1Hash')">SHA-1</div>
+            <div class="menu-item" @click="handleMenuAction('sha256Hash')">SHA-256</div>
+            <div class="menu-item" @click="handleMenuAction('bcryptHash')">Bcrypt</div>
           </div>
         </div>
 
@@ -175,8 +175,8 @@
           Unicode
           <span>▶</span>
           <div v-if="activeSubmenu === 'unicode'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('unicodeEscape')">Escape</div>
-            <div class="menu-item" @click="handleTransformation('unicodeUnescape')">Unescape</div>
+            <div class="menu-item" @click="handleMenuAction('unicodeEscape')">Escape</div>
+            <div class="menu-item" @click="handleMenuAction('unicodeUnescape')">Unescape</div>
           </div>
         </div>
 
@@ -189,8 +189,8 @@
           JSON/YAML
           <span>▶</span>
           <div v-if="activeSubmenu === 'jsonYaml'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('jsonToYaml')">JSON to YAML</div>
-            <div class="menu-item" @click="handleTransformation('yamlToJson')">YAML to JSON</div>
+            <div class="menu-item" @click="handleMenuAction('jsonToYaml')">JSON to YAML</div>
+            <div class="menu-item" @click="handleMenuAction('yamlToJson')">YAML to JSON</div>
           </div>
         </div>
 
@@ -203,10 +203,10 @@
           Spring Boot
           <span>▶</span>
           <div v-if="activeSubmenu === 'springBoot'" class="submenu">
-            <div class="menu-item" @click="handleTransformation('propertiesFileToYaml')">
+            <div class="menu-item" @click="handleMenuAction('propertiesFileToYaml')">
               Properties to YAML
             </div>
-            <div class="menu-item" @click="handleTransformation('yamlToPropertiesFile')">
+            <div class="menu-item" @click="handleMenuAction('yamlToPropertiesFile')">
               YAML to Properties
             </div>
           </div>
@@ -218,20 +218,16 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useTabsStore } from '../store/tabsStore'
 
 // Define props and emits
 defineProps({
   editorRef: Object
 })
-const emit = defineEmits(['menu-action', 'transformation', 'open-settings'])
+const emit = defineEmits(['menu-action'])
 
 // State
 const activeMenu = ref('')
 const activeSubmenu = ref('')
-
-// Get the tabs store
-const tabsStore = useTabsStore()
 
 // Toggle menu visibility
 const toggleMenu = (menu) => {
@@ -249,21 +245,6 @@ const closeMenus = () => {
 const handleMenuAction = (action) => {
   closeMenus()
   emit('menu-action', action)
-}
-
-// Handle transformations
-const handleTransformation = (transformation) => {
-  closeMenus()
-
-  // Get the active tab
-  const activeTab = tabsStore.getActiveTab
-  if (!activeTab) {
-    console.error('No active tab found')
-    return
-  }
-
-  // Emit the transformation event to be handled by App.vue
-  emit('transformation', { type: transformation, success: true })
 }
 
 // Close menus when clicking outside

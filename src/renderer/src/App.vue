@@ -20,6 +20,7 @@ const settingsStore = useSettingsStore()
 // Handle menu actions
 const handleMenuAction = (action) => {
   switch (action) {
+    // File
     case 'new':
       editorRef.value?.createNewTab()
       break
@@ -38,6 +39,8 @@ const handleMenuAction = (action) => {
     case 'exit':
       window.close()
       break
+
+    // Edit
     case 'undo':
       editorRef.value?.undo()
       break
@@ -48,24 +51,93 @@ const handleMenuAction = (action) => {
     case 'copy':
     case 'paste':
     case 'selectAll':
-      // These actions are handled by Monaco editor directly
+      // These actions are handled by Monaco Editor directly
       break
-  }
-}
 
-// Handle transformation result
-const handleTransformation = (result) => {
-  console.log('Transformation:', result.type)
+    // Transformations
+    case 'base64Encode':
+      editorRef.value?.processBase64Encode()
+      break
+    case 'base64Decode':
+      editorRef.value?.processBase64Decode()
+      break
+    case 'jsonPrettify':
+      editorRef.value?.processJsonPrettify()
+      break
+    case 'jsonCompact':
+      editorRef.value?.processJsonCompact()
+      break
+    case 'urlEncode':
+      editorRef.value?.processUrlEncode()
+      break
+    case 'urlDecode':
+      editorRef.value?.processUrlDecode()
+      break
+    case 'toUpperCase':
+      editorRef.value?.processToUpperCase()
+      break
+    case 'toLowerCase':
+      editorRef.value?.processToLowerCase()
+      break
+    case 'toTitleCase':
+      editorRef.value?.processToTitleCase()
+      break
+    case 'xmlPrettify':
+      editorRef.value?.processXmlPrettify()
+      break
+    case 'xmlCompact':
+      editorRef.value?.processXmlCompact()
+      break
+    case 'sortLines':
+      editorRef.value?.processSortLines()
+      break
+    case 'deduplicateLines':
+      editorRef.value?.processDeduplicateLines()
+      break
+    case 'reverseLines':
+      editorRef.value?.processReverseLines()
+      break
+    case 'htmlEncode':
+      editorRef.value?.processHtmlEncode()
+      break
+    case 'htmlDecode':
+      editorRef.value?.processHtmlDecode()
+      break
+    case 'md5Hash':
+      editorRef.value?.processMd5Hash()
+      break
+    case 'sha1Hash':
+      editorRef.value?.processSha1Hash()
+      break
+    case 'sha256Hash':
+      editorRef.value?.processSha256Hash()
+      break
+    case 'bcryptHash':
+      editorRef.value?.processBcryptHash()
+      break
+    case 'unicodeEscape':
+      editorRef.value?.processUnicodeEscape()
+      break
+    case 'unicodeUnescape':
+      editorRef.value?.processUnicodeUnescape()
+      break
+    case 'jsonToYaml':
+      editorRef.value?.processJsonToYaml()
+      break
+    case 'yamlToJson':
+      editorRef.value?.processYamlToJson()
+      break
+    case 'propertiesFileToYaml':
+      editorRef.value?.processPropertiesToYaml()
+      break
+    case 'yamlToPropertiesFile':
+      editorRef.value?.processYamlToProperties()
+      break
 
-  // Map transformation type to the corresponding process function
-  const processFunctionName = 'process' + result.type.charAt(0).toUpperCase() + result.type.slice(1)
-
-  // Check if the function exists on the editor reference
-  if (editorRef.value && typeof editorRef.value[processFunctionName] === 'function') {
-    // Call the process function
-    editorRef.value[processFunctionName]()
-  } else {
-    console.error(`Process function ${processFunctionName} not found on editor`)
+    // Default
+    default:
+      console.error(`Menu action ${action} not found`)
+      break
   }
 }
 
@@ -129,7 +201,6 @@ onBeforeUnmount(() => {
       <TopNavBar
         :editor-ref="editorRef"
         @menu-action="handleMenuAction"
-        @transformation="handleTransformation"
         @open-settings="showSettings = true"
       />
       <TabBar :editor-ref="editorRef" />
