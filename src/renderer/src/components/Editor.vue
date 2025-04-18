@@ -442,7 +442,7 @@ const updateEditorSettings = () => {
   setupAutoSave()
 }
 
-// Function to save content before unload
+// Function to save content before unloading
 const saveBeforeUnload = () => {
   if (editor && activeTab.value) {
     // Make sure the current tab content is saved
@@ -487,7 +487,7 @@ onUnmounted(() => {
   window.removeEventListener('beforeunload', saveBeforeUnload)
 })
 
-// Watch for changes in active tab
+// Watch for changes in the active tab
 watch(
   activeTab,
   (newTab, oldTab) => {
@@ -518,7 +518,7 @@ watch(
   (newContent) => {
     if (!editor || !activeTab.value || !newContent) return
 
-    // Save current cursor position and selection
+    // Save the current cursor position and selection
     const currentPosition = editor.getPosition()
     const currentSelection = editor.getSelection()
 

@@ -16,7 +16,6 @@ win:
   icon: ./build/icon.ico
   target:
     - nsis
-
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -52,6 +51,7 @@ snap:
     - provider: github
 appImage:
   artifactName: ${name}-${version}.${ext}
+
 npmRebuild: false
 
 publish:
