@@ -4,13 +4,21 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/e55776f0-9aff-49ea-ba3c-7c796e1a98cf.png?asset'
 import fs from 'fs'
 import path from 'path'
+import { autoUpdater } from 'electron-updater'
 
 // Store the last directory used for file operations
 let lastDirectory = app.getPath('documents')
 
+// Configure auto updater
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = true
+
+// Store main window reference
+let mainWindow
+
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     show: false,
@@ -186,6 +194,84 @@ app.whenReady().then(() => {
       }
     }
   })
+
+  // Auto-update IPC handlers
+  ipcMain.handle('check-for-updates', async () => {
+    if (is.dev) {
+      return { updateAvailable: false, version: app.getVersion(), isDev: true }
+    }
+
+    try {
+      const checkResult = await autoUpdater.checkForUpdates()
+      const updateAvailable = checkResult && checkResult.updateInfo.version !== app.getVersion()
+
+      return {
+        updateAvailable,
+        version: updateAvailable ? checkResult.updateInfo.version : app.getVersion(),
+        releaseNotes: updateAvailable ? checkResult.updateInfo.releaseNotes : null
+      }
+    } catch (error) {
+      console.error('Error checking for updates:', error)
+      return { error: error.message, updateAvailable: false, version: app.getVersion() }
+    }
+  })
+
+  ipcMain.handle('download-update', async () => {
+    if (is.dev) {
+      return { success: false, isDev: true }
+    }
+
+    try {
+      autoUpdater.downloadUpdate()
+      return { success: true }
+    } catch (error) {
+      console.error('Error downloading update:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('install-update', () => {
+    if (is.dev) {
+      return { success: false, isDev: true }
+    }
+
+    autoUpdater.quitAndInstall()
+    return { success: true }
+  })
+
+  ipcMain.handle('get-app-version', () => {
+    return app.getVersion()
+  })
+
+  // Set up auto-updater events
+  autoUpdater.on('update-available', (info) => {
+    if (mainWindow) {
+      mainWindow.webContents.send('update-available', info)
+    }
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    if (mainWindow) {
+      mainWindow.webContents.send('update-downloaded', info)
+    }
+  })
+
+  autoUpdater.on('error', (err) => {
+    console.error('AutoUpdater error:', err)
+    if (mainWindow) {
+      mainWindow.webContents.send('update-error', err.message)
+    }
+  })
+
+  // Check for updates on startup (if not in dev mode)
+  if (!is.dev) {
+    // Wait a bit before checking for updates to ensure the app is fully loaded
+    setTimeout(() => {
+      autoUpdater.checkForUpdates().catch((err) => {
+        console.error('Error checking for updates on startup:', err)
+      })
+    }, 3000)
+  }
 
   createWindow()
 

@@ -7,6 +7,7 @@ import StatusBar from './components/StatusBar.vue'
 import Settings from './components/Settings.vue'
 import CRTEffect from './components/CRTEffect.vue'
 import TitleBar from './components/TitleBar.vue'
+import UpdateNotification from './components/UpdateNotification.vue'
 import { useSettingsStore } from './store/settingsStore'
 import { applyTheme } from './styles/themes'
 
@@ -32,6 +33,9 @@ const handleMenuAction = (action) => {
       break
     case 'saveAs':
       editorRef.value?.saveFileAs()
+      break
+    case 'checkForUpdates':
+      checkForUpdates()
       break
     case 'settings':
       showSettings.value = true
@@ -152,6 +156,20 @@ const closeSettings = () => {
   showSettings.value = false
 }
 
+// Check for updates
+const checkForUpdates = async () => {
+  try {
+    const result = await window.api.checkForUpdates()
+    if (result.updateAvailable) {
+      alert(`Update available: ${result.version}\nClick OK to download and install.`)
+    } else {
+      alert('No updates available. You are using the latest version.')
+    }
+  } catch (error) {
+    alert(`Error checking for updates: ${error.message}`)
+  }
+}
+
 // Handle keyboard shortcuts
 const handleKeyDown = (event) => {
   // Ctrl+S: Save
@@ -228,6 +246,16 @@ onMounted(() => {
 
   // Add keyboard shortcut listener
   window.addEventListener('keydown', handleKeyDown)
+
+  // Check for updates on startup if enabled
+  if (settingsStore.autoUpdate && settingsStore.checkForUpdatesOnStartup) {
+    // Wait a bit before checking for updates to ensure the app is fully loaded
+    setTimeout(() => {
+      window.api.checkForUpdates().catch((error) => {
+        console.error('Error checking for updates on startup:', error)
+      })
+    }, 5000)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -251,6 +279,8 @@ onBeforeUnmount(() => {
 
       <Settings v-if="showSettings" @close="closeSettings" />
     </CRTEffect>
+
+    <UpdateNotification />
   </div>
 </template>
 

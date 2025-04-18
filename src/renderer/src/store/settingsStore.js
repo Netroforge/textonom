@@ -18,7 +18,9 @@ const defaultSettings = {
   wordWrap: 'on',
   lineNumbers: 'on',
   autoSave: false,
-  autoSaveInterval: 30000 // 30 seconds
+  autoSaveInterval: 30000, // 30 seconds
+  autoUpdate: true, // Enable auto-update by default
+  checkForUpdatesOnStartup: true // Check for updates on startup by default
 }
 
 // Load settings from localStorage if available
@@ -89,6 +91,18 @@ export const useSettingsStore = defineStore('settings', {
     // Update auto save interval
     setAutoSaveInterval(autoSaveInterval) {
       this.autoSaveInterval = Number(autoSaveInterval)
+      this.saveSettings()
+    },
+
+    // Update auto update setting
+    setAutoUpdate(autoUpdate) {
+      this.autoUpdate = autoUpdate
+      this.saveSettings()
+    },
+
+    // Update check for updates on startup setting
+    setCheckForUpdatesOnStartup(checkForUpdatesOnStartup) {
+      this.checkForUpdatesOnStartup = checkForUpdatesOnStartup
       this.saveSettings()
     },
 

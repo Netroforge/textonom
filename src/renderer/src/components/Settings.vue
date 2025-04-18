@@ -5,7 +5,6 @@
         <h2>Settings</h2>
         <button @click="close">✕</button>
       </div>
-
       <!-- Theme Settings -->
       <div class="settings-section">
         <h3 class="settings-section-title">Theme</h3>
@@ -108,6 +107,30 @@
         </div>
       </div>
 
+      <!-- Auto Update Settings -->
+      <div class="settings-section">
+        <h3 class="settings-section-title">Updates</h3>
+        <div class="settings-row">
+          <label class="settings-label">Enable Auto Update</label>
+          <div class="settings-control">
+            <input v-model="autoUpdate" type="checkbox" />
+          </div>
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Check for Updates on Startup</label>
+          <div class="settings-control">
+            <input v-model="checkForUpdatesOnStartup" type="checkbox" :disabled="!autoUpdate" />
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-control">
+            <button class="check-updates-btn" @click="checkForUpdates">
+              Check for Updates Now
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="settings-footer">
         <button @click="resetSettings">Reset to Defaults</button>
         <button @click="close">Close</button>
@@ -136,6 +159,8 @@ const wordWrap = ref(settingsStore.wordWrap)
 const lineNumbers = ref(settingsStore.lineNumbers)
 const autoSave = ref(settingsStore.autoSave)
 const autoSaveInterval = ref(settingsStore.autoSaveInterval)
+const autoUpdate = ref(settingsStore.autoUpdate)
+const checkForUpdatesOnStartup = ref(settingsStore.checkForUpdatesOnStartup)
 
 // Watch for changes and update the store
 watch(theme, (newValue) => {
@@ -174,6 +199,14 @@ watch(autoSaveInterval, (newValue) => {
   settingsStore.setAutoSaveInterval(Number(newValue))
 })
 
+watch(autoUpdate, (newValue) => {
+  settingsStore.setAutoUpdate(newValue)
+})
+
+watch(checkForUpdatesOnStartup, (newValue) => {
+  settingsStore.setCheckForUpdatesOnStartup(newValue)
+})
+
 // Reset settings to defaults
 const resetSettings = () => {
   settingsStore.resetSettings()
@@ -188,6 +221,22 @@ const resetSettings = () => {
   lineNumbers.value = settingsStore.lineNumbers
   autoSave.value = settingsStore.autoSave
   autoSaveInterval.value = settingsStore.autoSaveInterval
+  autoUpdate.value = settingsStore.autoUpdate
+  checkForUpdatesOnStartup.value = settingsStore.checkForUpdatesOnStartup
+}
+
+// Check for updates
+const checkForUpdates = async () => {
+  try {
+    const result = await window.api.checkForUpdates()
+    if (result.updateAvailable) {
+      alert(`Update available: ${result.version}\nClick OK to download and install.`)
+    } else {
+      alert('No updates available. You are using the latest version.')
+    }
+  } catch (error) {
+    alert(`Error checking for updates: ${error.message}`)
+  }
 }
 
 // Close the settings dialog

@@ -12,7 +12,13 @@ const api = {
   // File operations
   openFile: () => ipcRenderer.invoke('open-file'),
   saveFile: (data) => ipcRenderer.invoke('save-file', data),
-  saveFileAs: (data) => ipcRenderer.invoke('save-file-as', data)
+  saveFileAs: (data) => ipcRenderer.invoke('save-file-as', data),
+
+  // Auto-update operations
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  downloadUpdate: () => ipcRenderer.invoke('download-update'),
+  installUpdate: () => ipcRenderer.invoke('install-update'),
+  getAppVersion: () => ipcRenderer.invoke('get-app-version')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

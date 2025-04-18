@@ -14,6 +14,7 @@
         <div class="menu-item" @click="handleMenuAction('open')">Open</div>
         <div class="menu-item" @click="handleMenuAction('save')">Save</div>
         <div class="menu-item" @click="handleMenuAction('saveAs')">Save As</div>
+        <div class="menu-item" @click="handleMenuAction('checkForUpdates')">Check for Updates</div>
         <div class="menu-item" @click="handleMenuAction('settings')">Settings</div>
         <div class="menu-item" @click="handleMenuAction('exit')">Exit</div>
       </div>

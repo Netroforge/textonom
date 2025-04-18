@@ -449,6 +449,22 @@ textarea:focus {
   border-top: 1px solid var(--border);
 }
 
+/* Update notification button */
+.check-updates-btn {
+  background-color: var(--primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.check-updates-btn:hover {
+  background-color: var(--info);
+}
+
 /* Top navigation bar */
 .top-nav {
   display: flex;
