@@ -138,6 +138,22 @@ const redo = async () => {
   await editor.trigger('redo...', 'redo')
 }
 
+const cut = async () => {
+  await editor.trigger('cut...', 'editor.action.clipboardCutAction')
+}
+
+const copy = async () => {
+  await editor.trigger('copy...', 'editor.action.clipboardCopyAction')
+}
+
+const paste = async () => {
+  await editor.trigger('paste...', 'editor.action.clipboardPasteAction')
+}
+
+const selectAll = async () => {
+  await editor.trigger('selectAll...', 'editor.action.selectAll')
+}
+
 const processBase64Encode = async () => {
   processTransformation(transformations.base64Encode)
 }
@@ -439,7 +455,7 @@ watch(
 // Watch for changes in tab content
 watch(
   () => activeTab.value?.content,
-  (newContent, oldContent) => {
+  (newContent) => {
     if (!editor || !activeTab.value || !newContent) return
 
     console.log('newContent', newContent)
@@ -500,6 +516,10 @@ defineExpose({
   createNewTab,
   undo,
   redo,
+  cut,
+  copy,
+  paste,
+  selectAll,
   processBase64Encode,
   processBase64Decode,
   processJsonPrettify,

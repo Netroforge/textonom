@@ -48,10 +48,16 @@ const handleMenuAction = (action) => {
       editorRef.value?.redo()
       break
     case 'cut':
+      editorRef.value?.cut()
+      break
     case 'copy':
+      editorRef.value?.copy()
+      break
     case 'paste':
+      editorRef.value?.paste()
+      break
     case 'selectAll':
-      // These actions are handled by Monaco Editor directly
+      editorRef.value?.selectAll()
       break
 
     // Transformations
@@ -176,6 +182,42 @@ const handleKeyDown = (event) => {
   if (event.ctrlKey && event.key === ',') {
     event.preventDefault()
     showSettings.value = true
+  }
+
+  // Note: Cut, Copy, Paste, and Select All are handled by Monaco Editor directly
+  // through standard keyboard shortcuts (Ctrl+X, Ctrl+C, Ctrl+V, Ctrl+A)
+  // These are just fallbacks in case the editor doesn't handle them
+
+  // Ctrl+X: Cut
+  if (event.ctrlKey && event.key === 'x') {
+    // Let the editor handle it by default
+    if (!editorRef.value) {
+      event.preventDefault()
+    }
+  }
+
+  // Ctrl+C: Copy
+  if (event.ctrlKey && event.key === 'c') {
+    // Let the editor handle it by default
+    if (!editorRef.value) {
+      event.preventDefault()
+    }
+  }
+
+  // Ctrl+V: Paste
+  if (event.ctrlKey && event.key === 'v') {
+    // Let the editor handle it by default
+    if (!editorRef.value) {
+      event.preventDefault()
+    }
+  }
+
+  // Ctrl+A: Select All
+  if (event.ctrlKey && event.key === 'a') {
+    // Let the editor handle it by default
+    if (!editorRef.value) {
+      event.preventDefault()
+    }
   }
 }
 
