@@ -156,6 +156,10 @@ const handleMenuAction = (action) => {
   }
 }
 
+const handleNewTab = () => {
+  editorRef.value?.createNewTab()
+}
+
 // Close settings dialog
 const closeSettings = () => {
   showSettings.value = false
@@ -283,7 +287,7 @@ onBeforeUnmount(() => {
         @menu-action="handleMenuAction"
         @open-settings="showSettings = true"
       />
-      <TabBar :editor-ref="editorRef" />
+      <TabBar :editor-ref="editorRef" @new-tab="handleNewTab" />
       <Editor ref="editorRef" />
       <StatusBar />
 

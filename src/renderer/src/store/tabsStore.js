@@ -22,8 +22,12 @@ const loadTabs = () => {
     } catch (e) {
       console.error('Failed to parse saved tabs:', e)
     }
+  } else {
+    return {
+      tabs: [],
+      activeTabId: null
+    }
   }
-  return { tabs: [], activeTabId: null }
 }
 
 export const useTabsStore = defineStore('tabs', {
@@ -56,7 +60,7 @@ export const useTabsStore = defineStore('tabs', {
 
       this.tabs.splice(tabIndex, 1)
 
-      // Set new active tab if the closed tab was active
+      // Set a new active tab if the closed tab was active
       if (this.activeTabId === tabId) {
         if (this.tabs.length > 0) {
           // Try to activate the tab to the right, or if not available, the tab to the left

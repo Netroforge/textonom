@@ -461,12 +461,12 @@ onMounted(() => {
   // Apply the current theme
   applyTheme(settingsStore.theme)
 
-  // Add event listener to save tabs before window unloads
+  // Add event listener to save tabs before a window unloaded
   window.addEventListener('beforeunload', saveBeforeUnload)
 })
 
 onUnmounted(() => {
-  // Dispose the editor
+  // Dispose of the editor
   if (editor) {
     editor.dispose()
     editor = null
