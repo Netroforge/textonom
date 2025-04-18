@@ -1,4 +1,5 @@
 ![Static Badge](https://img.shields.io/badge/vibe_coded-8A2BE2?style=for-the-badge&logo=musicbrainz&logoColor=white)
+[![slack](https://img.shields.io/badge/slack-join-brightgreen.svg?style=for-the-badge&logo=slack)](https://join.slack.com/t/netroforge/shared_invite/zt-335byot5g-Z6PVCx45OgKKiTjJxz7odw)
 
 # textonom
 
