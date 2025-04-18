@@ -11,7 +11,8 @@
         </div>
       </div>
     </div>
-    <div v-else ref="monacoContainer" class="monaco-container"></div>
+<!--    <div v-else ref="monacoContainer" class="monaco-container"></div>-->
+    <div ref="monacoContainer" class="monaco-container"></div>
 
     <!-- Error Popup -->
     <div v-if="showErrorPopup" class="error-popup">
@@ -25,7 +26,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, reactive } from 'vue'
 import * as monaco from 'monaco-editor'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
@@ -38,6 +39,10 @@ const monacoContainer = ref(null)
 let editor = null
 let autoSaveInterval = null
 let contentSaveInterval = null
+
+// Store models and editor states for each tab
+const tabIdToMonacoModelMap = reactive(new Map())
+const tabIdToMonacoEditorViewStateMap = reactive(new Map())
 
 // Get stores
 const tabsStore = useTabsStore()
@@ -81,7 +86,8 @@ const saveFile = async () => {
   if (!activeTab.value) return
 
   try {
-    const content = editor.getValue()
+    const model = editor.getModel()
+    const content = model.getValue()
     const result = await window.api.saveFile({
       filePath: activeTab.value.filePath,
       content
@@ -90,13 +96,6 @@ const saveFile = async () => {
     if (result.success) {
       const fileName = result.filePath.split('/').pop()
       tabsStore.updateTabAfterSave(activeTab.value.id, result.filePath, fileName)
-
-      // Force update the editor model to ensure it has the latest content
-      // This ensures the content comparison works correctly
-      const model = editor.getModel()
-      if (model && model.getValue() !== content) {
-        model.setValue(content)
-      }
     }
   } catch (error) {
     console.error('Error saving file:', error)
@@ -108,7 +107,8 @@ const saveFileAs = async () => {
   if (!activeTab.value) return
 
   try {
-    const content = editor.getValue()
+    const model = editor.getModel()
+    const content = model.getValue()
     const result = await window.api.saveFileAs({
       content,
       currentPath: activeTab.value.filePath
@@ -117,13 +117,6 @@ const saveFileAs = async () => {
     if (result.success) {
       const fileName = result.filePath.split('/').pop()
       tabsStore.updateTabAfterSave(activeTab.value.id, result.filePath, fileName)
-
-      // Force update the editor model to ensure it has the latest content
-      // This ensures the content comparison works correctly
-      const model = editor.getModel()
-      if (model && model.getValue() !== content) {
-        model.setValue(content)
-      }
     }
   } catch (error) {
     console.error('Error saving file as:', error)
@@ -357,14 +350,94 @@ const closeErrorPopup = () => {
   errorMessage.value = ''
 }
 
+// Detect language from file extension
+const detectLanguage = (filename) => {
+  if (!filename) return 'plaintext'
+
+  const extension = filename.split('.').pop().toLowerCase()
+
+  // Map common extensions to languages
+  const languageMap = {
+    js: 'javascript',
+    jsx: 'javascript',
+    ts: 'typescript',
+    tsx: 'typescript',
+    html: 'html',
+    htm: 'html',
+    css: 'css',
+    scss: 'scss',
+    less: 'less',
+    json: 'json',
+    xml: 'xml',
+    md: 'markdown',
+    php: 'php',
+    py: 'python',
+    rb: 'ruby',
+    java: 'java',
+    c: 'c',
+    cpp: 'cpp',
+    h: 'cpp',
+    cs: 'csharp',
+    go: 'go',
+    rs: 'rust',
+    swift: 'swift',
+    sql: 'sql',
+    sh: 'shell',
+    bash: 'shell',
+    yaml: 'yaml',
+    yml: 'yaml',
+    ini: 'ini',
+    bat: 'bat',
+    ps1: 'powershell',
+    txt: 'plaintext'
+  }
+
+  return languageMap[extension] || 'plaintext'
+}
+
+// Create or get a model for a tab
+const getOrCreateModel = (tab) => {
+  if (!tab) return null
+
+  // Check if we already have a model for this tab
+  if (tabIdToMonacoModelMap.has(tab.id)) {
+    return tabIdToMonacoModelMap.get(tab.id)
+  } else {
+    // Detect language based on file extension
+    const language = detectLanguage(tab.title)
+
+    // Create a new model for this tab
+    // Use the tab ID as part of the URI to ensure uniqueness
+    const uri = monaco.Uri.parse(`file:///${tab.id}/${tab.title || 'untitled'}`)
+    const model = monaco.editor.createModel(tab.content || '', language, uri)
+
+    // Store the model
+    tabIdToMonacoModelMap.set(tab.id, model)
+
+    return model
+  }
+}
+
+// Dispose of a model for a tab
+const disposeModel = (tabId) => {
+  if (tabIdToMonacoModelMap.has(tabId)) {
+    const model = tabIdToMonacoModelMap.get(tabId)
+    model.dispose()
+    tabIdToMonacoModelMap.delete(tabId)
+  }
+
+  // Also remove any saved view state
+  if (tabIdToMonacoEditorViewStateMap.has(tabId)) {
+    tabIdToMonacoEditorViewStateMap.delete(tabId)
+  }
+}
+
 // Initialize the editor
 const initEditor = () => {
   if (!monacoContainer.value) return
 
-  // Create the editor
+  // Create the editor without a model initially
   editor = monaco.editor.create(monacoContainer.value, {
-    value: activeTab.value?.content || '',
-    language: 'plaintext',
     theme: settingsStore.theme === 'light' ? 'vs' : 'vs-dark',
     automaticLayout: true,
     fontSize: settingsStore.fontSize,
@@ -383,6 +456,12 @@ const initEditor = () => {
     },
     quickSuggestions: false
   })
+
+  // If there's an active tab, set its model
+  if (activeTab.value) {
+    const model = getOrCreateModel(activeTab.value)
+    editor.setModel(model)
+  }
 
   // Listen for content changes
   editor.onDidChangeModelContent(() => {
@@ -404,9 +483,6 @@ const initEditor = () => {
 
   // Set up auto-save if enabled
   setupAutoSave()
-
-  // Focus the editor
-  //editor.focus()
 }
 
 // Set up auto-save
@@ -446,7 +522,10 @@ const updateEditorSettings = () => {
 const saveBeforeUnload = () => {
   if (editor && activeTab.value) {
     // Make sure the current tab content is saved
-    tabsStore.updateTabContent(activeTab.value.id, editor.getValue(), true)
+    const model = editor.getModel()
+    if (model) {
+      tabsStore.updateTabContent(activeTab.value.id, model.getValue(), true)
+    }
   }
 }
 
@@ -472,6 +551,13 @@ onUnmounted(() => {
     editor = null
   }
 
+  // Dispose of all models
+  tabIdToMonacoModelMap.forEach((model) => {
+    model.dispose()
+  })
+  tabIdToMonacoModelMap.clear()
+  tabIdToMonacoEditorViewStateMap.clear()
+
   // Clear intervals
   if (autoSaveInterval) {
     clearInterval(autoSaveInterval)
@@ -491,13 +577,6 @@ onUnmounted(() => {
 watch(
   activeTab,
   (newTab, oldTab) => {
-    // If we're switching from one tab to another, ensure the old tab's content is saved
-    if (oldTab && editor) {
-      // Save the content of the previous tab before switching
-      const content = editor.getValue()
-      tabsStore.updateTabContent(oldTab.id, content, true)
-    }
-
     if (!editor) {
       if (newTab) {
         initEditor()
@@ -505,40 +584,27 @@ watch(
       return
     }
 
-    if (oldTab !== newTab) {
+    // If we're switching from one tab to another
+    if (oldTab && oldTab !== newTab) {
+      // Save the view state of the old tab
+      tabIdToMonacoEditorViewStateMap.set(oldTab.id, editor.saveViewState())
+    }
+
+    // If we have a new tab, set its model
+    if (newTab) {
+      const model = getOrCreateModel(newTab)
+      editor.setModel(model)
+
+      // Restore the view state if we have one
+      const viewState = tabIdToMonacoEditorViewStateMap.get(newTab.id)
+      if (viewState) {
+        editor.restoreViewState(viewState)
+      }
+
       editor.focus()
     }
   },
   { deep: true }
-)
-
-// Watch for changes in tab content
-watch(
-  () => activeTab.value?.content,
-  (newContent) => {
-    if (!editor || !activeTab.value || !newContent) return
-
-    // Save the current cursor position and selection
-    const currentPosition = editor.getPosition()
-    const currentSelection = editor.getSelection()
-
-    // Update content
-    const model = editor.getModel()
-    const currentValue = model.getValue()
-
-    if (currentValue !== newContent) {
-      // Force update the model content
-      model.setValue(newContent)
-
-      // Restore cursor position and selection if they were valid
-      if (currentPosition && currentPosition.lineNumber <= model.getLineCount()) {
-        editor.setPosition(currentPosition)
-        if (currentSelection) {
-          editor.setSelection(currentSelection)
-        }
-      }
-    }
-  }
 )
 
 watch(
@@ -562,6 +628,26 @@ watch(
   ],
   () => {
     updateEditorSettings()
+  }
+)
+
+// Watch for tab closures to dispose of models
+watch(
+  () => tabsStore.tabs.length,
+  (newLength, oldLength) => {
+    // If the number of tabs decreased, a tab was closed
+    if (newLength < oldLength) {
+      // Find which tab was closed by comparing the current tabs with the models we have
+      const currentTabIds = new Set(tabsStore.tabs.map((tab) => tab.id))
+
+      // Find models that don't have a corresponding tab anymore
+      for (const tabId of tabIdToMonacoModelMap.keys()) {
+        if (!currentTabIds.has(tabId)) {
+          // This model's tab was closed, dispose it
+          disposeModel(tabId)
+        }
+      }
+    }
   }
 )
 
