@@ -122,13 +122,6 @@
             <input v-model="checkForUpdatesOnStartup" type="checkbox" :disabled="!autoUpdate" />
           </div>
         </div>
-        <div class="settings-row">
-          <div class="settings-control">
-            <button class="check-updates-btn" @click="checkForUpdates">
-              Check for Updates Now
-            </button>
-          </div>
-        </div>
       </div>
 
       <div class="settings-footer">
@@ -223,20 +216,6 @@ const resetSettings = () => {
   autoSaveInterval.value = settingsStore.autoSaveInterval
   autoUpdate.value = settingsStore.autoUpdate
   checkForUpdatesOnStartup.value = settingsStore.checkForUpdatesOnStartup
-}
-
-// Check for updates
-const checkForUpdates = async () => {
-  try {
-    const result = await window.api.checkForUpdates()
-    if (result.updateAvailable) {
-      alert(`Update available: ${result.version}\nClick OK to download and install.`)
-    } else {
-      alert('No updates available. You are using the latest version.')
-    }
-  } catch (error) {
-    alert(`Error checking for updates: ${error.message}`)
-  }
 }
 
 // Close the settings dialog

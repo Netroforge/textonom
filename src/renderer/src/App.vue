@@ -5,6 +5,7 @@ import Editor from './components/Editor.vue'
 import TopNavBar from './components/TopNavBar.vue'
 import StatusBar from './components/StatusBar.vue'
 import Settings from './components/Settings.vue'
+import About from './components/About.vue'
 import CRTEffect from './components/CRTEffect.vue'
 import TitleBar from './components/TitleBar.vue'
 import UpdateNotification from './components/UpdateNotification.vue'
@@ -14,6 +15,7 @@ import { applyTheme } from './styles/themes'
 // Refs
 const editorRef = ref(null)
 const showSettings = ref(false)
+const showAbout = ref(false)
 
 // Get settings store
 const settingsStore = useSettingsStore()
@@ -36,6 +38,9 @@ const handleMenuAction = (action) => {
       break
     case 'checkForUpdates':
       checkForUpdates()
+      break
+    case 'about':
+      showAbout.value = true
       break
     case 'settings':
       showSettings.value = true
@@ -154,6 +159,11 @@ const handleMenuAction = (action) => {
 // Close settings dialog
 const closeSettings = () => {
   showSettings.value = false
+}
+
+// Close about dialog
+const closeAbout = () => {
+  showAbout.value = false
 }
 
 // Check for updates
@@ -278,6 +288,7 @@ onBeforeUnmount(() => {
       <StatusBar />
 
       <Settings v-if="showSettings" @close="closeSettings" />
+      <About v-if="showAbout" @close="closeAbout" />
     </CRTEffect>
 
     <UpdateNotification />

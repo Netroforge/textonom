@@ -14,7 +14,6 @@
         <div class="menu-item" @click="handleMenuAction('open')">Open</div>
         <div class="menu-item" @click="handleMenuAction('save')">Save</div>
         <div class="menu-item" @click="handleMenuAction('saveAs')">Save As</div>
-        <div class="menu-item" @click="handleMenuAction('checkForUpdates')">Check for Updates</div>
         <div class="menu-item" @click="handleMenuAction('settings')">Settings</div>
         <div class="menu-item" @click="handleMenuAction('exit')">Exit</div>
       </div>
@@ -212,6 +211,21 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- About Menu -->
+    <div class="menu-container">
+      <div
+        class="top-nav-item"
+        @click="toggleMenu('about')"
+        @mouseenter="menuClicked ? (activeMenu = 'about') : null"
+      >
+        About
+      </div>
+      <div v-if="activeMenu === 'about'" class="menu">
+        <div class="menu-item" @click="handleMenuAction('about')">About Textonom</div>
+        <div class="menu-item" @click="handleMenuAction('checkForUpdates')">Check for Updates</div>
       </div>
     </div>
   </div>
