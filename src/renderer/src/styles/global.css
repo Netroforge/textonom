@@ -404,7 +404,7 @@ textarea:focus {
   max-width: 800px;
   max-height: 90%;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 0;
 }
 
 .settings-header {
@@ -414,10 +414,18 @@ textarea:focus {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background-color: var(--surface);
+  z-index: 10;
+  width: 100%;
+  padding: 1rem 1rem 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .settings-section {
   margin-bottom: 1.5rem;
+  padding: 0 1rem;
 }
 
 .settings-section-title {
@@ -445,7 +453,7 @@ textarea:focus {
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
-  padding-top: 0.5rem;
+  padding: 0.5rem 1rem 1rem;
   border-top: 1px solid var(--border);
 }
 
