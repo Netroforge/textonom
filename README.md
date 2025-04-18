@@ -5,6 +5,8 @@
 
 A text editor that performs popular routine transformations of a text on your local machine.
 
+![Screenshot.png](Screenshot.png)
+
 ## Project Setup
 
 ### Install
