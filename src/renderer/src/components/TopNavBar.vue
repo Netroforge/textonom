@@ -1,11 +1,11 @@
 <template>
-  <div class="top-nav">
+  <div class="top-nav" ref="topNavRef">
     <!-- File Menu -->
     <div class="menu-container">
       <div
         class="top-nav-item"
         @click="toggleMenu('file')"
-        @mouseenter="activeMenu === '' ? (activeMenu = 'file') : null"
+        @mouseenter="menuClicked ? (activeMenu = 'file') : null"
       >
         File
       </div>
@@ -24,7 +24,7 @@
       <div
         class="top-nav-item"
         @click="toggleMenu('edit')"
-        @mouseenter="activeMenu === '' ? (activeMenu = 'edit') : null"
+        @mouseenter="menuClicked ? (activeMenu = 'edit') : null"
       >
         Edit
       </div>
@@ -43,7 +43,7 @@
       <div
         class="top-nav-item"
         @click="toggleMenu('transform')"
-        @mouseenter="activeMenu === '' ? (activeMenu = 'transform') : null"
+        @mouseenter="menuClicked ? (activeMenu = 'transform') : null"
       >
         Transformations
       </div>
@@ -51,7 +51,7 @@
         <!-- Base64 -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'base64'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'base64') : null"
           @mouseleave="activeSubmenu === 'base64' ? (activeSubmenu = '') : null"
         >
           Base64
@@ -65,7 +65,7 @@
         <!-- JSON -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'json'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'json') : null"
           @mouseleave="activeSubmenu === 'json' ? (activeSubmenu = '') : null"
         >
           JSON
@@ -79,7 +79,7 @@
         <!-- URL -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'url'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'url') : null"
           @mouseleave="activeSubmenu === 'url' ? (activeSubmenu = '') : null"
         >
           URL
@@ -93,7 +93,7 @@
         <!-- Case -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'case'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'case') : null"
           @mouseleave="activeSubmenu === 'case' ? (activeSubmenu = '') : null"
         >
           Case
@@ -108,7 +108,7 @@
         <!-- XML -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'xml'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'xml') : null"
           @mouseleave="activeSubmenu === 'xml' ? (activeSubmenu = '') : null"
         >
           XML
@@ -122,7 +122,7 @@
         <!-- Line Operations -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'lines'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'lines') : null"
           @mouseleave="activeSubmenu === 'lines' ? (activeSubmenu = '') : null"
         >
           Line Operations
@@ -139,7 +139,7 @@
         <!-- HTML -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'html'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'html') : null"
           @mouseleave="activeSubmenu === 'html' ? (activeSubmenu = '') : null"
         >
           HTML
@@ -153,7 +153,7 @@
         <!-- Hash -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'hash'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'hash') : null"
           @mouseleave="activeSubmenu === 'hash' ? (activeSubmenu = '') : null"
         >
           Hash
@@ -169,7 +169,7 @@
         <!-- Unicode -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'unicode'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'unicode') : null"
           @mouseleave="activeSubmenu === 'unicode' ? (activeSubmenu = '') : null"
         >
           Unicode
@@ -183,7 +183,7 @@
         <!-- JSON/YAML -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'jsonYaml'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'jsonYaml') : null"
           @mouseleave="activeSubmenu === 'jsonYaml' ? (activeSubmenu = '') : null"
         >
           JSON/YAML
@@ -197,7 +197,7 @@
         <!-- Spring Boot Properties -->
         <div
           class="menu-item has-submenu"
-          @mouseenter="activeSubmenu = 'springBoot'"
+          @mouseenter="menuClicked ? (activeSubmenu = 'springBoot') : null"
           @mouseleave="activeSubmenu === 'springBoot' ? (activeSubmenu = '') : null"
         >
           Spring Boot
@@ -217,7 +217,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 // Define props and emits
 defineProps({
@@ -228,17 +228,20 @@ const emit = defineEmits(['menu-action'])
 // State
 const activeMenu = ref('')
 const activeSubmenu = ref('')
+const menuClicked = ref(false)
 
 // Toggle menu visibility
 const toggleMenu = (menu) => {
   activeMenu.value = activeMenu.value === menu ? '' : menu
   activeSubmenu.value = ''
+  menuClicked.value = activeMenu.value !== ''
 }
 
 // Close all menus
 const closeMenus = () => {
   activeMenu.value = ''
   activeSubmenu.value = ''
+  menuClicked.value = false
 }
 
 // Handle menu actions
@@ -247,12 +250,34 @@ const handleMenuAction = (action) => {
   emit('menu-action', action)
 }
 
-// Close menus when clicking outside
-document.addEventListener('click', (event) => {
-  const isMenuClick = event.target.closest('.menu-container')
-  if (!isMenuClick) {
-    closeMenus()
+// Add ref for the top nav bar
+const topNavRef = ref(null)
+
+// Use onMounted to add event listener after component is mounted
+onMounted(() => {
+  // Handle clicks outside the menu and top nav
+  const handleOutsideClick = (event) => {
+    const isMenuClick = event.target.closest('.menu-container')
+    const isTopNavClick = event.target.closest('.top-nav')
+
+    // Close menus when clicking outside menu containers
+    if (!isMenuClick) {
+      closeMenus()
+    }
+
+    // Reset hover behavior when clicking outside the top nav
+    if (!isTopNavClick) {
+      menuClicked.value = false
+    }
   }
+
+  // Add the event listener
+  document.addEventListener('click', handleOutsideClick)
+
+  // Clean up the event listener when component is unmounted
+  onBeforeUnmount(() => {
+    document.removeEventListener('click', handleOutsideClick)
+  })
 })
 </script>
 
