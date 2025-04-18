@@ -25,11 +25,11 @@
 </template>
 
 <script setup>
-import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import * as monaco from 'monaco-editor'
-import {useTabsStore} from '../store/tabsStore'
-import {useSettingsStore} from '../store/settingsStore'
-import {applyTheme} from '../styles/themes'
+import { useTabsStore } from '../store/tabsStore'
+import { useSettingsStore } from '../store/settingsStore'
+import { applyTheme } from '../styles/themes'
 import transformations from '../transformations'
 
 // Refs
