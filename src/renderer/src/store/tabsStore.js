@@ -34,7 +34,7 @@ export const useTabsStore = defineStore('tabs', {
     addTab(tab) {
       const content = tab.content || ''
       const newTab = {
-        id: Date.now().toString(),
+        id: crypto.randomUUID().toString(),
         title: tab.title || 'Untitled',
         content: content,
         savedContent: tab.isUnsaved ? null : content, // Track saved content
