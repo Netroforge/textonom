@@ -5,6 +5,11 @@
   "main": "./out/main/index.js",
   "author": "Netroforge",
   "homepage": "https://github.com/Netroforge/textonom",
+  "build": {
+    "directories": {
+      "buildResources": "resources"
+    }
+  },
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

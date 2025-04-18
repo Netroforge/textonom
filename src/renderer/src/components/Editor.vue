@@ -25,11 +25,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
 import * as monaco from 'monaco-editor'
-import { useTabsStore } from '../store/tabsStore'
-import { useSettingsStore } from '../store/settingsStore'
-import { applyTheme } from '../styles/themes'
+import {useTabsStore} from '../store/tabsStore'
+import {useSettingsStore} from '../store/settingsStore'
+import {applyTheme} from '../styles/themes'
 import transformations from '../transformations'
 
 // Refs
@@ -131,27 +131,87 @@ const saveFileAs = async () => {
 }
 
 const undo = async () => {
-  await editor.trigger('undo...', 'undo')
+  if (!editor) {
+    console.error('Editor not initialized')
+    return
+  }
+
+  try {
+    await editor.focus()
+    await editor.trigger('keyboard', 'undo')
+  } catch (error) {
+    console.error('Undo action failed:', error)
+  }
 }
 
 const redo = async () => {
-  await editor.trigger('redo...', 'redo')
+  if (!editor) {
+    console.error('Editor not initialized')
+    return
+  }
+
+  try {
+    await editor.focus()
+    await editor.trigger('keyboard', 'redo')
+  } catch (error) {
+    console.error('Redo action failed:', error)
+  }
 }
 
 const cut = async () => {
-  await editor.trigger('cut...', 'editor.action.clipboardCutAction')
+  if (!editor) {
+    console.error('Editor not initialized')
+    return
+  }
+
+  try {
+    editor.focus()
+    await editor.trigger('keyboard', 'editor.action.clipboardCutAction', null)
+  } catch (error) {
+    console.error('Cut action failed:', error)
+  }
 }
 
 const copy = async () => {
-  await editor.trigger('copy...', 'editor.action.clipboardCopyAction')
+  if (!editor) {
+    console.error('Editor not initialized')
+    return
+  }
+
+  try {
+    editor.focus()
+    await editor.trigger('keyboard', 'editor.action.clipboardCopyAction', null)
+  } catch (error) {
+    console.error('Copy action failed:', error)
+  }
 }
 
 const paste = async () => {
-  await editor.trigger('paste...', 'editor.action.clipboardPasteAction')
+  if (!editor) {
+    console.error('Editor not initialized')
+    return
+  }
+
+  try {
+    editor.focus()
+    await editor.trigger('keyboard', 'editor.action.clipboardPasteAction', null)
+  } catch (error) {
+    console.error('Paste action failed:', error)
+  }
 }
 
 const selectAll = async () => {
-  await editor.trigger('selectAll...', 'editor.action.selectAll')
+  if (!editor) {
+    console.error('Editor not initialized')
+    return
+  }
+
+  try {
+    editor.focus()
+    await editor.trigger('keyboard', 'editor.action.selectAll', null)
+  } catch (error) {
+    console.error('Select all action failed:', error)
+  }
 }
 
 const processBase64Encode = async () => {
@@ -458,7 +518,6 @@ watch(
   (newContent) => {
     if (!editor || !activeTab.value || !newContent) return
 
-    console.log('newContent', newContent)
     // Save current cursor position and selection
     const currentPosition = editor.getPosition()
     const currentSelection = editor.getSelection()
