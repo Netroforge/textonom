@@ -3,8 +3,12 @@
     <div v-if="!activeTab" class="empty-editor">
       <div class="empty-message">
         <p>No open files</p>
-        <button @click="createNewTab">Create New File</button>
-        <button @click="openFile">Open File</button>
+        <div>
+          <button @click="createNewTab">Create New File</button>
+        </div>
+        <div>
+          <button @click="openFile">Open File</button>
+        </div>
       </div>
     </div>
     <div v-else ref="monacoContainer" class="monaco-container"></div>
@@ -376,9 +380,6 @@ onMounted(() => {
   // Initialize the editor if there's an active tab
   if (activeTab.value) {
     initEditor()
-  } else if (tabsStore.tabs.length === 0) {
-    // Create a new tab if there are no tabs
-    createNewTab()
   }
 
   // Apply the current theme
@@ -541,8 +542,13 @@ defineExpose({
 }
 
 .empty-editor {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   height: 100%;
   width: 100%;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
