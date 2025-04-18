@@ -37,6 +37,7 @@ $ npm run build:linux
 ### Snapcraft
 
 https://snapcraft.io/docs/releasing-your-app
+
 ```shell
 snapcraft login
 ```
