@@ -10,9 +10,10 @@ const api = {
   isWindowMaximized: () => ipcRenderer.invoke('window-is-maximized'),
 
   // File operations
-  openFile: () => ipcRenderer.invoke('open-file'),
+  openFile: (data) => ipcRenderer.invoke('open-file', data),
   saveFile: (data) => ipcRenderer.invoke('save-file', data),
   saveFileAs: (data) => ipcRenderer.invoke('save-file-as', data),
+  setLastDirectory: (directory) => ipcRenderer.invoke('set-last-directory', directory),
 
   // Auto-update operations
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),

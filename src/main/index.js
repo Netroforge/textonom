@@ -6,8 +6,8 @@ import fs from 'fs'
 import path from 'path'
 import { autoUpdater } from 'electron-updater'
 
-// Store the last directory used for file operations
-let lastDirectory = app.getPath('documents')
+// Default directory for file operations
+let lastDirectory = app.getPath('home')
 
 // Configure auto updater
 autoUpdater.autoDownload = false
@@ -103,11 +103,13 @@ app.whenReady().then(() => {
   })
 
   // File operations IPC handlers
-  ipcMain.handle('open-file', async () => {
+  ipcMain.handle('open-file', async (_, { lastDirectory: userLastDirectory } = {}) => {
+    const dialogDefaultPath = userLastDirectory || lastDirectory
+
     const { canceled, filePaths } = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [{ name: 'All Files', extensions: ['*'] }],
-      defaultPath: lastDirectory
+      defaultPath: dialogDefaultPath
     })
 
     if (!canceled && filePaths.length > 0) {
@@ -119,7 +121,8 @@ app.whenReady().then(() => {
         return {
           success: true,
           filePath,
-          content
+          content,
+          lastDirectory
         }
       } catch (error) {
         return {
@@ -132,68 +135,78 @@ app.whenReady().then(() => {
     return { success: false, canceled: true }
   })
 
-  ipcMain.handle('save-file', async (_, { filePath, content }) => {
-    let savePath = filePath
+  ipcMain.handle(
+    'save-file',
+    async (_, { filePath, content, lastDirectory: userLastDirectory }) => {
+      let savePath = filePath
+      const dialogDefaultPath = userLastDirectory || lastDirectory
 
-    if (!savePath) {
-      const { canceled, filePath: selectedPath } = await dialog.showSaveDialog({
-        filters: [{ name: 'Text Files', extensions: ['txt'] }],
-        defaultPath: path.join(lastDirectory, 'untitled.txt')
+      if (!savePath) {
+        const { canceled, filePath: selectedPath } = await dialog.showSaveDialog({
+          filters: [{ name: 'Text Files', extensions: ['txt'] }],
+          defaultPath: path.join(dialogDefaultPath, 'untitled.txt')
+        })
+
+        if (canceled || !selectedPath) {
+          return { success: false, canceled: true }
+        }
+
+        savePath = selectedPath
+        lastDirectory = path.dirname(savePath)
+      }
+
+      try {
+        fs.writeFileSync(savePath, content, 'utf8')
+        return {
+          success: true,
+          filePath: savePath,
+          lastDirectory
+        }
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message
+        }
+      }
+    }
+  )
+
+  ipcMain.handle(
+    'save-file-as',
+    async (_, { content, currentPath, lastDirectory: userLastDirectory }) => {
+      const dialogDefaultPath = userLastDirectory || lastDirectory
+      const defaultPath = currentPath || path.join(dialogDefaultPath, 'untitled.txt')
+      const defaultExtension = path.extname(defaultPath).slice(1) || 'txt'
+
+      const { canceled, filePath } = await dialog.showSaveDialog({
+        filters: [
+          { name: 'Current Type', extensions: [defaultExtension] },
+          { name: 'All Files', extensions: ['*'] }
+        ],
+        defaultPath
       })
 
-      if (canceled || !selectedPath) {
+      if (canceled || !filePath) {
         return { success: false, canceled: true }
       }
 
-      savePath = selectedPath
-      lastDirectory = path.dirname(savePath)
-    }
+      lastDirectory = path.dirname(filePath)
 
-    try {
-      fs.writeFileSync(savePath, content, 'utf8')
-      return {
-        success: true,
-        filePath: savePath
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message
-      }
-    }
-  })
-
-  ipcMain.handle('save-file-as', async (_, { content, currentPath }) => {
-    const defaultPath = currentPath || path.join(lastDirectory, 'untitled.txt')
-    const defaultExtension = path.extname(defaultPath).slice(1) || 'txt'
-
-    const { canceled, filePath } = await dialog.showSaveDialog({
-      filters: [
-        { name: 'Current Type', extensions: [defaultExtension] },
-        { name: 'All Files', extensions: ['*'] }
-      ],
-      defaultPath
-    })
-
-    if (canceled || !filePath) {
-      return { success: false, canceled: true }
-    }
-
-    lastDirectory = path.dirname(filePath)
-
-    try {
-      fs.writeFileSync(filePath, content, 'utf8')
-      return {
-        success: true,
-        filePath
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message
+      try {
+        fs.writeFileSync(filePath, content, 'utf8')
+        return {
+          success: true,
+          filePath,
+          lastDirectory
+        }
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message
+        }
       }
     }
-  })
+  )
 
   // Auto-update IPC handlers
   ipcMain.handle('check-for-updates', async () => {
@@ -241,6 +254,15 @@ app.whenReady().then(() => {
 
   ipcMain.handle('get-app-version', () => {
     return app.getVersion()
+  })
+
+  // Set the last directory from renderer
+  ipcMain.handle('set-last-directory', (_, directory) => {
+    if (directory && typeof directory === 'string') {
+      lastDirectory = directory
+      return true
+    }
+    return false
   })
 
   // Set up auto-updater events

@@ -4,7 +4,7 @@
       <div class="empty-message">
         <p>No open files</p>
         <div>
-          <button @click="createNewTab">Create New File</button>
+          <button @click="createNewTab">Create New Scratch File</button>
         </div>
         <div>
           <button @click="openFile">Open File</button>
@@ -69,16 +69,20 @@ const createNewTab = () => {
 // Open a file
 const openFile = async () => {
   try {
-    const result = await window.api.openFile()
+    // Pass the last directory from settings if available
+    const result = await window.api.openFile({ lastDirectory: settingsStore.lastDirectory })
     if (result.success) {
-      console.log('1 File opened:', result.filePath)
+      // Update the last directory in settings
+      if (result.lastDirectory) {
+        settingsStore.setLastDirectory(result.lastDirectory)
+      }
+
       tabsStore.addTab({
         title: result.filePath.split('/').pop(),
         content: result.content,
         filePath: result.filePath,
         isUnsaved: false
       })
-      console.log('2 File opened:', result.filePath)
     }
   } catch (error) {
     console.error('Error opening file:', error)
@@ -95,10 +99,16 @@ const saveFile = async () => {
     const content = model.getValue()
     const result = await window.api.saveFile({
       filePath: activeTab.filePath,
-      content
+      content,
+      lastDirectory: settingsStore.lastDirectory
     })
 
     if (result.success) {
+      // Update the last directory in settings
+      if (result.lastDirectory) {
+        settingsStore.setLastDirectory(result.lastDirectory)
+      }
+
       const fileName = result.filePath.split('/').pop()
       tabsStore.updateTabAfterSave(activeTab.id, result.filePath, fileName)
     }
@@ -117,10 +127,16 @@ const saveFileAs = async () => {
     const content = model.getValue()
     const result = await window.api.saveFileAs({
       content,
-      currentPath: activeTab.filePath
+      currentPath: activeTab.filePath,
+      lastDirectory: settingsStore.lastDirectory
     })
 
     if (result.success) {
+      // Update the last directory in settings
+      if (result.lastDirectory) {
+        settingsStore.setLastDirectory(result.lastDirectory)
+      }
+
       const fileName = result.filePath.split('/').pop()
       tabsStore.updateTabAfterSave(activeTab.id, result.filePath, fileName)
     }

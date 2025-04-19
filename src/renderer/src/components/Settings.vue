@@ -107,6 +107,17 @@
         </div>
       </div>
 
+      <!-- File Settings -->
+      <div class="settings-section">
+        <h3 class="settings-section-title">Files</h3>
+        <div class="settings-row">
+          <label class="settings-label">Last Directory</label>
+          <div class="settings-control">
+            <input v-model="lastDirectory" type="text" readonly />
+          </div>
+        </div>
+      </div>
+
       <!-- Auto Update Settings -->
       <div class="settings-section">
         <h3 class="settings-section-title">Updates</h3>
@@ -154,6 +165,7 @@ const autoSave = ref(settingsStore.autoSave)
 const autoSaveInterval = ref(settingsStore.autoSaveInterval)
 const autoUpdate = ref(settingsStore.autoUpdate)
 const checkForUpdatesOnStartup = ref(settingsStore.checkForUpdatesOnStartup)
+const lastDirectory = ref(settingsStore.lastDirectory)
 
 // Watch for changes and update the store
 watch(theme, (newValue) => {
@@ -216,6 +228,7 @@ const resetSettings = () => {
   autoSaveInterval.value = settingsStore.autoSaveInterval
   autoUpdate.value = settingsStore.autoUpdate
   checkForUpdatesOnStartup.value = settingsStore.checkForUpdatesOnStartup
+  lastDirectory.value = settingsStore.lastDirectory
 }
 
 // Close the settings dialog

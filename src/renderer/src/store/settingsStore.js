@@ -20,7 +20,8 @@ const defaultSettings = {
   autoSave: false,
   autoSaveInterval: 30000, // 30 seconds
   autoUpdate: true, // Enable auto-update by default
-  checkForUpdatesOnStartup: true // Check for updates on startup by default
+  checkForUpdatesOnStartup: true, // Check for updates on startup by default
+  lastDirectory: '' // Last directory used for file operations
 }
 
 // Load settings from localStorage if available
@@ -103,6 +104,12 @@ export const useSettingsStore = defineStore('settings', {
     // Update check for updates on startup setting
     setCheckForUpdatesOnStartup(checkForUpdatesOnStartup) {
       this.checkForUpdatesOnStartup = checkForUpdatesOnStartup
+      this.saveSettings()
+    },
+
+    // Update last directory setting
+    setLastDirectory(lastDirectory) {
+      this.lastDirectory = lastDirectory
       this.saveSettings()
     },
 
