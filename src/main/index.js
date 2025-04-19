@@ -9,9 +9,25 @@ import { autoUpdater } from 'electron-updater'
 // Default directory for file operations
 let lastDirectory = app.getPath('home')
 
+// Logger
+const log = require('electron-log')
+if (is.dev) {
+  // Useful for some dev/debugging tasks, but download cannot be validated because the dev app is not signed
+  log.transports.file.level = 'debug'
+} else {
+  log.transports.file.level = 'info'
+}
+
 // Configure auto updater
+autoUpdater.logger = log
 autoUpdater.autoDownload = false
 autoUpdater.autoInstallOnAppQuit = true
+autoUpdater.forceDevUpdateConfig = is.dev
+if (is.dev) {
+  // Workaround for ded mode auto updater
+  // Inspired by https://github.com/electron-userland/electron-builder/issues/3167#issuecomment-627696277
+  process.env.APPIMAGE = path.join(__dirname, 'dist', `textonom-${app.getVersion()}.AppImage`)
+}
 
 // Store main window reference
 let mainWindow
@@ -210,21 +226,16 @@ app.whenReady().then(() => {
 
   // Auto-update IPC handlers
   ipcMain.handle('check-for-updates', async () => {
-    if (is.dev) {
-      return { updateAvailable: false, version: app.getVersion(), isDev: true }
-    }
-
     try {
       const checkResult = await autoUpdater.checkForUpdates()
       const updateAvailable = checkResult && checkResult.updateInfo.version !== app.getVersion()
-
       return {
         updateAvailable,
         version: updateAvailable ? checkResult.updateInfo.version : app.getVersion(),
         releaseNotes: updateAvailable ? checkResult.updateInfo.releaseNotes : null
       }
     } catch (error) {
-      console.error('Error checking for updates:', error)
+      log.error('Error checking for updates:', error)
       return { error: error.message, updateAvailable: false, version: app.getVersion() }
     }
   })
@@ -238,7 +249,7 @@ app.whenReady().then(() => {
       autoUpdater.downloadUpdate()
       return { success: true }
     } catch (error) {
-      console.error('Error downloading update:', error)
+      log.error('Error downloading update:', error)
       return { success: false, error: error.message }
     }
   })
@@ -279,7 +290,7 @@ app.whenReady().then(() => {
   })
 
   autoUpdater.on('error', (err) => {
-    console.error('AutoUpdater error:', err)
+    log.error('AutoUpdater error:', err)
     if (mainWindow) {
       mainWindow.webContents.send('update-error', err.message)
     }
@@ -290,7 +301,7 @@ app.whenReady().then(() => {
     // Wait a bit before checking for updates to ensure the app is fully loaded
     setTimeout(() => {
       autoUpdater.checkForUpdates().catch((err) => {
-        console.error('Error checking for updates on startup:', err)
+        log.error('Error checking for updates on startup:', err)
       })
     }, 3000)
   }

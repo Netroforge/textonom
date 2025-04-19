@@ -1,3 +1,24 @@
+<template>
+  <div class="app-container">
+    <CRTEffect>
+      <TitleBar />
+      <TopNavBar
+        :editor-ref="editorRef"
+        @menu-action="handleMenuAction"
+        @open-settings="showSettings = true"
+      />
+      <TabBar :editor-ref="editorRef" @new-tab="handleNewTab" />
+      <Editor ref="editorRef" />
+      <StatusBar />
+
+      <Settings v-if="showSettings" @close="closeSettings" />
+      <About v-if="showAbout" @close="closeAbout" />
+    </CRTEffect>
+
+    <UpdateNotification ref="updateNotificationRef" />
+  </div>
+</template>
+
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import TabBar from './components/TabBar.vue'
@@ -14,6 +35,7 @@ import { applyTheme } from './styles/themes'
 
 // Refs
 const editorRef = ref(null)
+const updateNotificationRef = ref(null)
 const showSettings = ref(false)
 const showAbout = ref(false)
 
@@ -173,12 +195,12 @@ const closeAbout = () => {
 // Check for updates
 const checkForUpdates = async () => {
   try {
-    const result = await window.api.checkForUpdates()
-    if (result.updateAvailable) {
-      alert(`Update available: ${result.version}\nClick OK to download and install.`)
-    } else {
-      alert('No updates available. You are using the latest version.')
-    }
+    updateNotificationRef.value.manualCheckUpdateStarted()
+    window.api.checkForUpdates().then((result) => {
+      if (!result.updateAvailable) {
+        updateNotificationRef.value.manualCheckUpdateCompletedUpdateNotAvailable()
+      }
+    })
   } catch (error) {
     alert(`Error checking for updates: ${error.message}`)
   }
@@ -277,27 +299,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown)
 })
 </script>
-
-<template>
-  <div class="app-container">
-    <CRTEffect>
-      <TitleBar />
-      <TopNavBar
-        :editor-ref="editorRef"
-        @menu-action="handleMenuAction"
-        @open-settings="showSettings = true"
-      />
-      <TabBar :editor-ref="editorRef" @new-tab="handleNewTab" />
-      <Editor ref="editorRef" />
-      <StatusBar />
-
-      <Settings v-if="showSettings" @close="closeSettings" />
-      <About v-if="showAbout" @close="closeAbout" />
-    </CRTEffect>
-
-    <UpdateNotification />
-  </div>
-</template>
 
 <style>
 @import './styles/global.css';

@@ -24,13 +24,6 @@
         </div>
       </div>
 
-      <div class="about-section">
-        <h3 class="about-section-title">Updates</h3>
-        <div class="about-row">
-          <button class="check-updates-btn" @click="checkForUpdates">Check for Updates</button>
-        </div>
-      </div>
-
       <div class="about-footer">
         <button @click="close">Close</button>
       </div>
@@ -56,20 +49,6 @@ onMounted(async () => {
     appVersion.value = 'Unknown'
   }
 })
-
-// Check for updates
-const checkForUpdates = async () => {
-  try {
-    const result = await window.api.checkForUpdates()
-    if (result.updateAvailable) {
-      alert(`Update available: ${result.version}\nClick OK to download and install.`)
-    } else {
-      alert('No updates available. You are using the latest version.')
-    }
-  } catch (error) {
-    alert(`Error checking for updates: ${error.message}`)
-  }
-}
 
 // Close the about dialog
 const close = () => {

@@ -1,9 +1,36 @@
 <template>
-  <div v-if="showNotification" class="update-notification">
+  <div v-if="showManualCheckUpdateStartedNotification" class="update-notification">
+    <div class="update-notification-content">
+      <div class="update-notification-header">
+        <h3>Checking for updates</h3>
+        <button class="close-button" @click="closeNotification">✕</button>
+      </div>
+      <div class="update-notification-body">
+        <p>In progress...</p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-if="showManualCheckUpdateCompletedUpdateNotAvailableNotification"
+    class="update-notification"
+  >
+    <div class="update-notification-content">
+      <div class="update-notification-header">
+        <h3>Updates check completed</h3>
+        <button class="close-button" @click="closeNotification">✕</button>
+      </div>
+      <div class="update-notification-body">
+        <p>You are using latest version</p>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showUpdateAvailableNotification" class="update-notification">
     <div class="update-notification-content">
       <div class="update-notification-header">
         <h3>Update Available</h3>
-        <button @click="closeNotification" class="close-button">✕</button>
+        <button class="close-button" @click="closeNotification">✕</button>
       </div>
       <div class="update-notification-body">
         <p>A new version ({{ updateInfo.version }}) is available.</p>
@@ -11,7 +38,7 @@
           {{ updateInfo.releaseNotes }}
         </p>
         <div class="update-notification-actions">
-          <button @click="downloadAndInstall" :disabled="downloading">
+          <button :disabled="downloading" @click="downloadAndInstall">
             {{ downloadButtonText }}
           </button>
           <button @click="closeNotification">Remind Me Later</button>
@@ -25,7 +52,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 // State
-const showNotification = ref(false)
+const showManualCheckUpdateStartedNotification = ref(false)
+const showManualCheckUpdateCompletedUpdateNotAvailableNotification = ref(false)
+const showUpdateAvailableNotification = ref(false)
+
 const updateInfo = ref({
   version: '',
   releaseNotes: ''
@@ -34,8 +64,22 @@ const downloading = ref(false)
 const downloadButtonText = ref('Download and Install')
 
 // Methods
+const manualCheckUpdateStarted = () => {
+  showManualCheckUpdateStartedNotification.value = true
+  showManualCheckUpdateCompletedUpdateNotAvailableNotification.value = false
+  showUpdateAvailableNotification.value = false
+}
+
+const manualCheckUpdateCompletedUpdateNotAvailable = () => {
+  showManualCheckUpdateStartedNotification.value = false
+  showManualCheckUpdateCompletedUpdateNotAvailableNotification.value = true
+  showUpdateAvailableNotification.value = false
+}
+
 const closeNotification = () => {
-  showNotification.value = false
+  showManualCheckUpdateStartedNotification.value = false
+  showManualCheckUpdateCompletedUpdateNotAvailableNotification.value = false
+  showUpdateAvailableNotification.value = false
 }
 
 const downloadAndInstall = async () => {
@@ -67,7 +111,8 @@ const downloadAndInstall = async () => {
 // Event listeners
 const handleUpdateAvailable = (_, info) => {
   updateInfo.value = info
-  showNotification.value = true
+  showManualCheckUpdateStartedNotification.value = false
+  showUpdateAvailableNotification.value = true
 }
 
 const handleUpdateDownloaded = (_, info) => {
@@ -94,9 +139,14 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   // Remove event listeners
-  window.electron.ipcRenderer.removeListener('update-available', handleUpdateAvailable)
-  window.electron.ipcRenderer.removeListener('update-downloaded', handleUpdateDownloaded)
-  window.electron.ipcRenderer.removeListener('update-error', handleUpdateError)
+  window.electron.ipcRenderer.off('update-available', handleUpdateAvailable)
+  window.electron.ipcRenderer.off('update-downloaded', handleUpdateDownloaded)
+  window.electron.ipcRenderer.off('update-error', handleUpdateError)
+})
+
+defineExpose({
+  manualCheckUpdateStarted,
+  manualCheckUpdateCompletedUpdateNotAvailable
 })
 </script>
 
@@ -109,7 +159,7 @@ onBeforeUnmount(() => {
   background-color: var(--background-color);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 1);
   width: 350px;
   max-width: 90vw;
   overflow: hidden;
