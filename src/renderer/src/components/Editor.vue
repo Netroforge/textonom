@@ -466,13 +466,14 @@ const initEditor = () => {
   editor = monaco.editor.create(monacoContainer.value, {
     theme: settingsStore.theme === 'light' ? 'vs' : 'vs-dark',
     automaticLayout: true,
+    smoothScrolling: true,
     fontSize: settingsStore.fontSize,
     fontFamily: settingsStore.fontFamily,
     tabSize: settingsStore.tabSize,
     insertSpaces: settingsStore.insertSpaces,
     wordWrap: settingsStore.wordWrap,
     lineNumbers: settingsStore.lineNumbers,
-    scrollBeyondLastLine: false,
+    scrollBeyondLastLine: true,
     minimap: {
       enabled: true
     },

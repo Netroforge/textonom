@@ -31,7 +31,8 @@
     "js-base64": "^3.7.7",
     "js-yaml": "^4.1.0",
     "monaco-editor": "^0.52.2",
-    "pinia": "^3.0.2"
+    "pinia": "^3.0.2",
+    "xml-formatter": "^3.6.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^2.1.0",

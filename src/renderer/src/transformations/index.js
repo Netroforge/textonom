@@ -2,6 +2,7 @@ import { Base64 } from 'js-base64'
 import yaml from 'js-yaml'
 import CryptoJS from 'crypto-js'
 import bcrypt from 'bcryptjs'
+import xmlFormat from 'xml-formatter'
 
 // Base64 transformations
 export const base64Encode = (text) => {
@@ -75,78 +76,7 @@ export const toTitleCase = (text) => {
 // XML transformations
 export const xmlPrettify = (text) => {
   try {
-    const parser = new DOMParser()
-    const xmlDoc = parser.parseFromString(text, 'text/xml')
-
-    // Check for parsing errors
-    const parserError = xmlDoc.querySelector('parsererror')
-    if (parserError) {
-      throw new Error('Invalid XML format')
-    }
-
-    let formatted = ''
-    let indent = ''
-
-    // Custom formatting function
-    const format = (node, level) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.nodeValue.trim()
-        if (text) {
-          formatted += indent + text + '\\n'
-        }
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        const hasChildren = node.hasChildNodes()
-        const hasTextOnly =
-          hasChildren &&
-          node.childNodes.length === 1 &&
-          node.childNodes[0].nodeType === Node.TEXT_NODE
-
-        if (!hasTextOnly) {
-          formatted += indent + '<' + node.nodeName
-
-          // Add attributes
-          for (let i = 0; i < node.attributes.length; i++) {
-            const attr = node.attributes[i]
-            formatted += ' ' + attr.name + '="' + attr.value + '"'
-          }
-
-          if (hasChildren) {
-            formatted += '>\\n'
-
-            // Increase indent for children
-            indent += '  '
-
-            // Process child nodes
-            for (let i = 0; i < node.childNodes.length; i++) {
-              format(node.childNodes[i], level + 1)
-            }
-
-            // Decrease indent
-            indent = indent.slice(0, -2)
-
-            formatted += indent + '</' + node.nodeName + '>\\n'
-          } else {
-            formatted += '/>\\n'
-          }
-        } else {
-          // Handle elements with text content only
-          formatted += indent + '<' + node.nodeName
-
-          // Add attributes
-          for (let i = 0; i < node.attributes.length; i++) {
-            const attr = node.attributes[i]
-            formatted += ' ' + attr.name + '="' + attr.value + '"'
-          }
-
-          formatted += '>' + node.textContent.trim() + '</' + node.nodeName + '>\\n'
-        }
-      }
-    }
-
-    // Start formatting from the root element
-    format(xmlDoc.documentElement, 0)
-
-    return formatted
+    return xmlFormat(text)
   } catch (error) {
     console.error('Error prettifying XML:', error)
     throw new Error('Failed to prettify XML: ' + error.message)
@@ -155,17 +85,10 @@ export const xmlPrettify = (text) => {
 
 export const xmlCompact = (text) => {
   try {
-    const parser = new DOMParser()
-    const xmlDoc = parser.parseFromString(text, 'text/xml')
-
-    // Check for parsing errors
-    const parserError = xmlDoc.querySelector('parsererror')
-    if (parserError) {
-      throw new Error('Invalid XML format')
-    }
-
-    const serializer = new XMLSerializer()
-    return serializer.serializeToString(xmlDoc)
+    return xmlFormat.minify(text, {
+      filter: (node) => node.type !== 'Comment',
+      collapseContent: true
+    })
   } catch (error) {
     console.error('Error compacting XML:', error)
     throw new Error('Failed to compact XML: ' + error.message)
