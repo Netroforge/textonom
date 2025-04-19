@@ -1,4 +1,4 @@
-<template xmlns="http://www.w3.org/1999/html">
+<template>
   <div class="about-dialog" @click.self="close">
     <div class="about-content">
       <div class="about-header">

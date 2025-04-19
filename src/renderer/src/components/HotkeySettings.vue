@@ -30,7 +30,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useHotkeysStore, defaultHotkeys } from '../store/hotkeysStore'
+import { useHotkeysStore } from '../store/hotkeysStore'
 
 // Get the hotkeys store
 const hotkeysStore = useHotkeysStore()
@@ -124,7 +124,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .hotkey-settings {
-  max-height: 400px;
+  height: 100%;
   overflow-y: auto;
   padding-right: 10px;
 }

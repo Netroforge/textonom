@@ -84,7 +84,6 @@ export const xmlPrettify = (text) => {
       throw new Error('Invalid XML format')
     }
 
-    const serializer = new XMLSerializer()
     let formatted = ''
     let indent = ''
 
