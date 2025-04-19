@@ -1,6 +1,6 @@
 <template>
   <div ref="editorContainer" class="editor-container">
-    <div v-if="!activeTab" class="empty-editor">
+    <div v-if="!activeTabId" class="empty-editor">
       <div class="empty-message">
         <p>No open files</p>
         <div>
@@ -11,7 +11,6 @@
         </div>
       </div>
     </div>
-<!--    <div v-else ref="monacoContainer" class="monaco-container"></div>-->
     <div ref="monacoContainer" class="monaco-container"></div>
 
     <!-- Error Popup -->
@@ -26,7 +25,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch, reactive } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import * as monaco from 'monaco-editor'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
@@ -41,15 +40,15 @@ let autoSaveInterval = null
 let contentSaveInterval = null
 
 // Store models and editor states for each tab
-const tabIdToMonacoModelMap = reactive(new Map())
-const tabIdToMonacoEditorViewStateMap = reactive(new Map())
+const tabIdToMonacoModelMap = new Map()
+const tabIdToMonacoEditorViewStateMap = new Map()
 
 // Get stores
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 
 // Computed properties
-const activeTab = computed(() => tabsStore.getActiveTab)
+const activeTabId = computed(() => tabsStore.getActiveTabId)
 
 // Show error
 const showErrorPopup = ref(false)
@@ -57,11 +56,14 @@ const errorMessage = ref('')
 
 // Create a new tab
 const createNewTab = () => {
-  tabsStore.addTab({
+  const tab = tabsStore.addTab({
     title: 'Untitled',
     content: '',
     isUnsaved: true
   })
+  if (!activeTabId.value) {
+    tabsStore.setActiveTab(tab.id)
+  }
 }
 
 // Open a file
@@ -69,12 +71,14 @@ const openFile = async () => {
   try {
     const result = await window.api.openFile()
     if (result.success) {
+      console.log('1 File opened:', result.filePath)
       tabsStore.addTab({
         title: result.filePath.split('/').pop(),
         content: result.content,
         filePath: result.filePath,
         isUnsaved: false
       })
+      console.log('2 File opened:', result.filePath)
     }
   } catch (error) {
     console.error('Error opening file:', error)
@@ -83,19 +87,20 @@ const openFile = async () => {
 
 // Save the current file
 const saveFile = async () => {
-  if (!activeTab.value) return
+  const activeTab = tabsStore.getActiveTab
+  if (!activeTab) return
 
   try {
     const model = editor.getModel()
     const content = model.getValue()
     const result = await window.api.saveFile({
-      filePath: activeTab.value.filePath,
+      filePath: activeTab.filePath,
       content
     })
 
     if (result.success) {
       const fileName = result.filePath.split('/').pop()
-      tabsStore.updateTabAfterSave(activeTab.value.id, result.filePath, fileName)
+      tabsStore.updateTabAfterSave(activeTab.id, result.filePath, fileName)
     }
   } catch (error) {
     console.error('Error saving file:', error)
@@ -104,19 +109,20 @@ const saveFile = async () => {
 
 // Save the current file as a new file
 const saveFileAs = async () => {
-  if (!activeTab.value) return
+  const activeTab = tabsStore.getActiveTab
+  if (!activeTab) return
 
   try {
     const model = editor.getModel()
     const content = model.getValue()
     const result = await window.api.saveFileAs({
       content,
-      currentPath: activeTab.value.filePath
+      currentPath: activeTab.filePath
     })
 
     if (result.success) {
       const fileName = result.filePath.split('/').pop()
-      tabsStore.updateTabAfterSave(activeTab.value.id, result.filePath, fileName)
+      tabsStore.updateTabAfterSave(activeTab.id, result.filePath, fileName)
     }
   } catch (error) {
     console.error('Error saving file as:', error)
@@ -312,12 +318,14 @@ const processYamlToProperties = async () => {
 }
 
 const processTransformation = (transformFn) => {
-  if (!editor || !editor.getModel()) return
+  if (!editor) return
+
+  const model = editor.getModel()
+  if (!model) return
 
   try {
     // Get the current selection or use an entire document
     const selection = editor.getSelection()
-    const model = editor.getModel()
     let text
 
     if (selection && !selection.isEmpty()) {
@@ -396,13 +404,14 @@ const detectLanguage = (filename) => {
 }
 
 // Create or get a model for a tab
-const getOrCreateModel = (tab) => {
-  if (!tab) return null
+const getOrCreateModel = (tabId) => {
+  if (!tabId) return null
 
   // Check if we already have a model for this tab
-  if (tabIdToMonacoModelMap.has(tab.id)) {
-    return tabIdToMonacoModelMap.get(tab.id)
+  if (tabIdToMonacoModelMap.has(tabId)) {
+    return tabIdToMonacoModelMap.get(tabId)
   } else {
+    const tab = tabsStore.getTabById(tabId)
     // Detect language based on file extension
     const language = detectLanguage(tab.title)
 
@@ -457,19 +466,27 @@ const initEditor = () => {
     quickSuggestions: false
   })
 
+  const activeTab = tabsStore.getActiveTab
   // If there's an active tab, set its model
-  if (activeTab.value) {
-    const model = getOrCreateModel(activeTab.value)
+  if (activeTab) {
+    const activeTab = tabsStore.getActiveTab
+    const model = getOrCreateModel(activeTab.id)
     editor.setModel(model)
   }
 
   // Listen for content changes
   editor.onDidChangeModelContent(() => {
-    if (!activeTab.value) return
+    if (!tabsStore.getActiveTabId) return
+
+    // Get the current model and its content
+    const model = editor.getModel()
+    if (!model) return
+
+    const content = model.getValue()
 
     // Update tab content in store without triggering a re-render of the editor
     // This prevents the cursor from jumping to the beginning of the file
-    tabsStore.updateTabContent(activeTab.value.id, editor.getValue(), false)
+    tabsStore.updateTabContent(tabsStore.getActiveTabId, content, false)
 
     // Schedule a save to localStorage after a short delay
     // This ensures content is saved even if the user doesn't switch tabs
@@ -494,8 +511,11 @@ const setupAutoSave = () => {
 
   if (settingsStore.autoSave) {
     autoSaveInterval = setInterval(() => {
-      if (activeTab.value?.isUnsaved) {
-        saveFile()
+      const activeTab = tabsStore.getActiveTab
+      if (activeTab) {
+        if (activeTab.isUnsaved) {
+          saveFile()
+        }
       }
     }, settingsStore.autoSaveInterval)
   }
@@ -520,20 +540,21 @@ const updateEditorSettings = () => {
 
 // Function to save content before unloading
 const saveBeforeUnload = () => {
-  if (editor && activeTab.value) {
+  const activeTab = tabsStore.getActiveTab
+  if (editor && activeTab) {
     // Make sure the current tab content is saved
     const model = editor.getModel()
     if (model) {
-      tabsStore.updateTabContent(activeTab.value.id, model.getValue(), true)
+      tabsStore.updateTabContent(activeTab.id, model.getValue(), true)
     }
   }
 }
 
 // Lifecycle hooks
-
 onMounted(() => {
   // Initialize the editor if there's an active tab
-  if (activeTab.value) {
+  const activeTab = tabsStore.getActiveTab
+  if (activeTab) {
     initEditor()
   }
 
@@ -575,32 +596,31 @@ onUnmounted(() => {
 
 // Watch for changes in the active tab
 watch(
-  activeTab,
-  (newTab, oldTab) => {
+  activeTabId,
+  (newTabId, oldTabId) => {
     if (!editor) {
-      if (newTab) {
+      if (newTabId) {
         initEditor()
       }
       return
     }
 
     // If we're switching from one tab to another
-    if (oldTab && oldTab !== newTab) {
+    if (oldTabId && oldTabId !== newTabId) {
       // Save the view state of the old tab
-      tabIdToMonacoEditorViewStateMap.set(oldTab.id, editor.saveViewState())
+      tabIdToMonacoEditorViewStateMap.set(oldTabId, editor.saveViewState())
     }
 
     // If we have a new tab, set its model
-    if (newTab) {
-      const model = getOrCreateModel(newTab)
+    if (newTabId) {
+      const model = getOrCreateModel(newTabId)
       editor.setModel(model)
 
       // Restore the view state if we have one
-      const viewState = tabIdToMonacoEditorViewStateMap.get(newTab.id)
+      const viewState = tabIdToMonacoEditorViewStateMap.get(newTabId)
       if (viewState) {
         editor.restoreViewState(viewState)
       }
-
       editor.focus()
     }
   },

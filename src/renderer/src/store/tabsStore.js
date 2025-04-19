@@ -73,6 +73,11 @@ export const useTabsStore = defineStore('tabs', {
       this.saveTabs()
     },
 
+    // Get an active tab
+    getTabById(tabId) {
+      return this.tabs.find((tab) => tab.id === tabId)
+    },
+
     // Set the active tab
     setActiveTab(tabId) {
       this.activeTabId = tabId
@@ -168,6 +173,11 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   getters: {
+    // Get an active tab id
+    getActiveTabId() {
+      return this.activeTabId
+    },
+
     // Get an active tab
     getActiveTab() {
       return this.tabs.find((tab) => tab.id === this.activeTabId)
