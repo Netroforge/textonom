@@ -1,5 +1,5 @@
 <template>
-  <div class="top-nav" ref="topNavRef">
+  <div ref="topNavRef" class="top-nav">
     <!-- File Menu -->
     <div class="menu-container">
       <div
@@ -10,12 +10,29 @@
         File
       </div>
       <div v-if="activeMenu === 'file'" class="menu">
-        <div class="menu-item" @click="handleMenuAction('new')">New</div>
-        <div class="menu-item" @click="handleMenuAction('open')">Open</div>
-        <div class="menu-item" @click="handleMenuAction('save')">Save</div>
-        <div class="menu-item" @click="handleMenuAction('saveAs')">Save As</div>
-        <div class="menu-item" @click="handleMenuAction('settings')">Settings</div>
-        <div class="menu-item" @click="handleMenuAction('exit')">Exit</div>
+        <div class="menu-item" @click="handleMenuAction('new')">
+          <span>New</span>
+          <span class="hotkey-hint">{{ getHotkeyString('file.new') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('open')">
+          <span>Open</span>
+          <span class="hotkey-hint">{{ getHotkeyString('file.open') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('save')">
+          <span>Save</span>
+          <span class="hotkey-hint">{{ getHotkeyString('file.save') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('saveAs')">
+          <span>Save As</span>
+          <span class="hotkey-hint">{{ getHotkeyString('file.saveAs') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('settings')">
+          <span>Settings</span>
+          <span class="hotkey-hint">{{ getHotkeyString('file.settings') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('exit')">
+          <span>Exit</span>
+        </div>
       </div>
     </div>
 
@@ -29,12 +46,30 @@
         Edit
       </div>
       <div v-if="activeMenu === 'edit'" class="menu">
-        <div class="menu-item" @click="handleMenuAction('undo')">Undo</div>
-        <div class="menu-item" @click="handleMenuAction('redo')">Redo</div>
-        <div class="menu-item" @click="handleMenuAction('cut')">Cut</div>
-        <div class="menu-item" @click="handleMenuAction('copy')">Copy</div>
-        <div class="menu-item" @click="handleMenuAction('paste')">Paste</div>
-        <div class="menu-item" @click="handleMenuAction('selectAll')">Select All</div>
+        <div class="menu-item" @click="handleMenuAction('undo')">
+          <span>Undo</span>
+          <span class="hotkey-hint">{{ getHotkeyString('edit.undo') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('redo')">
+          <span>Redo</span>
+          <span class="hotkey-hint">{{ getHotkeyString('edit.redo') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('cut')">
+          <span>Cut</span>
+          <span class="hotkey-hint">{{ getHotkeyString('edit.cut') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('copy')">
+          <span>Copy</span>
+          <span class="hotkey-hint">{{ getHotkeyString('edit.copy') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('paste')">
+          <span>Paste</span>
+          <span class="hotkey-hint">{{ getHotkeyString('edit.paste') }}</span>
+        </div>
+        <div class="menu-item" @click="handleMenuAction('selectAll')">
+          <span>Select All</span>
+          <span class="hotkey-hint">{{ getHotkeyString('edit.selectAll') }}</span>
+        </div>
       </div>
     </div>
 
@@ -57,8 +92,14 @@
           Base64
           <span>▶</span>
           <div v-if="activeSubmenu === 'base64'" class="submenu">
-            <div class="menu-item" @click="handleMenuAction('base64Encode')">Encode</div>
-            <div class="menu-item" @click="handleMenuAction('base64Decode')">Decode</div>
+            <div class="menu-item" @click="handleMenuAction('base64Encode')">
+              <span>Encode</span>
+              <span class="hotkey-hint">{{ getHotkeyString('transform.base64Encode') }}</span>
+            </div>
+            <div class="menu-item" @click="handleMenuAction('base64Decode')">
+              <span>Decode</span>
+              <span class="hotkey-hint">{{ getHotkeyString('transform.base64Decode') }}</span>
+            </div>
           </div>
         </div>
 
@@ -71,8 +112,14 @@
           JSON
           <span>▶</span>
           <div v-if="activeSubmenu === 'json'" class="submenu">
-            <div class="menu-item" @click="handleMenuAction('jsonPrettify')">Prettify</div>
-            <div class="menu-item" @click="handleMenuAction('jsonCompact')">Compact</div>
+            <div class="menu-item" @click="handleMenuAction('jsonPrettify')">
+              <span>Prettify</span>
+              <span class="hotkey-hint">{{ getHotkeyString('transform.jsonPrettify') }}</span>
+            </div>
+            <div class="menu-item" @click="handleMenuAction('jsonCompact')">
+              <span>Compact</span>
+              <span class="hotkey-hint">{{ getHotkeyString('transform.jsonCompact') }}</span>
+            </div>
           </div>
         </div>
 
@@ -85,8 +132,14 @@
           URL
           <span>▶</span>
           <div v-if="activeSubmenu === 'url'" class="submenu">
-            <div class="menu-item" @click="handleMenuAction('urlEncode')">Encode</div>
-            <div class="menu-item" @click="handleMenuAction('urlDecode')">Decode</div>
+            <div class="menu-item" @click="handleMenuAction('urlEncode')">
+              <span>Encode</span>
+              <span class="hotkey-hint">{{ getHotkeyString('transform.urlEncode') }}</span>
+            </div>
+            <div class="menu-item" @click="handleMenuAction('urlDecode')">
+              <span>Decode</span>
+              <span class="hotkey-hint">{{ getHotkeyString('transform.urlDecode') }}</span>
+            </div>
           </div>
         </div>
 
@@ -233,6 +286,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useHotkeysStore } from '../store/hotkeysStore'
 
 // Define props and emits
 defineProps({
@@ -244,6 +298,14 @@ const emit = defineEmits(['menu-action'])
 const activeMenu = ref('')
 const activeSubmenu = ref('')
 const menuClicked = ref(false)
+
+// Get hotkeys store
+const hotkeysStore = useHotkeysStore()
+
+// Get hotkey string for display
+const getHotkeyString = (actionId) => {
+  return hotkeysStore.getHotkeyString(actionId)
+}
 
 // Toggle menu visibility
 const toggleMenu = (menu) => {
@@ -268,7 +330,7 @@ const handleMenuAction = (action) => {
 // Add ref for the top nav bar
 const topNavRef = ref(null)
 
-// Use onMounted to add event listener after component is mounted
+// Use onMounted to add an event listener after a component is mounted
 onMounted(() => {
   // Handle clicks outside the menu and top nav
   const handleOutsideClick = (event) => {
@@ -289,7 +351,7 @@ onMounted(() => {
   // Add the event listener
   document.addEventListener('click', handleOutsideClick)
 
-  // Clean up the event listener when component is unmounted
+  // Clean up the event listener when the component is unmounted
   onBeforeUnmount(() => {
     document.removeEventListener('click', handleOutsideClick)
   })
@@ -307,5 +369,18 @@ onMounted(() => {
   left: 100%;
   top: 0;
   z-index: 1001;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hotkey-hint {
+  margin-left: 20px;
+  opacity: 0.7;
+  font-size: 0.85em;
+  color: var(--text);
 }
 </style>

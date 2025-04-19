@@ -31,6 +31,7 @@ import CRTEffect from './components/CRTEffect.vue'
 import TitleBar from './components/TitleBar.vue'
 import UpdateNotification from './components/UpdateNotification.vue'
 import { useSettingsStore } from './store/settingsStore'
+import { useHotkeysStore } from './store/hotkeysStore'
 import { applyTheme } from './styles/themes'
 
 // Refs
@@ -39,8 +40,9 @@ const updateNotificationRef = ref(null)
 const showSettings = ref(false)
 const showAbout = ref(false)
 
-// Get settings store
+// Get stores
 const settingsStore = useSettingsStore()
+const hotkeysStore = useHotkeysStore()
 
 // Handle menu actions
 const handleMenuAction = (action) => {
@@ -208,70 +210,127 @@ const checkForUpdates = async () => {
 
 // Handle keyboard shortcuts
 const handleKeyDown = (event) => {
-  // Ctrl+S: Save
-  if (event.ctrlKey && event.key === 's') {
-    event.preventDefault()
-    editorRef.value?.saveFile()
-  }
-
-  // Ctrl+Shift+S: Save As
-  if (event.ctrlKey && event.shiftKey && event.key === 'S') {
-    event.preventDefault()
-    editorRef.value?.saveFileAs()
-  }
-
-  // Ctrl+O: Open
-  if (event.ctrlKey && event.key === 'o') {
-    event.preventDefault()
-    editorRef.value?.openFile()
-  }
-
-  // Ctrl+N: New
-  if (event.ctrlKey && event.key === 'n') {
+  // File menu shortcuts
+  if (hotkeysStore.matchesAction(event, 'file.new')) {
     event.preventDefault()
     editorRef.value?.createNewTab()
+    return
   }
 
-  // Ctrl+,: Settings
-  if (event.ctrlKey && event.key === ',') {
+  if (hotkeysStore.matchesAction(event, 'file.open')) {
+    event.preventDefault()
+    editorRef.value?.openFile()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'file.save')) {
+    event.preventDefault()
+    editorRef.value?.saveFile()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'file.saveAs')) {
+    event.preventDefault()
+    editorRef.value?.saveFileAs()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'file.settings')) {
     event.preventDefault()
     showSettings.value = true
+    return
   }
 
-  // Note: Cut, Copy, Paste, and Select All are handled by Monaco Editor directly
-  // through standard keyboard shortcuts (Ctrl+X, Ctrl+C, Ctrl+V, Ctrl+A)
-  // These are just fallbacks in case the editor doesn't handle them
-
-  // Ctrl+X: Cut
-  if (event.ctrlKey && event.key === 'x') {
+  // Edit menu shortcuts
+  if (hotkeysStore.matchesAction(event, 'edit.undo')) {
     // Let the editor handle it by default
     if (!editorRef.value) {
       event.preventDefault()
+      editorRef.value?.undo()
     }
+    return
   }
 
-  // Ctrl+C: Copy
-  if (event.ctrlKey && event.key === 'c') {
+  if (hotkeysStore.matchesAction(event, 'edit.redo')) {
     // Let the editor handle it by default
     if (!editorRef.value) {
       event.preventDefault()
+      editorRef.value?.redo()
     }
+    return
   }
 
-  // Ctrl+V: Paste
-  if (event.ctrlKey && event.key === 'v') {
+  if (hotkeysStore.matchesAction(event, 'edit.cut')) {
     // Let the editor handle it by default
     if (!editorRef.value) {
       event.preventDefault()
+      editorRef.value?.cut()
     }
+    return
   }
 
-  // Ctrl+A: Select All
-  if (event.ctrlKey && event.key === 'a') {
+  if (hotkeysStore.matchesAction(event, 'edit.copy')) {
     // Let the editor handle it by default
     if (!editorRef.value) {
       event.preventDefault()
+      editorRef.value?.copy()
     }
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'edit.paste')) {
+    // Let the editor handle it by default
+    if (!editorRef.value) {
+      event.preventDefault()
+      editorRef.value?.paste()
+    }
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'edit.selectAll')) {
+    // Let the editor handle it by default
+    if (!editorRef.value) {
+      event.preventDefault()
+      editorRef.value?.selectAll()
+    }
+    return
+  }
+
+  // Transformation shortcuts
+  if (hotkeysStore.matchesAction(event, 'transform.base64Encode')) {
+    event.preventDefault()
+    editorRef.value?.processBase64Encode()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'transform.base64Decode')) {
+    event.preventDefault()
+    editorRef.value?.processBase64Decode()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'transform.jsonPrettify')) {
+    event.preventDefault()
+    editorRef.value?.processJsonPrettify()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'transform.jsonCompact')) {
+    event.preventDefault()
+    editorRef.value?.processJsonCompact()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'transform.urlEncode')) {
+    event.preventDefault()
+    editorRef.value?.processUrlEncode()
+    return
+  }
+
+  if (hotkeysStore.matchesAction(event, 'transform.urlDecode')) {
+    event.preventDefault()
+    editorRef.value?.processUrlDecode()
+    return
   }
 }
 

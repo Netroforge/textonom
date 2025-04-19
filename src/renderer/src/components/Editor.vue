@@ -362,6 +362,7 @@ const processTransformation = (transformFn) => {
       // Apply the transformation as an edit operation to preserve undo history
       editor.executeEdits('transformation', [{ range: fullRange, text: transformedText }])
     }
+    editor.focus()
   } catch (error) {
     console.error('Transformation failed:', error)
     showErrorPopup.value = true
@@ -582,6 +583,9 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // Save all tabs before unloading
+  tabsStore.saveTabs()
+
   // Dispose of the editor
   if (editor) {
     editor.dispose()

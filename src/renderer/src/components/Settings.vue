@@ -135,6 +135,12 @@
         </div>
       </div>
 
+      <!-- Hotkeys Settings -->
+      <div class="settings-section">
+        <h3 class="settings-section-title">Keyboard Shortcuts</h3>
+        <HotkeySettings />
+      </div>
+
       <div class="settings-footer">
         <button @click="resetSettings">Reset to Defaults</button>
         <button @click="close">Close</button>
@@ -146,6 +152,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useSettingsStore, THEMES } from '../store/settingsStore'
+import HotkeySettings from './HotkeySettings.vue'
 
 // Define props and emits
 const emit = defineEmits(['close'])
