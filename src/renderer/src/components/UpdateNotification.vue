@@ -34,13 +34,12 @@
       </div>
       <div class="update-notification-body">
         <p>A new version ({{ updateInfo.version }}) is available.</p>
-        <p v-if="updateInfo.releaseNotes" class="release-notes">
-          {{ updateInfo.releaseNotes }}
-        </p>
+        <p v-if="updateInfo.releaseNotes" class="release-notes" v-html="updateInfo.releaseNotes" />
         <div class="update-notification-actions">
-          <button :disabled="downloading" @click="downloadAndInstall">
+          <button v-if="!updateReadyToInstall" :disabled="downloading" @click="downloadUpdate">
             {{ downloadButtonText }}
           </button>
+          <button v-if="updateReadyToInstall" @click="installUpdate">Install</button>
           <button @click="closeNotification">Remind Me Later</button>
         </div>
       </div>
@@ -49,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 // State
 const showManualCheckUpdateStartedNotification = ref(false)
@@ -61,7 +60,8 @@ const updateInfo = ref({
   releaseNotes: ''
 })
 const downloading = ref(false)
-const downloadButtonText = ref('Download and Install')
+const downloadButtonText = ref('Download')
+const updateReadyToInstall = ref(false)
 
 // Methods
 const manualCheckUpdateStarted = () => {
@@ -82,29 +82,25 @@ const closeNotification = () => {
   showUpdateAvailableNotification.value = false
 }
 
-const downloadAndInstall = async () => {
+const downloadUpdate = async () => {
   try {
     downloading.value = true
-    downloadButtonText.value = 'Downloading...'
-
-    const result = await window.api.downloadUpdate()
-
-    if (result.success) {
-      downloadButtonText.value = 'Installing...'
-      await window.api.installUpdate()
-    } else {
-      if (result.isDev) {
-        alert('Cannot download updates in development mode')
-      } else {
-        alert(`Error downloading update: ${result.error || 'Unknown error'}`)
-      }
-      downloading.value = false
-      downloadButtonText.value = 'Download and Install'
-    }
+    downloadButtonText.value = 'Downloading (0%)...'
+    window.api.downloadUpdate()
   } catch (error) {
     alert(`Error: ${error.message}`)
     downloading.value = false
-    downloadButtonText.value = 'Download and Install'
+    downloadButtonText.value = 'Download'
+  }
+}
+
+const installUpdate = async () => {
+  try {
+    await window.api.installUpdate()
+    updateReadyToInstall.value = false
+    showUpdateAvailableNotification.value = false
+  } catch (error) {
+    alert(`Error: ${error.message}`)
   }
 }
 
@@ -115,17 +111,23 @@ const handleUpdateAvailable = (_, info) => {
   showUpdateAvailableNotification.value = true
 }
 
+const handleDownloadProgress = (_, progress) => {
+  const percentTrunc = Math.trunc(progress.percent)
+  downloadButtonText.value = `Downloading (${percentTrunc}%)...`
+}
+
 const handleUpdateDownloaded = (_, info) => {
   updateInfo.value = info
   downloading.value = false
-  downloadButtonText.value = 'Install Now'
+  updateReadyToInstall.value = true
 }
 
 const handleUpdateError = (_, error) => {
   if (downloading.value) {
     alert(`Update error: ${error}`)
     downloading.value = false
-    downloadButtonText.value = 'Download and Install'
+    updateReadyToInstall.value = false
+    downloadButtonText.value = 'Download'
   }
 }
 
@@ -133,6 +135,7 @@ const handleUpdateError = (_, error) => {
 onMounted(() => {
   // Listen for update events from the main process
   window.electron.ipcRenderer.on('update-available', handleUpdateAvailable)
+  window.electron.ipcRenderer.on('download-progress', handleDownloadProgress)
   window.electron.ipcRenderer.on('update-downloaded', handleUpdateDownloaded)
   window.electron.ipcRenderer.on('update-error', handleUpdateError)
 })
@@ -140,6 +143,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // Remove event listeners
   window.electron.ipcRenderer.off('update-available', handleUpdateAvailable)
+  window.electron.ipcRenderer.off('download-progress', handleDownloadProgress)
   window.electron.ipcRenderer.off('update-downloaded', handleUpdateDownloaded)
   window.electron.ipcRenderer.off('update-error', handleUpdateError)
 })

@@ -241,16 +241,10 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('download-update', async () => {
-    if (is.dev) {
-      return { success: false, isDev: true }
-    }
-
     try {
       autoUpdater.downloadUpdate()
-      return { success: true }
     } catch (error) {
       log.error('Error downloading update:', error)
-      return { success: false, error: error.message }
     }
   })
 
@@ -280,6 +274,12 @@ app.whenReady().then(() => {
   autoUpdater.on('update-available', (info) => {
     if (mainWindow) {
       mainWindow.webContents.send('update-available', info)
+    }
+  })
+
+  autoUpdater.on('download-progress', (progress) => {
+    if (mainWindow) {
+      mainWindow.webContents.send('download-progress', progress)
     }
   })
 
