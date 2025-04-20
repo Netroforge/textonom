@@ -270,6 +270,15 @@ app.whenReady().then(() => {
     return false
   })
 
+  // Set the window title
+  ipcMain.handle('set-window-title', (_, title) => {
+    if (mainWindow) {
+      mainWindow.setTitle(title)
+      return true
+    }
+    return false
+  })
+
   // Set up auto-updater events
   autoUpdater.on('update-available', (info) => {
     if (mainWindow) {

@@ -8,6 +8,7 @@ const api = {
   maximizeWindow: () => ipcRenderer.invoke('window-maximize'),
   closeWindow: () => ipcRenderer.invoke('window-close'),
   isWindowMaximized: () => ipcRenderer.invoke('window-is-maximized'),
+  setWindowTitle: (title) => ipcRenderer.invoke('set-window-title', title),
 
   // File operations
   openFile: (data) => ipcRenderer.invoke('open-file', data),

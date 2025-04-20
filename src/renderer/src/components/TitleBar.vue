@@ -1,7 +1,7 @@
 <template>
   <div class="title-bar">
     <div class="title-bar-drag-area">
-      <div class="app-title">Textonom</div>
+      <div class="app-title">{{ appTitle }}</div>
     </div>
     <div class="window-controls">
       <button class="window-control minimize" @click="minimizeWindow">
@@ -27,17 +27,45 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { useTabsStore } from '../store/tabsStore'
 
-// State for window maximized status
+// Get the tabs store
+const tabsStore = useTabsStore()
+
+// State for a window maximized status
 const isMaximized = ref(false)
+
+// Computed property for the app title
+const appTitle = computed(() => {
+  const activeTab = tabsStore.getActiveTab
+  if (!activeTab) {
+    return 'Textonom'
+  }
+
+  // If it's a real file (has a filePath), show the full file path
+  if (activeTab.filePath) {
+    return `Textonom - ${activeTab.filePath}${activeTab.isUnsaved ? '*' : ''}`
+  }
+
+  // If it's a new file, show the tab title
+  return `Textonom - ${activeTab.title}${activeTab.isUnsaved ? '*' : ''}`
+})
+
+// Watch for changes in the active tab and update the window title
+watch(appTitle, (newTitle) => {
+  window.api.setWindowTitle(newTitle)
+})
 
 // Check initial maximized state
 onMounted(async () => {
   isMaximized.value = await window.api.isWindowMaximized()
 
-  // Listen for window resize to update maximized state
+  // Listen for window resize to update the maximized state
   window.addEventListener('resize', checkMaximizedState)
+
+  // Set the initial window title
+  window.api.setWindowTitle(appTitle.value)
 })
 
 onBeforeUnmount(() => {
