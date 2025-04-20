@@ -1,0 +1,82 @@
+import { contextBridge, ipcRenderer } from 'electron'
+import { electronAPI } from '@electron-toolkit/preload'
+
+// Custom APIs for renderer
+const api = {
+  // Window control
+  minimizeWindow: (): Promise<boolean> => ipcRenderer.invoke('window-minimize'),
+  maximizeWindow: (): Promise<boolean> => ipcRenderer.invoke('window-maximize'),
+  closeWindow: (): Promise<boolean> => ipcRenderer.invoke('window-close'),
+  isWindowMaximized: (): Promise<boolean> => ipcRenderer.invoke('window-is-maximized'),
+  setWindowTitle: (title: string): Promise<boolean> =>
+    ipcRenderer.invoke('set-window-title', title),
+
+  // File operations
+  openFile: (data?: {
+    lastDirectory?: string
+  }): Promise<{
+    success: boolean
+    filePath?: string
+    content?: string
+    lastDirectory?: string
+    error?: string
+    canceled?: boolean
+  }> => ipcRenderer.invoke('open-file', data),
+
+  saveFile: (data: {
+    filePath?: string
+    content: string
+    lastDirectory?: string
+  }): Promise<{
+    success: boolean
+    filePath?: string
+    lastDirectory?: string
+    error?: string
+    canceled?: boolean
+  }> => ipcRenderer.invoke('save-file', data),
+
+  saveFileAs: (data: {
+    content: string
+    currentPath?: string
+    lastDirectory?: string
+  }): Promise<{
+    success: boolean
+    filePath?: string
+    lastDirectory?: string
+    error?: string
+    canceled?: boolean
+  }> => ipcRenderer.invoke('save-file-as', data),
+
+  setLastDirectory: (directory: string): Promise<boolean> =>
+    ipcRenderer.invoke('set-last-directory', directory),
+
+  // Auto-update operations
+  checkForUpdates: (): Promise<{
+    updateAvailable: boolean
+    version: string
+    releaseNotes?: string
+    error?: string
+  }> => ipcRenderer.invoke('check-for-updates'),
+
+  downloadUpdate: (): Promise<void> => ipcRenderer.invoke('download-update'),
+
+  installUpdate: (): Promise<{ success: boolean; isDev?: boolean }> =>
+    ipcRenderer.invoke('install-update'),
+
+  getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version')
+}
+
+// Use `contextBridge` APIs to expose Electron APIs to
+// renderer only if context isolation is enabled, otherwise
+// just add to the DOM global.
+if (process.contextIsolated) {
+  try {
+    contextBridge.exposeInMainWorld('electron', electronAPI)
+    contextBridge.exposeInMainWorld('api', api)
+  } catch (error) {
+    console.error(error)
+  }
+} else {
+  window.electron = electronAPI
+  window.api = api
+}

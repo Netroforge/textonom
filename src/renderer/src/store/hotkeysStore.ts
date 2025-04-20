@@ -1,7 +1,23 @@
 import { defineStore } from 'pinia'
 
+interface HotkeyConfig {
+  key: string
+  ctrl: boolean
+  shift: boolean
+  alt: boolean
+  description: string
+}
+
+interface HotkeysMap {
+  [actionId: string]: HotkeyConfig
+}
+
+interface HotkeysState {
+  hotkeys: HotkeysMap
+}
+
 // Define default hotkeys
-const defaultHotkeys = {
+const defaultHotkeys: HotkeysMap = {
   // File menu
   'file.new': { key: 'n', ctrl: true, shift: false, alt: false, description: 'Create a new file' },
   'file.open': { key: 'o', ctrl: true, shift: false, alt: false, description: 'Open a file' },
@@ -81,11 +97,11 @@ const defaultHotkeys = {
 }
 
 // Load hotkeys from localStorage if available
-const loadHotkeys = () => {
+const loadHotkeys = (): HotkeysMap => {
   const savedHotkeys = localStorage.getItem('textonom-hotkeys')
   if (savedHotkeys) {
     try {
-      return JSON.parse(savedHotkeys)
+      return JSON.parse(savedHotkeys) as HotkeysMap
     } catch (e) {
       console.error('Failed to parse saved hotkeys:', e)
     }
@@ -94,19 +110,19 @@ const loadHotkeys = () => {
 }
 
 export const useHotkeysStore = defineStore('hotkeys', {
-  state: () => ({
+  state: (): HotkeysState => ({
     hotkeys: loadHotkeys()
   }),
 
   actions: {
     // Update a specific hotkey
-    updateHotkey(actionId, hotkeyConfig) {
+    updateHotkey(actionId: string, hotkeyConfig: HotkeyConfig): void {
       this.hotkeys[actionId] = hotkeyConfig
       this.saveHotkeys()
     },
 
     // Reset a specific hotkey to default
-    resetHotkey(actionId) {
+    resetHotkey(actionId: string): void {
       if (defaultHotkeys[actionId]) {
         this.hotkeys[actionId] = { ...defaultHotkeys[actionId] }
         this.saveHotkeys()
@@ -114,18 +130,18 @@ export const useHotkeysStore = defineStore('hotkeys', {
     },
 
     // Reset all hotkeys to defaults
-    resetAllHotkeys() {
+    resetAllHotkeys(): void {
       this.hotkeys = { ...defaultHotkeys }
       this.saveHotkeys()
     },
 
     // Save hotkeys to localStorage
-    saveHotkeys() {
+    saveHotkeys(): void {
       localStorage.setItem('textonom-hotkeys', JSON.stringify(this.hotkeys))
     },
 
     // Check if a keyboard event matches a specific action
-    matchesAction(event, actionId) {
+    matchesAction(event: KeyboardEvent, actionId: string): boolean {
       const hotkey = this.hotkeys[actionId]
       if (!hotkey) return false
 
@@ -138,11 +154,11 @@ export const useHotkeysStore = defineStore('hotkeys', {
     },
 
     // Get hotkey string representation for display
-    getHotkeyString(actionId) {
+    getHotkeyString(actionId: string): string {
       const hotkey = this.hotkeys[actionId]
       if (!hotkey) return ''
 
-      const parts = []
+      const parts: string[] = []
       if (hotkey.ctrl) parts.push('Ctrl')
       if (hotkey.shift) parts.push('Shift')
       if (hotkey.alt) parts.push('Alt')

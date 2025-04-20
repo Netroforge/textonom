@@ -1,0 +1,112 @@
+// Type definitions for the application
+
+// API exposed from preload
+export interface ElectronAPI {
+  // Window control
+  minimizeWindow: () => Promise<boolean>
+  maximizeWindow: () => Promise<boolean>
+  closeWindow: () => Promise<boolean>
+  isWindowMaximized: () => Promise<boolean>
+  setWindowTitle: (title: string) => Promise<boolean>
+
+  // File operations
+  openFile: (data?: { lastDirectory?: string }) => Promise<{
+    success: boolean
+    filePath?: string
+    content?: string
+    lastDirectory?: string
+    error?: string
+    canceled?: boolean
+  }>
+  saveFile: (data: { filePath?: string; content: string; lastDirectory?: string }) => Promise<{
+    success: boolean
+    filePath?: string
+    lastDirectory?: string
+    error?: string
+    canceled?: boolean
+  }>
+  saveFileAs: (data: { content: string; currentPath?: string; lastDirectory?: string }) => Promise<{
+    success: boolean
+    filePath?: string
+    lastDirectory?: string
+    error?: string
+    canceled?: boolean
+  }>
+  setLastDirectory: (directory: string) => Promise<boolean>
+
+  // Auto-update operations
+  checkForUpdates: () => Promise<{
+    updateAvailable: boolean
+    version: string
+    releaseNotes?: string
+    error?: string
+  }>
+  downloadUpdate: () => Promise<void>
+  installUpdate: () => Promise<{ success: boolean; isDev?: boolean }>
+  getAppVersion: () => Promise<string>
+}
+
+// Theme definitions
+export type ThemeType = 'light' | 'dark' | 'cyberpunk'
+
+// Settings interface
+export interface Settings {
+  theme: ThemeType
+  turboMode: boolean
+  fontSize: number
+  fontFamily: string
+  tabSize: number
+  insertSpaces: boolean
+  wordWrap: 'on' | 'off' | 'wordWrapColumn' | 'bounded'
+  lineNumbers: 'on' | 'off' | 'relative' | 'interval'
+  autoSave: boolean
+  autoSaveInterval: number
+  autoUpdate: boolean
+  checkForUpdatesOnStartup: boolean
+  lastDirectory: string
+  bcryptRounds: number
+}
+
+// Tab interface
+export interface Tab {
+  id: string
+  name: string
+  content: string
+  filePath: string | null
+  isDirty: boolean
+  language: string
+}
+
+// Transformation function type
+export type TransformationFunction = (text: string, ...args: any[]) => Promise<string>
+
+// Transformation interface
+export interface Transformation {
+  name: string
+  description: string
+  category: string
+  fn: TransformationFunction
+  parameters?: {
+    name: string
+    type: string
+    description: string
+    default?: any
+  }[]
+}
+
+// Hotkey interface
+export interface Hotkey {
+  id: string
+  name: string
+  description: string
+  keys: string[]
+  action: () => void
+}
+
+// Declare global window interface
+declare global {
+  interface Window {
+    electron: any
+    api: ElectronAPI
+  }
+}

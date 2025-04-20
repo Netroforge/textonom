@@ -4,13 +4,14 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/e55776f0-9aff-49ea-ba3c-7c796e1a98cf.png?asset'
 import fs from 'fs'
 import path from 'path'
-import { autoUpdater } from 'electron-updater'
+import { autoUpdater, UpdateCheckResult } from 'electron-updater'
+import electronLog from 'electron-log'
 
 // Default directory for file operations
 let lastDirectory = app.getPath('home')
 
 // Logger
-const log = require('electron-log')
+const log = electronLog
 if (is.dev) {
   // Useful for some dev/debugging tasks, but download cannot be validated because the dev app is not signed
   log.transports.file.level = 'debug'
@@ -24,15 +25,15 @@ autoUpdater.autoDownload = false
 autoUpdater.autoInstallOnAppQuit = true
 autoUpdater.forceDevUpdateConfig = is.dev
 if (is.dev) {
-  // Workaround for ded mode auto updater
+  // Workaround for dev mode auto updater
   // Inspired by https://github.com/electron-userland/electron-builder/issues/3167#issuecomment-627696277
   process.env.APPIMAGE = path.join(__dirname, 'dist', `textonom-${app.getVersion()}.AppImage`)
 }
 
 // Store main window reference
-let mainWindow
+let mainWindow: BrowserWindow | null = null
 
-function createWindow() {
+function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -50,7 +51,7 @@ function createWindow() {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -141,9 +142,10 @@ app.whenReady().then(() => {
           lastDirectory
         }
       } catch (error) {
+        const err = error as Error
         return {
           success: false,
-          error: error.message
+          error: err.message
         }
       }
     }
@@ -153,7 +155,18 @@ app.whenReady().then(() => {
 
   ipcMain.handle(
     'save-file',
-    async (_, { filePath, content, lastDirectory: userLastDirectory }) => {
+    async (
+      _,
+      {
+        filePath,
+        content,
+        lastDirectory: userLastDirectory
+      }: {
+        filePath?: string
+        content: string
+        lastDirectory?: string
+      }
+    ) => {
       let savePath = filePath
       const dialogDefaultPath = userLastDirectory || lastDirectory
 
@@ -179,9 +192,10 @@ app.whenReady().then(() => {
           lastDirectory
         }
       } catch (error) {
+        const err = error as Error
         return {
           success: false,
-          error: error.message
+          error: err.message
         }
       }
     }
@@ -189,7 +203,18 @@ app.whenReady().then(() => {
 
   ipcMain.handle(
     'save-file-as',
-    async (_, { content, currentPath, lastDirectory: userLastDirectory }) => {
+    async (
+      _,
+      {
+        content,
+        currentPath,
+        lastDirectory: userLastDirectory
+      }: {
+        content: string
+        currentPath?: string
+        lastDirectory?: string
+      }
+    ) => {
       const dialogDefaultPath = userLastDirectory || lastDirectory
       const defaultPath = currentPath || path.join(dialogDefaultPath, 'untitled.txt')
       const defaultExtension = path.extname(defaultPath).slice(1) || 'txt'
@@ -216,9 +241,10 @@ app.whenReady().then(() => {
           lastDirectory
         }
       } catch (error) {
+        const err = error as Error
         return {
           success: false,
-          error: error.message
+          error: err.message
         }
       }
     }
@@ -227,7 +253,7 @@ app.whenReady().then(() => {
   // Auto-update IPC handlers
   ipcMain.handle('check-for-updates', async () => {
     try {
-      const checkResult = await autoUpdater.checkForUpdates()
+      const checkResult = (await autoUpdater.checkForUpdates()) as UpdateCheckResult
       const updateAvailable = checkResult && checkResult.updateInfo.version !== app.getVersion()
       return {
         updateAvailable,
@@ -235,14 +261,15 @@ app.whenReady().then(() => {
         releaseNotes: updateAvailable ? checkResult.updateInfo.releaseNotes : null
       }
     } catch (error) {
+      const err = error as Error
       log.error('Error checking for updates:', error)
-      return { error: error.message, updateAvailable: false, version: app.getVersion() }
+      return { error: err.message, updateAvailable: false, version: app.getVersion() }
     }
   })
 
   ipcMain.handle('download-update', async () => {
     try {
-      autoUpdater.downloadUpdate()
+      await autoUpdater.downloadUpdate()
     } catch (error) {
       log.error('Error downloading update:', error)
     }
@@ -262,7 +289,7 @@ app.whenReady().then(() => {
   })
 
   // Set the last directory from renderer
-  ipcMain.handle('set-last-directory', (_, directory) => {
+  ipcMain.handle('set-last-directory', (_, directory: string) => {
     if (directory && typeof directory === 'string') {
       lastDirectory = directory
       return true
@@ -271,7 +298,7 @@ app.whenReady().then(() => {
   })
 
   // Set the window title
-  ipcMain.handle('set-window-title', (_, title) => {
+  ipcMain.handle('set-window-title', (_, title: string) => {
     if (mainWindow) {
       mainWindow.setTitle(title)
       return true

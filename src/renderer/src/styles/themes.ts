@@ -1,8 +1,41 @@
 import { THEMES } from '../store/settingsStore'
 import { useSettingsStore } from '../store/settingsStore'
+import type { ThemeType } from '../types'
+
+interface Theme {
+  primary: string
+  secondary: string
+  background: string
+  surface: string
+  text: string
+  border: string
+  divider: string
+  error: string
+  success: string
+  warning: string
+  info: string
+  editorBackground: string
+  editorForeground: string
+  editorLineNumbers: string
+  editorSelectionBackground: string
+  editorCursor: string
+  tabBackground: string
+  tabActiveBackground: string
+  tabHoverBackground: string
+  tabActiveBorder: string
+  tabText: string
+  tabActiveText: string
+  menuBackground: string
+  menuHoverBackground: string
+  menuText: string
+  menuBorder: string
+  scrollbarThumb: string
+  scrollbarTrack: string
+  textGlow?: boolean
+}
 
 // Light theme colors
-export const lightTheme = {
+export const lightTheme: Theme = {
   primary: '#007bff',
   secondary: '#6c757d',
   background: '#ffffff',
@@ -34,7 +67,7 @@ export const lightTheme = {
 }
 
 // Dark theme colors
-export const darkTheme = {
+export const darkTheme: Theme = {
   primary: '#0d6efd',
   secondary: '#6c757d',
   background: '#212529',
@@ -66,7 +99,7 @@ export const darkTheme = {
 }
 
 // Cyberpunk theme colors
-export const cyberpunkTheme = {
+export const cyberpunkTheme: Theme = {
   primary: '#ff00ff', // Magenta
   secondary: '#00ffff', // Cyan
   background: '#0a0a16', // Dark blue-black
@@ -99,7 +132,7 @@ export const cyberpunkTheme = {
 }
 
 // Get theme by name
-export const getThemeByName = (themeName) => {
+export const getThemeByName = (themeName: ThemeType): Theme => {
   switch (themeName) {
     case THEMES.LIGHT:
       return lightTheme
@@ -113,14 +146,20 @@ export const getThemeByName = (themeName) => {
 }
 
 // Generate CSS variables from theme
-export const generateCssVariables = (theme) => {
+export const generateCssVariables = (theme: Theme): string => {
   return Object.entries(theme)
-    .map(([key, value]) => `--${key}: ${value};`)
+    .map(([key, value]) => {
+      if (typeof value === 'string') {
+        return `--${key}: ${value};`
+      }
+      return ''
+    })
+    .filter(Boolean)
     .join('\\n')
 }
 
 // Apply theme to document
-export const applyTheme = (themeName) => {
+export const applyTheme = (themeName: ThemeType): void => {
   const theme = getThemeByName(themeName)
   const settingsStore = useSettingsStore()
   const root = document.documentElement

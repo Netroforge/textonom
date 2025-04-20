@@ -1,11 +1,32 @@
 import { defineStore } from 'pinia'
 
+interface Tab {
+  id: string
+  title: string
+  content: string
+  savedContent: string | null
+  filePath: string | null
+  isUnsaved: boolean
+}
+
+interface TabsState {
+  tabs: Tab[]
+  activeTabId: string | null
+}
+
+interface TabInput {
+  title?: string
+  content?: string
+  filePath?: string | null
+  isUnsaved?: boolean
+}
+
 // Load tabs from localStorage if available
-const loadTabs = () => {
+const loadTabs = (): TabsState => {
   const savedTabs = localStorage.getItem('textonom-tabs')
   if (savedTabs) {
     try {
-      const parsedTabs = JSON.parse(savedTabs)
+      const parsedTabs = JSON.parse(savedTabs) as TabsState
 
       // Initialize savedContent for existing tabs if it doesn't exist
       if (parsedTabs.tabs) {
@@ -22,22 +43,22 @@ const loadTabs = () => {
     } catch (e) {
       console.error('Failed to parse saved tabs:', e)
     }
-  } else {
-    return {
-      tabs: [],
-      activeTabId: null
-    }
+  }
+
+  return {
+    tabs: [],
+    activeTabId: null
   }
 }
 
 export const useTabsStore = defineStore('tabs', {
-  state: () => loadTabs(),
+  state: (): TabsState => loadTabs(),
 
   actions: {
     // Add a new tab
-    addTab(tab) {
+    addTab(tab: TabInput): string {
       const content = tab.content || ''
-      const newTab = {
+      const newTab: Tab = {
         id: crypto.randomUUID().toString(),
         title: tab.title || 'Untitled',
         content: content,
@@ -54,7 +75,7 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     // Close a tab by id
-    closeTab(tabId) {
+    closeTab(tabId: string): void {
       const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
       if (tabIndex === -1) return
 
@@ -74,18 +95,18 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     // Get an active tab
-    getTabById(tabId) {
+    getTabById(tabId: string): Tab | undefined {
       return this.tabs.find((tab) => tab.id === tabId)
     },
 
     // Set the active tab
-    setActiveTab(tabId) {
+    setActiveTab(tabId: string): void {
       this.activeTabId = tabId
       this.saveTabs()
     },
 
     // Update tab content
-    updateTabContent(tabId, content, saveToLocalStorage = true) {
+    updateTabContent(tabId: string, content: string, saveToLocalStorage = true): void {
       // Find the tab index
       const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
 
@@ -103,7 +124,7 @@ export const useTabsStore = defineStore('tabs', {
         // Only update if content has actually changed to prevent recursive updates
         if (currentTab.content !== content || currentTab.isUnsaved !== hasChanged) {
           // Create a new tab object with updated content
-          const updatedTab = {
+          const updatedTab: Tab = {
             ...currentTab,
             content,
             isUnsaved: hasChanged
@@ -124,7 +145,7 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     // Update tab after save
-    updateTabAfterSave(tabId, filePath, title) {
+    updateTabAfterSave(tabId: string, filePath: string, title: string): void {
       const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
       if (tabIndex !== -1) {
         const currentTab = this.tabs[tabIndex]
@@ -137,7 +158,7 @@ export const useTabsStore = defineStore('tabs', {
           currentTab.isUnsaved !== false
         ) {
           // Create a new tab object with updated properties
-          const updatedTab = {
+          const updatedTab: Tab = {
             ...currentTab,
             filePath,
             title,
@@ -154,14 +175,14 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     // Clear all tabs
-    clearTabs() {
+    clearTabs(): void {
       this.tabs = []
       this.activeTabId = null
       this.saveTabs()
     },
 
     // Save tabs to localStorage
-    saveTabs() {
+    saveTabs(): void {
       localStorage.setItem(
         'textonom-tabs',
         JSON.stringify({
@@ -174,17 +195,17 @@ export const useTabsStore = defineStore('tabs', {
 
   getters: {
     // Get an active tab id
-    getActiveTabId() {
+    getActiveTabId(): string | null {
       return this.activeTabId
     },
 
     // Get an active tab
-    getActiveTab() {
+    getActiveTab(): Tab | undefined {
       return this.tabs.find((tab) => tab.id === this.activeTabId)
     },
 
     // Check if there are unsaved tabs
-    hasUnsavedTabs() {
+    hasUnsavedTabs(): boolean {
       return this.tabs.some((tab) => tab.isUnsaved)
     }
   }

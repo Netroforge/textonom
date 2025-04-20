@@ -1,7 +1,20 @@
 import { defineStore } from 'pinia'
 
+interface TransformationState {
+  isTransforming: boolean
+  transformationName: string
+  transformationStartTime: number | null
+  transformationDuration: number
+}
+
+interface TransformationStatus {
+  isTransforming: boolean
+  transformationName: string
+  transformationDuration: number
+}
+
 export const useTransformationStore = defineStore('transformation', {
-  state: () => ({
+  state: (): TransformationState => ({
     isTransforming: false,
     transformationName: '',
     transformationStartTime: null,
@@ -9,14 +22,16 @@ export const useTransformationStore = defineStore('transformation', {
   }),
 
   actions: {
-    startTransformation(transformationName) {
+    startTransformation(transformationName: string): void {
       this.isTransforming = true
       this.transformationName = transformationName
       this.transformationStartTime = Date.now()
     },
 
-    endTransformation() {
-      this.transformationDuration = Date.now() - this.transformationStartTime
+    endTransformation(): void {
+      if (this.transformationStartTime !== null) {
+        this.transformationDuration = Date.now() - this.transformationStartTime
+      }
       this.isTransforming = false
       this.transformationStartTime = null
 
@@ -27,7 +42,7 @@ export const useTransformationStore = defineStore('transformation', {
       }, 1000)
     },
 
-    cancelTransformation() {
+    cancelTransformation(): void {
       this.isTransforming = false
       this.transformationName = ''
       this.transformationStartTime = null
@@ -36,7 +51,7 @@ export const useTransformationStore = defineStore('transformation', {
   },
 
   getters: {
-    getTransformationStatus() {
+    getTransformationStatus(): TransformationStatus {
       return {
         isTransforming: this.isTransforming,
         transformationName: this.transformationName,

@@ -9,9 +9,10 @@
     "format": "prettier --write .",
     "lint": "eslint --cache .",
     "lint:fix": "eslint --cache --fix .",
+    "type-check": "vue-tsc --noEmit -p tsconfig.vue.json",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "build": "electron-vite build",
+    "build": "vue-tsc --noEmit -p tsconfig.vue.json && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
@@ -22,7 +23,8 @@
     "publish:linux": "npm run build && electron-builder --linux --publish always"
   },
   "dependencies": {
-    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "bcryptjs": "^3.0.2",
     "crypto-js": "^4.2.0",
@@ -37,6 +39,14 @@
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^2.1.0",
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/crypto-js": "^4.2.2",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.14.1",
+    "@types/xml-formatter": "^2.1.1",
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
+    "@typescript-eslint/parser": "^8.30.1",
     "@vitejs/plugin-vue": "^5.2.3",
     "electron": "^35.2.0",
     "electron-builder": "^26.0.12",
@@ -44,8 +54,11 @@
     "eslint": "^9.25.0",
     "eslint-plugin-vue": "^10.0.0",
     "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "undici-types": "^7.8.0",
     "vite": "^6.3.2",
     "vue": "^3.5.13",
-    "vue-eslint-parser": "^10.1.3"
+    "vue-eslint-parser": "^10.1.3",
+    "vue-tsc": "^2.2.8"
   }
 }

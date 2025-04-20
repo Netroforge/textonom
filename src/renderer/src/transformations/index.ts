@@ -1,12 +1,13 @@
 import { Base64 } from 'js-base64'
-import yaml from 'js-yaml'
-import CryptoJS from 'crypto-js'
-import bcrypt from 'bcryptjs'
+import * as yaml from 'js-yaml'
+import * as CryptoJS from 'crypto-js'
+import * as bcrypt from 'bcryptjs'
 import xmlFormat from 'xml-formatter'
 import { useSettingsStore } from '../store/settingsStore'
+import type { TransformationFunction } from '../types'
 
 // Base64 transformations
-export const base64Encode = async (text) => {
+export const base64Encode: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return Base64.encode(text)
   } catch (error) {
@@ -15,7 +16,7 @@ export const base64Encode = async (text) => {
   }
 }
 
-export const base64Decode = async (text) => {
+export const base64Decode: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return Base64.decode(text)
   } catch (error) {
@@ -25,7 +26,7 @@ export const base64Decode = async (text) => {
 }
 
 // JSON transformations
-export const jsonPrettify = async (text) => {
+export const jsonPrettify: TransformationFunction = async (text: string): Promise<string> => {
   try {
     const parsed = JSON.parse(text)
     return JSON.stringify(parsed, null, 2)
@@ -35,7 +36,7 @@ export const jsonPrettify = async (text) => {
   }
 }
 
-export const jsonCompact = async (text) => {
+export const jsonCompact: TransformationFunction = async (text: string): Promise<string> => {
   try {
     const parsed = JSON.parse(text)
     return JSON.stringify(parsed)
@@ -46,7 +47,7 @@ export const jsonCompact = async (text) => {
 }
 
 // URL transformations
-export const urlEncode = async (text) => {
+export const urlEncode: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return encodeURIComponent(text)
   } catch (error) {
@@ -55,7 +56,7 @@ export const urlEncode = async (text) => {
   }
 }
 
-export const urlDecode = async (text) => {
+export const urlDecode: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return decodeURIComponent(text)
   } catch (error) {
@@ -65,9 +66,11 @@ export const urlDecode = async (text) => {
 }
 
 // Case transformations
-export const toUpperCase = async (text) => text.toUpperCase()
-export const toLowerCase = async (text) => text.toLowerCase()
-export const toTitleCase = async (text) => {
+export const toUpperCase: TransformationFunction = async (text: string): Promise<string> =>
+  text.toUpperCase()
+export const toLowerCase: TransformationFunction = async (text: string): Promise<string> =>
+  text.toLowerCase()
+export const toTitleCase: TransformationFunction = async (text: string): Promise<string> => {
   return text
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -75,16 +78,17 @@ export const toTitleCase = async (text) => {
 }
 
 // XML transformations
-export const xmlPrettify = async (text) => {
+export const xmlPrettify: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return xmlFormat(text)
   } catch (error) {
     console.error('Error prettifying XML:', error)
-    throw new Error('Failed to prettify XML: ' + error.message)
+    const err = error as Error
+    throw new Error('Failed to prettify XML: ' + err.message)
   }
 }
 
-export const xmlCompact = async (text) => {
+export const xmlCompact: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return xmlFormat.minify(text, {
       filter: (node) => node.type !== 'Comment',
@@ -92,26 +96,27 @@ export const xmlCompact = async (text) => {
     })
   } catch (error) {
     console.error('Error compacting XML:', error)
-    throw new Error('Failed to compact XML: ' + error.message)
+    const err = error as Error
+    throw new Error('Failed to compact XML: ' + err.message)
   }
 }
 
 // Line operations
-export const sortLines = async (text) => {
+export const sortLines: TransformationFunction = async (text: string): Promise<string> => {
   if (!text) return text
   // Handle different types of newlines (CR, LF, CRLF)
   const lines = text.split(/\r\n|\r|\n/)
   return lines.sort().join('\n')
 }
 
-export const deduplicateLines = async (text) => {
+export const deduplicateLines: TransformationFunction = async (text: string): Promise<string> => {
   if (!text) return text
   // Handle different types of newlines (CR, LF, CRLF)
   const lines = text.split(/\r\n|\r|\n/)
   return [...new Set(lines)].join('\n')
 }
 
-export const reverseLines = async (text) => {
+export const reverseLines: TransformationFunction = async (text: string): Promise<string> => {
   if (!text) return text
   // Handle different types of newlines (CR, LF, CRLF)
   const lines = text.split(/\r\n|\r|\n/)
@@ -119,32 +124,35 @@ export const reverseLines = async (text) => {
 }
 
 // HTML transformations
-export const htmlEncode = async (text) => {
+export const htmlEncode: TransformationFunction = async (text: string): Promise<string> => {
   const el = document.createElement('div')
   el.innerText = text
   return el.innerHTML
 }
 
-export const htmlDecode = async (text) => {
+export const htmlDecode: TransformationFunction = async (text: string): Promise<string> => {
   const el = document.createElement('div')
   el.innerHTML = text
   return el.innerText
 }
 
 // Hash generation
-export const md5Hash = async (text) => {
+export const md5Hash: TransformationFunction = async (text: string): Promise<string> => {
   return CryptoJS.MD5(text).toString()
 }
 
-export const sha1Hash = async (text) => {
+export const sha1Hash: TransformationFunction = async (text: string): Promise<string> => {
   return CryptoJS.SHA1(text).toString()
 }
 
-export const sha256Hash = async (text) => {
+export const sha256Hash: TransformationFunction = async (text: string): Promise<string> => {
   return CryptoJS.SHA256(text).toString()
 }
 
-export const bcryptHash = async (text, costFactor) => {
+export const bcryptHash: TransformationFunction = async (
+  text: string,
+  costFactor?: number
+): Promise<string> => {
   // If no cost factor is provided, use the one from settings
   if (costFactor === undefined) {
     const settingsStore = useSettingsStore()
@@ -156,32 +164,33 @@ export const bcryptHash = async (text, costFactor) => {
 
   // Use the async version of bcrypt hash to prevent UI freezing
   // This wraps the callback-based hash in a Promise
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     bcrypt.hash(text, costFactor, (err, hash) => {
       if (err) {
         reject(new Error('Failed to generate bcrypt hash: ' + err.message))
       } else {
-        resolve(hash)
+        // Ensure hash is always a string
+        resolve(hash || '')
       }
     })
   })
 }
 
 // Unicode escaping
-export const unicodeEscape = async (text) => {
+export const unicodeEscape: TransformationFunction = async (text: string): Promise<string> => {
   return text.replace(/[\u007F-\uFFFF]/g, (char) => {
     return '\\u' + ('0000' + char.charCodeAt(0).toString(16)).slice(-4)
   })
 }
 
-export const unicodeUnescape = async (text) => {
+export const unicodeUnescape: TransformationFunction = async (text: string): Promise<string> => {
   return text.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => {
     return String.fromCharCode(parseInt(hex, 16))
   })
 }
 
 // JSON to YAML conversion
-export const jsonToYaml = async (text) => {
+export const jsonToYaml: TransformationFunction = async (text: string): Promise<string> => {
   try {
     const parsed = JSON.parse(text)
     return yaml.dump(parsed)
@@ -191,9 +200,9 @@ export const jsonToYaml = async (text) => {
   }
 }
 
-export const yamlToJson = async (text) => {
+export const yamlToJson: TransformationFunction = async (text: string): Promise<string> => {
   try {
-    const parsed = yaml.load(text)
+    const parsed = yaml.load(text) as object
     return JSON.stringify(parsed, null, 2)
   } catch (error) {
     console.error('Error converting YAML to JSON:', error)
@@ -202,12 +211,14 @@ export const yamlToJson = async (text) => {
 }
 
 // Spring Boot properties conversion
-export const propertiesFileToYaml = async (text) => {
+export const propertiesFileToYaml: TransformationFunction = async (
+  text: string
+): Promise<string> => {
   try {
     if (!text) return ''
     // Handle different types of newlines (CR, LF, CRLF)
     const lines = text.split(/\r\n|\r|\n/)
-    const result = {}
+    const result: Record<string, any> = {}
 
     for (const line of lines) {
       // Skip comments and empty lines
@@ -240,17 +251,20 @@ export const propertiesFileToYaml = async (text) => {
     return yaml.dump(result)
   } catch (error) {
     console.error('Error converting properties to YAML:', error)
-    throw new Error('Failed to convert properties to YAML: ' + error.message)
+    const err = error as Error
+    throw new Error('Failed to convert properties to YAML: ' + err.message)
   }
 }
 
-export const yamlToPropertiesFile = async (text) => {
+export const yamlToPropertiesFile: TransformationFunction = async (
+  text: string
+): Promise<string> => {
   try {
-    const parsed = yaml.load(text)
-    const lines = []
+    const parsed = yaml.load(text) as Record<string, any>
+    const lines: string[] = []
 
     // Recursive function to flatten nested objects
-    const flattenObject = (obj, prefix = '') => {
+    const flattenObject = (obj: Record<string, any>, prefix = '') => {
       for (const key in obj) {
         if (typeof obj[key] === 'object' && obj[key] !== null) {
           flattenObject(obj[key], prefix + key + '.')
@@ -264,7 +278,8 @@ export const yamlToPropertiesFile = async (text) => {
     return lines.join('\n')
   } catch (error) {
     console.error('Error converting YAML to properties:', error)
-    throw new Error('Failed to convert YAML to properties: ' + error.message)
+    const err = error as Error
+    throw new Error('Failed to convert YAML to properties: ' + err.message)
   }
 }
 
