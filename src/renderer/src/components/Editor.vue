@@ -66,6 +66,15 @@ const createNewTab = () => {
   }
 }
 
+// Extract filename from a path (works with both forward and backslashes)
+const getFilenameFromPath = (filePath) => {
+  if (!filePath) return 'Untitled'
+  // Replace backslashes with forward slashes for consistency
+  const normalizedPath = filePath.replace(/\\/g, '/')
+  // Get the last part after the last slash
+  return normalizedPath.split('/').pop()
+}
+
 // Open a file
 const openFile = async () => {
   try {
@@ -78,7 +87,7 @@ const openFile = async () => {
       }
 
       tabsStore.addTab({
-        title: result.filePath.split('/').pop(),
+        title: getFilenameFromPath(result.filePath),
         content: result.content,
         filePath: result.filePath,
         isUnsaved: false
@@ -109,7 +118,7 @@ const saveFile = async () => {
         settingsStore.setLastDirectory(result.lastDirectory)
       }
 
-      const fileName = result.filePath.split('/').pop()
+      const fileName = getFilenameFromPath(result.filePath)
       tabsStore.updateTabAfterSave(activeTab.id, result.filePath, fileName)
     }
   } catch (error) {
@@ -137,7 +146,7 @@ const saveFileAs = async () => {
         settingsStore.setLastDirectory(result.lastDirectory)
       }
 
-      const fileName = result.filePath.split('/').pop()
+      const fileName = getFilenameFromPath(result.filePath)
       tabsStore.updateTabAfterSave(activeTab.id, result.filePath, fileName)
     }
   } catch (error) {
@@ -379,7 +388,9 @@ const closeErrorPopup = () => {
 const detectLanguage = (filename) => {
   if (!filename) return 'plaintext'
 
-  const extension = filename.split('.').pop().toLowerCase()
+  // Handle filenames with multiple dots correctly
+  const parts = filename.split('.')
+  const extension = parts.length > 1 ? parts.pop().toLowerCase() : ''
 
   // Map common extensions to languages
   const languageMap = {
