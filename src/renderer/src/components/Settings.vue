@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useSettingsStore, THEMES } from '../store/settingsStore'
 import HotkeySettings from './HotkeySettings.vue'
 
@@ -208,13 +208,38 @@ const sections = [
   { id: 'hotkeys', title: 'Keyboard Shortcuts' }
 ]
 
-// Track active section
+// Define available font options
+const fontOptions = [
+  "Consolas, 'Courier New', monospace",
+  "'Courier New', monospace",
+  "'Fira Code', monospace",
+  "'Source Code Pro', monospace",
+  'monospace'
+]
+
+// Function to find the closest matching font option
+const findMatchingFontOption = (fontFamily) => {
+  // Try to find the exact match first
+  const exactMatch = fontOptions.find((option) => option === fontFamily)
+  if (exactMatch) return exactMatch
+
+  // If no exact match, try to find a partial match
+  const partialMatch = fontOptions.find((option) => {
+    // Extract the primary font name from the option
+    const primaryFont = option.split(',')[0].trim().replace(/["']/g, '')
+    return fontFamily.includes(primaryFont)
+  })
+
+  return partialMatch || fontOptions[0] // Default to first option if no match found
+}
+
+// Track an active section
 const activeSection = ref('theme')
 
 // Create reactive refs for all settings
 const theme = ref(settingsStore.theme)
 const fontSize = ref(settingsStore.fontSize)
-const fontFamily = ref(settingsStore.fontFamily)
+const fontFamily = ref(findMatchingFontOption(settingsStore.fontFamily))
 const tabSize = ref(settingsStore.tabSize)
 const insertSpaces = ref(settingsStore.insertSpaces)
 const wordWrap = ref(settingsStore.wordWrap)
@@ -278,7 +303,7 @@ const resetSettings = () => {
     // Update local refs
     theme.value = settingsStore.theme
     fontSize.value = settingsStore.fontSize
-    fontFamily.value = settingsStore.fontFamily
+    fontFamily.value = findMatchingFontOption(settingsStore.fontFamily)
     tabSize.value = settingsStore.tabSize
     insertSpaces.value = settingsStore.insertSpaces
     wordWrap.value = settingsStore.wordWrap
@@ -295,6 +320,12 @@ const resetSettings = () => {
 const close = () => {
   emit('close')
 }
+
+// When a component is mounted, ensure the font family is correctly set
+onMounted(() => {
+  // Make sure the font family is set to a matching option
+  fontFamily.value = findMatchingFontOption(settingsStore.fontFamily)
+})
 </script>
 
 <style scoped>
