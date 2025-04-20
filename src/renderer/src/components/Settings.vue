@@ -168,6 +168,31 @@
             </div>
           </div>
 
+          <!-- Transformations Settings -->
+          <div v-show="activeSection === 'transformations'" class="settings-section">
+            <h3 class="settings-section-title">Transformations</h3>
+            <div class="settings-section-content">
+              <div class="settings-row">
+                <label class="settings-label">Bcrypt Rounds (Cost Factor)</label>
+                <div class="settings-control">
+                  <input
+                    v-model="bcryptRounds"
+                    type="number"
+                    min="1"
+                    max="20"
+                    title="Higher values are more secure but slower. Default is 12."
+                  />
+                </div>
+              </div>
+              <div class="settings-info">
+                <p>
+                  Higher rounds provide stronger security but take longer to compute. The default
+                  value of 12 is a good balance between security and performance.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <!-- Hotkeys Settings -->
           <div v-show="activeSection === 'hotkeys'" class="settings-section">
             <h3 class="settings-section-title">Keyboard Shortcuts</h3>
@@ -205,6 +230,7 @@ const sections = [
   { id: 'autosave', title: 'Auto Save' },
   { id: 'files', title: 'Files' },
   { id: 'updates', title: 'Updates' },
+  { id: 'transformations', title: 'Transformations' },
   { id: 'hotkeys', title: 'Keyboard Shortcuts' }
 ]
 
@@ -249,6 +275,7 @@ const autoSaveInterval = ref(settingsStore.autoSaveInterval)
 const autoUpdate = ref(settingsStore.autoUpdate)
 const checkForUpdatesOnStartup = ref(settingsStore.checkForUpdatesOnStartup)
 const lastDirectory = ref(settingsStore.lastDirectory)
+const bcryptRounds = ref(settingsStore.bcryptRounds)
 
 // Watch for changes and update the store
 watch(theme, (newValue) => {
@@ -295,6 +322,10 @@ watch(checkForUpdatesOnStartup, (newValue) => {
   settingsStore.setCheckForUpdatesOnStartup(newValue)
 })
 
+watch(bcryptRounds, (newValue) => {
+  settingsStore.setBcryptRounds(Number(newValue))
+})
+
 // Reset settings to defaults
 const resetSettings = () => {
   if (confirm('Are you sure you want to reset all settings to their default values?')) {
@@ -313,6 +344,7 @@ const resetSettings = () => {
     autoUpdate.value = settingsStore.autoUpdate
     checkForUpdatesOnStartup.value = settingsStore.checkForUpdatesOnStartup
     lastDirectory.value = settingsStore.lastDirectory
+    bcryptRounds.value = settingsStore.bcryptRounds
   }
 }
 
@@ -397,6 +429,13 @@ onMounted(() => {
   padding: 16px;
   overflow-y: auto;
   flex: 1;
+}
+
+.settings-info {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: var(--textSecondary);
+  max-width: 500px;
 }
 
 /* Responsive adjustments */

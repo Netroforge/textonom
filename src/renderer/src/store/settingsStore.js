@@ -10,7 +10,7 @@ export const THEMES = {
 
 // Define default settings
 const defaultSettings = {
-  theme: THEMES.DARK,
+  theme: THEMES.CYBERPUNK_TURBO,
   fontSize: 14,
   fontFamily: 'Consolas, "Courier New", monospace',
   tabSize: 2,
@@ -21,7 +21,8 @@ const defaultSettings = {
   autoSaveInterval: 30000, // 30 seconds
   autoUpdate: true, // Enable auto-update by default
   checkForUpdatesOnStartup: true, // Check for updates on startup by default
-  lastDirectory: '' // Last directory used for file operations
+  lastDirectory: '', // Last directory used for file operations
+  bcryptRounds: 12 // Default bcrypt rounds (cost factor)
 }
 
 // Load settings from localStorage if available
@@ -110,6 +111,13 @@ export const useSettingsStore = defineStore('settings', {
     // Update last directory setting
     setLastDirectory(lastDirectory) {
       this.lastDirectory = lastDirectory
+      this.saveSettings()
+    },
+
+    // Update bcrypt rounds setting
+    setBcryptRounds(bcryptRounds) {
+      // Ensure the value is within the allowed range (1-20)
+      this.bcryptRounds = Math.max(1, Math.min(20, Number(bcryptRounds)))
       this.saveSettings()
     },
 

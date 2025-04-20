@@ -21,6 +21,9 @@
         <button @click="closeErrorPopup">Close</button>
       </div>
     </div>
+
+    <!-- Bcrypt Dialog -->
+    <BcryptDialog v-if="showBcryptDialog" @close="closeBcryptDialog" @apply="applyBcryptHash" />
   </div>
 </template>
 
@@ -36,6 +39,7 @@ import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { applyTheme } from '../styles/themes'
 import transformations from '../transformations'
+import BcryptDialog from './BcryptDialog.vue'
 
 // Refs
 const editorContainer = ref(null)
@@ -58,6 +62,9 @@ const activeTabId = computed(() => tabsStore.getActiveTabId)
 // Show error
 const showErrorPopup = ref(false)
 const errorMessage = ref('')
+
+// Bcrypt dialog
+const showBcryptDialog = ref(false)
 
 // Create a new tab
 const createNewTab = () => {
@@ -320,7 +327,20 @@ const processSha256Hash = async () => {
 }
 
 const processBcryptHash = async () => {
-  processTransformation(transformations.bcryptHash)
+  // Show the bcrypt dialog instead of directly applying the transformation
+  showBcryptDialog.value = true
+}
+
+// Close the bcrypt dialog
+const closeBcryptDialog = () => {
+  showBcryptDialog.value = false
+}
+
+// Apply bcrypt hash with custom rounds
+const applyBcryptHash = (rounds) => {
+  // Create a function that will use the specified rounds
+  const bcryptWithCustomRounds = (text) => transformations.bcryptHash(text, rounds)
+  processTransformation(bcryptWithCustomRounds)
 }
 
 const processUnicodeEscape = async () => {
@@ -816,27 +836,32 @@ defineExpose({
 
 /* Error Popup Styles */
 .error-popup {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
-  max-width: 80%;
-  min-width: 300px;
 }
 
 .error-popup-content {
-  color: #721c24;
+  background-color: var(--background);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  padding: 20px;
+  color: var(--text);
 }
 
 .error-popup h3 {
   margin-top: 0;
   margin-bottom: 10px;
+  color: var(--error);
 }
 
 .error-popup p {
@@ -844,15 +869,16 @@ defineExpose({
 }
 
 .error-popup button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
   padding: 8px 16px;
+  border: 1px solid var(--border);
   border-radius: 4px;
+  background-color: var(--surface);
+  color: var(--text);
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .error-popup button:hover {
-  background-color: #c82333;
+  background-color: var(--menuHoverBackground);
 }
 </style>

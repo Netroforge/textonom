@@ -3,6 +3,7 @@ import yaml from 'js-yaml'
 import CryptoJS from 'crypto-js'
 import bcrypt from 'bcryptjs'
 import xmlFormat from 'xml-formatter'
+import { useSettingsStore } from '../store/settingsStore'
 
 // Base64 transformations
 export const base64Encode = (text) => {
@@ -143,7 +144,16 @@ export const sha256Hash = (text) => {
   return CryptoJS.SHA256(text).toString()
 }
 
-export const bcryptHash = (text, costFactor = 10) => {
+export const bcryptHash = (text, costFactor) => {
+  // If no cost factor is provided, use the one from settings
+  if (costFactor === undefined) {
+    const settingsStore = useSettingsStore()
+    costFactor = settingsStore.bcryptRounds
+  }
+
+  // Ensure the cost factor is within the allowed range (1-20)
+  costFactor = Math.max(1, Math.min(20, Number(costFactor)))
+
   return bcrypt.hashSync(text, costFactor)
 }
 
