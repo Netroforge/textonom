@@ -33,8 +33,14 @@
                     <option :value="THEMES.LIGHT">Light</option>
                     <option :value="THEMES.DARK">Dark</option>
                     <option :value="THEMES.CYBERPUNK">Cyberpunk</option>
-                    <option :value="THEMES.CYBERPUNK_TURBO">Cyberpunk Turbo</option>
                   </select>
+                </div>
+              </div>
+              <div class="settings-row">
+                <label class="settings-label">Turbo Mode</label>
+                <div class="settings-control">
+                  <input v-model="turboMode" type="checkbox" />
+                  <span class="settings-description">Enable</span>
                 </div>
               </div>
             </div>
@@ -264,6 +270,7 @@ const activeSection = ref('theme')
 
 // Create reactive refs for all settings
 const theme = ref(settingsStore.theme)
+const turboMode = ref(settingsStore.turboMode)
 const fontSize = ref(settingsStore.fontSize)
 const fontFamily = ref(findMatchingFontOption(settingsStore.fontFamily))
 const tabSize = ref(settingsStore.tabSize)
@@ -280,6 +287,10 @@ const bcryptRounds = ref(settingsStore.bcryptRounds)
 // Watch for changes and update the store
 watch(theme, (newValue) => {
   settingsStore.setTheme(newValue)
+})
+
+watch(turboMode, (newValue) => {
+  settingsStore.setTurboMode(newValue)
 })
 
 watch(fontSize, (newValue) => {
@@ -333,6 +344,7 @@ const resetSettings = () => {
 
     // Update local refs
     theme.value = settingsStore.theme
+    turboMode.value = settingsStore.turboMode
     fontSize.value = settingsStore.fontSize
     fontFamily.value = findMatchingFontOption(settingsStore.fontFamily)
     tabSize.value = settingsStore.tabSize
@@ -361,6 +373,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.settings-description {
+  margin-left: 8px;
+  font-size: 0.9em;
+  color: var(--text);
+  opacity: 0.8;
+}
 /* Settings layout styling */
 .settings-layout {
   display: flex;

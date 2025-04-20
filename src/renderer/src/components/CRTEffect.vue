@@ -1,5 +1,5 @@
 <template>
-  <div class="crt-container crt-flicker" :class="{ 'crt-active': isCRTActive }">
+  <div class="crt-container crt-flicker">
     <div class="crt-content">
       <slot></slot>
     </div>
@@ -22,23 +22,18 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue'
-import { useSettingsStore, THEMES } from '../store/settingsStore'
+import { onMounted, onUnmounted } from 'vue'
 
-// Get the current theme from the settings store
-const settingsStore = useSettingsStore()
-
-// Compute whether the CRT effect should be active
-const isCRTActive = computed(() => {
-  return settingsStore.theme === THEMES.CYBERPUNK_TURBO
-})
+// The CRT effect is now controlled by the data-crt-effect attribute
+// which is set in the applyTheme function
 
 // Glitch effect timing
 let glitchInterval = null
 
 // Create random glitches
 const createGlitch = () => {
-  if (!isCRTActive.value) return
+  // Check if CRT effect is active using the data attribute
+  if (document.documentElement.getAttribute('data-crt-effect') !== 'true') return
 
   // Determine which type of glitch to create
   const glitchType = Math.floor(Math.random() * 3)
@@ -347,29 +342,7 @@ onUnmounted(() => {
   display: none;
 }
 
-/* Only apply effects when active */
-.crt-container:not(.crt-active) .crt-scanlines,
-.crt-container:not(.crt-active) .crt-rgb-separation,
-.crt-container:not(.crt-active) .crt-vignette,
-.crt-container:not(.crt-active) .crt-glow,
-.crt-container:not(.crt-active) .crt-flicker-overlay,
-.crt-container:not(.crt-active) .crt-glitch-overlay,
-.crt-container:not(.crt-active) .crt-horizontal-glitch,
-.crt-container:not(.crt-active) .crt-color-shift,
-.crt-container:not(.crt-active) .crt-static-noise,
-.crt-container:not(.crt-active) .crt-vertical-sync,
-.crt-container:not(.crt-active) .crt-signal-jitter,
-.crt-container:not(.crt-active) .crt-digital-corruption,
-.crt-container:not(.crt-active) .crt-scan-distortion,
-.crt-container:not(.crt-active) .crt-text-corruption,
-.crt-container:not(.crt-active) .crt-pixel-displacement {
-  display: none;
-}
-
-.crt-container:not(.crt-active) .crt-glitch-overlay {
-  transform: none !important;
-  clip-path: none !important;
-}
+/* Effects are now controlled by the data-crt-effect attribute in global.css */
 
 @keyframes flicker {
   0% {

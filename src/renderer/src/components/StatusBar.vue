@@ -10,7 +10,7 @@
     </div>
     <div class="status-right">
       <div class="status-item">
-        {{ currentTheme }}
+        {{ currentTheme }}{{ settingsStore.turboMode ? ' (Turbo Mode)' : '' }}
       </div>
     </div>
   </div>
@@ -37,8 +37,6 @@ const currentTheme = computed(() => {
       return 'Dark Theme'
     case THEMES.CYBERPUNK:
       return 'Cyberpunk Theme'
-    case THEMES.CYBERPUNK_TURBO:
-      return 'Cyberpunk Turbo Theme'
     default:
       return 'Unknown Theme'
   }

@@ -754,6 +754,15 @@ watch(
   }
 )
 
+// Watch for changes in turbo mode
+watch(
+  () => settingsStore.turboMode,
+  () => {
+    // Reapply the theme to update the CRT effect
+    applyTheme(settingsStore.theme)
+  }
+)
+
 watch(
   [
     () => settingsStore.fontSize,

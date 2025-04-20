@@ -4,13 +4,13 @@ import { defineStore } from 'pinia'
 export const THEMES = {
   LIGHT: 'light',
   DARK: 'dark',
-  CYBERPUNK: 'cyberpunk',
-  CYBERPUNK_TURBO: 'cyberpunk-turbo'
+  CYBERPUNK: 'cyberpunk'
 }
 
 // Define default settings
 const defaultSettings = {
-  theme: THEMES.CYBERPUNK_TURBO,
+  theme: THEMES.CYBERPUNK,
+  turboMode: true, // Enable Turbo Mode (CRT effects) by default
   fontSize: 14,
   fontFamily: 'Consolas, "Courier New", monospace',
   tabSize: 2,
@@ -45,6 +45,12 @@ export const useSettingsStore = defineStore('settings', {
     // Update theme
     setTheme(theme) {
       this.theme = theme
+      this.saveSettings()
+    },
+
+    // Update turbo mode
+    setTurboMode(enabled) {
+      this.turboMode = enabled
       this.saveSettings()
     },
 

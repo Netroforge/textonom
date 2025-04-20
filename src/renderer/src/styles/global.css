@@ -126,7 +126,7 @@ textarea:focus {
     0 0 15px var(--primary);
 }
 
-/* CRT Effect for Cyberpunk Turbo Theme */
+/* CRT Effect for Turbo Mode */
 [data-crt-effect='true'] .crt-container {
   position: relative;
   overflow: hidden;
@@ -160,6 +160,30 @@ textarea:focus {
   );
   z-index: 3;
   pointer-events: none;
+}
+
+/* Hide CRT effect elements when turbo mode is disabled */
+[data-crt-effect='false'] .crt-scanlines,
+[data-crt-effect='false'] .crt-rgb-separation,
+[data-crt-effect='false'] .crt-vignette,
+[data-crt-effect='false'] .crt-glow,
+[data-crt-effect='false'] .crt-flicker-overlay,
+[data-crt-effect='false'] .crt-glitch-overlay,
+[data-crt-effect='false'] .crt-horizontal-glitch,
+[data-crt-effect='false'] .crt-color-shift,
+[data-crt-effect='false'] .crt-static-noise,
+[data-crt-effect='false'] .crt-vertical-sync,
+[data-crt-effect='false'] .crt-signal-jitter,
+[data-crt-effect='false'] .crt-digital-corruption,
+[data-crt-effect='false'] .crt-scan-distortion,
+[data-crt-effect='false'] .crt-text-corruption,
+[data-crt-effect='false'] .crt-pixel-displacement {
+  display: none !important;
+}
+
+[data-crt-effect='false'] .crt-glitch-overlay {
+  transform: none !important;
+  clip-path: none !important;
 }
 
 /* CRT Flicker Animation */

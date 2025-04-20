@@ -1,4 +1,5 @@
 import { THEMES } from '../store/settingsStore'
+import { useSettingsStore } from '../store/settingsStore'
 
 // Light theme colors
 export const lightTheme = {
@@ -97,41 +98,6 @@ export const cyberpunkTheme = {
   textGlow: true // Enable text glow effect
 }
 
-// Cyberpunk Turbo theme (with CRT effect)
-export const cyberpunkTurboTheme = {
-  ...cyberpunkTheme,
-  primary: '#ff00ff', // Magenta
-  secondary: '#00ffff', // Cyan
-  background: '#0a0a16', // Dark blue-black
-  surface: '#1a1a2e', // Dark blue
-  text: '#00ffff', // Cyan
-  border: '#ff00ff', // Magenta
-  divider: '#1a1a2e', // Dark blue
-  error: '#ff0055', // Neon red
-  success: '#00ff9f', // Neon green
-  warning: '#ffcc00', // Neon yellow
-  info: '#00ffff', // Cyan
-  editorBackground: '#0a0a16', // Dark blue-black
-  editorForeground: '#00ffff', // Cyan
-  editorLineNumbers: '#ff00ff', // Magenta
-  editorSelectionBackground: '#3d1a7a', // Purple
-  editorCursor: '#00ffff', // Cyan
-  tabBackground: '#1a1a2e', // Dark blue
-  tabActiveBackground: '#0a0a16', // Dark blue-black
-  tabHoverBackground: '#2a2a4e', // Lighter blue
-  tabActiveBorder: '#ff00ff', // Magenta
-  tabText: '#00ffff', // Cyan
-  tabActiveText: '#00ffff', // Cyan
-  menuBackground: '#1a1a2e', // Dark blue
-  menuHoverBackground: '#2a2a4e', // Lighter blue
-  menuText: '#00ffff', // Cyan
-  menuBorder: '#ff00ff', // Magenta
-  scrollbarThumb: '#ff00ff', // Magenta
-  scrollbarTrack: '#1a1a2e', // Dark blue
-  crtEffect: true, // Enable CRT effect
-  textGlow: true // Enable text glow effect
-}
-
 // Get theme by name
 export const getThemeByName = (themeName) => {
   switch (themeName) {
@@ -141,8 +107,6 @@ export const getThemeByName = (themeName) => {
       return darkTheme
     case THEMES.CYBERPUNK:
       return cyberpunkTheme
-    case THEMES.CYBERPUNK_TURBO:
-      return cyberpunkTurboTheme
     default:
       return darkTheme
   }
@@ -158,6 +122,7 @@ export const generateCssVariables = (theme) => {
 // Apply theme to document
 export const applyTheme = (themeName) => {
   const theme = getThemeByName(themeName)
+  const settingsStore = useSettingsStore()
   const root = document.documentElement
 
   Object.entries(theme).forEach(([key, value]) => {
@@ -168,6 +133,6 @@ export const applyTheme = (themeName) => {
 
   // Set data attributes for special effects
   root.setAttribute('data-theme', themeName)
-  root.setAttribute('data-crt-effect', theme.crtEffect ? 'true' : 'false')
+  root.setAttribute('data-crt-effect', settingsStore.turboMode ? 'true' : 'false')
   root.setAttribute('data-text-glow', theme.textGlow ? 'true' : 'false')
 }
