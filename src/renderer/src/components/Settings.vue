@@ -217,19 +217,27 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useSettingsStore, THEMES } from '../store/settingsStore'
 import HotkeySettings from './HotkeySettings.vue'
+import { ThemeType } from '../types'
 
 // Define props and emits
-const emit = defineEmits(['close'])
+const emit = defineEmits<{
+  close: []
+}>()
 
 // Get the settings store
 const settingsStore = useSettingsStore()
 
 // Define sections for navigation
-const sections = [
+interface Section {
+  id: string
+  title: string
+}
+
+const sections: Section[] = [
   { id: 'theme', title: 'Theme' },
   { id: 'font', title: 'Font' },
   { id: 'editor', title: 'Editor' },
@@ -241,7 +249,7 @@ const sections = [
 ]
 
 // Define available font options
-const fontOptions = [
+const fontOptions: string[] = [
   "Consolas, 'Courier New', monospace",
   "'Courier New', monospace",
   "'Fira Code', monospace",
@@ -250,7 +258,7 @@ const fontOptions = [
 ]
 
 // Function to find the closest matching font option
-const findMatchingFontOption = (fontFamily) => {
+const findMatchingFontOption = (fontFamily: string): string => {
   // Try to find the exact match first
   const exactMatch = fontOptions.find((option) => option === fontFamily)
   if (exactMatch) return exactMatch
@@ -266,23 +274,23 @@ const findMatchingFontOption = (fontFamily) => {
 }
 
 // Track an active section
-const activeSection = ref('theme')
+const activeSection = ref<string>('theme')
 
 // Create reactive refs for all settings
-const theme = ref(settingsStore.theme)
-const turboMode = ref(settingsStore.turboMode)
-const fontSize = ref(settingsStore.fontSize)
-const fontFamily = ref(findMatchingFontOption(settingsStore.fontFamily))
-const tabSize = ref(settingsStore.tabSize)
-const insertSpaces = ref(settingsStore.insertSpaces)
-const wordWrap = ref(settingsStore.wordWrap)
-const lineNumbers = ref(settingsStore.lineNumbers)
-const autoSave = ref(settingsStore.autoSave)
-const autoSaveInterval = ref(settingsStore.autoSaveInterval)
-const autoUpdate = ref(settingsStore.autoUpdate)
-const checkForUpdatesOnStartup = ref(settingsStore.checkForUpdatesOnStartup)
-const lastDirectory = ref(settingsStore.lastDirectory)
-const bcryptRounds = ref(settingsStore.bcryptRounds)
+const theme = ref<ThemeType>(settingsStore.theme)
+const turboMode = ref<boolean>(settingsStore.turboMode)
+const fontSize = ref<number>(settingsStore.fontSize)
+const fontFamily = ref<string>(findMatchingFontOption(settingsStore.fontFamily))
+const tabSize = ref<number>(settingsStore.tabSize)
+const insertSpaces = ref<boolean>(settingsStore.insertSpaces)
+const wordWrap = ref<'on' | 'off' | 'wordWrapColumn' | 'bounded'>(settingsStore.wordWrap)
+const lineNumbers = ref<'on' | 'off' | 'relative' | 'interval'>(settingsStore.lineNumbers)
+const autoSave = ref<boolean>(settingsStore.autoSave)
+const autoSaveInterval = ref<number>(settingsStore.autoSaveInterval)
+const autoUpdate = ref<boolean>(settingsStore.autoUpdate)
+const checkForUpdatesOnStartup = ref<boolean>(settingsStore.checkForUpdatesOnStartup)
+const lastDirectory = ref<string>(settingsStore.lastDirectory)
+const bcryptRounds = ref<number>(settingsStore.bcryptRounds)
 
 // Watch for changes and update the store
 watch(theme, (newValue) => {
@@ -338,7 +346,7 @@ watch(bcryptRounds, (newValue) => {
 })
 
 // Reset settings to defaults
-const resetSettings = () => {
+const resetSettings = (): void => {
   if (confirm('Are you sure you want to reset all settings to their default values?')) {
     settingsStore.resetSettings()
 
@@ -361,7 +369,7 @@ const resetSettings = () => {
 }
 
 // Close the settings dialog
-const close = () => {
+const close = (): void => {
   emit('close')
 }
 

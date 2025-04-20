@@ -34,7 +34,7 @@
       </div>
       <div class="update-notification-body">
         <p>A new version ({{ updateInfo.version }}) is available.</p>
-        <p v-if="updateInfo.releaseNotes" class="release-notes" v-html="updateInfo.releaseNotes" />
+        <p v-if="updateInfo.releaseNotes" class="release-notes">{{ updateInfo.releaseNotes }}</p>
         <div class="update-notification-actions">
           <button v-if="!updateReadyToInstall" :disabled="downloading" @click="downloadUpdate">
             {{ downloadButtonText }}
@@ -47,42 +47,47 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 // State
-const showManualCheckUpdateStartedNotification = ref(false)
-const showManualCheckUpdateCompletedUpdateNotAvailableNotification = ref(false)
-const showUpdateAvailableNotification = ref(false)
+const showManualCheckUpdateStartedNotification = ref<boolean>(false)
+const showManualCheckUpdateCompletedUpdateNotAvailableNotification = ref<boolean>(false)
+const showUpdateAvailableNotification = ref<boolean>(false)
 
-const updateInfo = ref({
+interface UpdateInfo {
+  version: string
+  releaseNotes: string
+}
+
+const updateInfo = ref<UpdateInfo>({
   version: '',
   releaseNotes: ''
 })
-const downloading = ref(false)
-const downloadButtonText = ref('Download')
-const updateReadyToInstall = ref(false)
+const downloading = ref<boolean>(false)
+const downloadButtonText = ref<string>('Download')
+const updateReadyToInstall = ref<boolean>(false)
 
 // Methods
-const manualCheckUpdateStarted = () => {
+const manualCheckUpdateStarted = (): void => {
   showManualCheckUpdateStartedNotification.value = true
   showManualCheckUpdateCompletedUpdateNotAvailableNotification.value = false
   showUpdateAvailableNotification.value = false
 }
 
-const manualCheckUpdateCompletedUpdateNotAvailable = () => {
+const manualCheckUpdateCompletedUpdateNotAvailable = (): void => {
   showManualCheckUpdateStartedNotification.value = false
   showManualCheckUpdateCompletedUpdateNotAvailableNotification.value = true
   showUpdateAvailableNotification.value = false
 }
 
-const closeNotification = () => {
+const closeNotification = (): void => {
   showManualCheckUpdateStartedNotification.value = false
   showManualCheckUpdateCompletedUpdateNotAvailableNotification.value = false
   showUpdateAvailableNotification.value = false
 }
 
-const downloadUpdate = async () => {
+const downloadUpdate = async (): Promise<void> => {
   try {
     downloading.value = true
     downloadButtonText.value = 'Downloading (0%)...'
@@ -94,7 +99,7 @@ const downloadUpdate = async () => {
   }
 }
 
-const installUpdate = async () => {
+const installUpdate = async (): Promise<void> => {
   try {
     await window.api.installUpdate()
     updateReadyToInstall.value = false
@@ -105,24 +110,24 @@ const installUpdate = async () => {
 }
 
 // Event listeners
-const handleUpdateAvailable = (_, info) => {
+const handleUpdateAvailable = (_: never, info: UpdateInfo): void => {
   updateInfo.value = info
   showManualCheckUpdateStartedNotification.value = false
   showUpdateAvailableNotification.value = true
 }
 
-const handleDownloadProgress = (_, progress) => {
+const handleDownloadProgress = (_: never, progress: { percent: number }): void => {
   const percentTrunc = Math.trunc(progress.percent)
   downloadButtonText.value = `Downloading (${percentTrunc}%)...`
 }
 
-const handleUpdateDownloaded = (_, info) => {
+const handleUpdateDownloaded = (_: never, info: UpdateInfo): void => {
   updateInfo.value = info
   downloading.value = false
   updateReadyToInstall.value = true
 }
 
-const handleUpdateError = (_, error) => {
+const handleUpdateError = (_: never, error: string): void => {
   if (downloading.value) {
     alert(`Update error: ${error}`)
     downloading.value = false

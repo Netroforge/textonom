@@ -21,17 +21,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 
 // The CRT effect is now controlled by the data-crt-effect attribute
 // which is set in the applyTheme function
 
 // Glitch effect timing
-let glitchInterval = null
+let glitchInterval: ReturnType<typeof setInterval> | null = null
 
 // Create random glitches
-const createGlitch = () => {
+const createGlitch = (): void => {
   // Check if CRT effect is active using the data attribute
   if (document.documentElement.getAttribute('data-crt-effect') !== 'true') return
 
@@ -55,8 +55,8 @@ const createGlitch = () => {
 }
 
 // Original basic glitch effect
-const createBasicGlitch = (duration) => {
-  const glitchElement = document.querySelector('.crt-glitch-overlay')
+const createBasicGlitch = (duration: number): void => {
+  const glitchElement = document.querySelector('.crt-glitch-overlay') as HTMLElement
   if (!glitchElement) return
 
   // Apply random transform
@@ -76,8 +76,8 @@ const createBasicGlitch = (duration) => {
 }
 
 // Horizontal glitch lines
-const createHorizontalGlitch = (duration) => {
-  const element = document.querySelector('.crt-horizontal-glitch')
+const createHorizontalGlitch = (duration: number): void => {
+  const element = document.querySelector('.crt-horizontal-glitch') as HTMLElement
   if (!element) return
 
   // Make element visible
@@ -131,8 +131,8 @@ const createHorizontalGlitch = (duration) => {
 }
 
 // Color shift artifacts
-const createColorShift = (duration) => {
-  const element = document.querySelector('.crt-color-shift')
+const createColorShift = (duration: number): void => {
+  const element = document.querySelector('.crt-color-shift') as HTMLElement
   if (!element) return
 
   // Make element visible
@@ -201,7 +201,7 @@ const createColorShift = (duration) => {
 // Setup and cleanup glitch effect
 onMounted(() => {
   // Create glitches at random intervals
-  const setupGlitchInterval = () => {
+  const setupGlitchInterval = (): void => {
     if (glitchInterval) clearInterval(glitchInterval)
 
     glitchInterval = setInterval(() => {

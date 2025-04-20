@@ -20,16 +20,16 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useTransformationStore } from '../store/transformationStore'
 
 const transformationStore = useTransformationStore()
 
 // Computed properties
-const isTransforming = computed(() => transformationStore.isTransforming)
-const transformationName = computed(() => transformationStore.transformationName)
-const transformationDuration = computed(() => transformationStore.transformationDuration)
+const isTransforming = computed((): boolean => transformationStore.isTransforming)
+const transformationName = computed((): string => transformationStore.transformationName)
+const transformationDuration = computed((): number => transformationStore.transformationDuration)
 </script>
 
 <style scoped>

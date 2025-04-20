@@ -19,8 +19,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import TabBar from './components/TabBar.vue'
 import Editor from './components/Editor.vue'
 import TopNavBar from './components/TopNavBar.vue'
@@ -35,17 +35,17 @@ import { useHotkeysStore } from './store/hotkeysStore'
 import { applyTheme } from './styles/themes'
 
 // Refs
-const editorRef = ref(null)
-const updateNotificationRef = ref(null)
-const showSettings = ref(false)
-const showAbout = ref(false)
+const editorRef = ref<InstanceType<typeof Editor> | null>(null)
+const updateNotificationRef = ref<InstanceType<typeof UpdateNotification> | null>(null)
+const showSettings = ref<boolean>(false)
+const showAbout = ref<boolean>(false)
 
 // Get stores
 const settingsStore = useSettingsStore()
 const hotkeysStore = useHotkeysStore()
 
 // Handle menu actions
-const handleMenuAction = (action) => {
+const handleMenuAction = (action: string): void => {
   switch (action) {
     // File
     case 'new':
@@ -180,22 +180,22 @@ const handleMenuAction = (action) => {
   }
 }
 
-const handleNewTab = () => {
+const handleNewTab = (): void => {
   editorRef.value?.createNewTab()
 }
 
 // Close settings dialog
-const closeSettings = () => {
+const closeSettings = (): void => {
   showSettings.value = false
 }
 
 // Close about dialog
-const closeAbout = () => {
+const closeAbout = (): void => {
   showAbout.value = false
 }
 
 // Check for updates
-const checkForUpdates = async () => {
+const checkForUpdates = async (): Promise<void> => {
   try {
     updateNotificationRef.value.manualCheckUpdateStarted()
     window.api.checkForUpdates().then((result) => {
@@ -209,7 +209,7 @@ const checkForUpdates = async () => {
 }
 
 // Handle keyboard shortcuts
-const handleKeyDown = (event) => {
+const handleKeyDown = (event: KeyboardEvent): void => {
   // File menu shortcuts
   if (hotkeysStore.matchesAction(event, 'file.new')) {
     event.preventDefault()

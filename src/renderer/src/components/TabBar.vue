@@ -16,11 +16,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
 
-const emit = defineEmits(['new-tab'])
+const emit = defineEmits<{
+  'new-tab': []
+}>()
 
 // Get the tab's store
 const tabsStore = useTabsStore()
@@ -30,15 +32,15 @@ const tabs = computed(() => tabsStore.tabs)
 const activeTabId = computed(() => tabsStore.activeTabId)
 
 // Methods
-const setActiveTab = (tabId) => {
+const setActiveTab = (tabId: string): void => {
   tabsStore.setActiveTab(tabId)
 }
 
-const closeTab = (tabId) => {
+const closeTab = (tabId: string): void => {
   tabsStore.closeTab(tabId)
 }
 
-const createNewTab = () => {
+const createNewTab = (): void => {
   emit('new-tab')
 }
 </script>

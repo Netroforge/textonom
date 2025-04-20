@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-interface HotkeyConfig {
+export interface HotkeyConfig {
   key: string
   ctrl: boolean
   shift: boolean

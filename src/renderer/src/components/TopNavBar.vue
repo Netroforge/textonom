@@ -284,58 +284,61 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useHotkeysStore } from '../store/hotkeysStore'
+import Editor from '../components/Editor.vue'
 
 // Define props and emits
-defineProps({
-  editorRef: Object
-})
-const emit = defineEmits(['menu-action'])
+defineProps<{
+  editorRef: InstanceType<typeof Editor> | null
+}>()
+const emit = defineEmits<{
+  'menu-action': [action: string]
+}>()
 
 // State
-const activeMenu = ref('')
-const activeSubmenu = ref('')
-const menuClicked = ref(false)
+const activeMenu = ref<string>('')
+const activeSubmenu = ref<string>('')
+const menuClicked = ref<boolean>(false)
 
 // Get hotkeys store
 const hotkeysStore = useHotkeysStore()
 
 // Get hotkey string for display
-const getHotkeyString = (actionId) => {
+const getHotkeyString = (actionId: string): string => {
   return hotkeysStore.getHotkeyString(actionId)
 }
 
 // Toggle menu visibility
-const toggleMenu = (menu) => {
+const toggleMenu = (menu: string): void => {
   activeMenu.value = activeMenu.value === menu ? '' : menu
   activeSubmenu.value = ''
   menuClicked.value = activeMenu.value !== ''
 }
 
 // Close all menus
-const closeMenus = () => {
+const closeMenus = (): void => {
   activeMenu.value = ''
   activeSubmenu.value = ''
   menuClicked.value = false
 }
 
 // Handle menu actions
-const handleMenuAction = (action) => {
+const handleMenuAction = (action: string): void => {
   closeMenus()
   emit('menu-action', action)
 }
 
 // Add ref for the top nav bar
-const topNavRef = ref(null)
+const topNavRef = ref<HTMLElement | null>(null)
 
 // Use onMounted to add an event listener after a component is mounted
 onMounted(() => {
   // Handle clicks outside the menu and top nav
-  const handleOutsideClick = (event) => {
-    const isMenuClick = event.target.closest('.menu-container')
-    const isTopNavClick = event.target.closest('.top-nav')
+  const handleOutsideClick = (event: MouseEvent): void => {
+    const isMenuClick = (event.target as Element).closest('.menu-container')
+    const isTopNavClick = (event.target as Element).closest('.top-nav')
 
     // Close menus when clicking outside menu containers
     if (!isMenuClick) {

@@ -78,7 +78,7 @@ export interface Tab {
 }
 
 // Transformation function type
-export type TransformationFunction = (text: string, ...args: any[]) => Promise<string>
+export type TransformationFunction = (text: string, ...args: unknown[]) => Promise<string>
 
 // Transformation interface
 export interface Transformation {
@@ -90,7 +90,7 @@ export interface Transformation {
     name: string
     type: string
     description: string
-    default?: any
+    default?: never
   }[]
 }
 
@@ -106,7 +106,16 @@ export interface Hotkey {
 // Declare global window interface
 declare global {
   interface Window {
-    electron: any
+    electron: {
+      ipcRenderer: {
+        on: (channel: string, listener: (...args: unknown[]) => void) => void
+        off: (channel: string, listener: (...args: unknown[]) => void) => void
+        send: (channel: string, ...args: unknown[]) => void
+      }
+      process: {
+        versions: Record<string, string>
+      }
+    }
     api: ElectronAPI
   }
 }

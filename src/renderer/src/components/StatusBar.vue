@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore, THEMES } from '../store/settingsStore'
@@ -29,7 +29,7 @@ const settingsStore = useSettingsStore()
 const activeTab = computed(() => tabsStore.getActiveTab)
 
 // Get the current theme name
-const currentTheme = computed(() => {
+const currentTheme = computed((): string => {
   switch (settingsStore.theme) {
     case THEMES.LIGHT:
       return 'Light Theme'

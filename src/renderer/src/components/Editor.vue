@@ -30,13 +30,23 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import * as monaco from 'monaco-editor'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
@@ -45,17 +55,18 @@ import { applyTheme } from '../styles/themes'
 import transformations from '../transformations'
 import BcryptDialog from './BcryptDialog.vue'
 import TransformationOverlay from './TransformationOverlay.vue'
+import { TransformationFunction } from '../types'
 
 // Refs
-const editorContainer = ref(null)
-const monacoContainer = ref(null)
-let editor = null
-let autoSaveInterval = null
-let contentSaveInterval = null
+const editorContainer = ref<HTMLElement | null>(null)
+const monacoContainer = ref<HTMLElement | null>(null)
+let editor: monaco.editor.IStandaloneCodeEditor | null = null
+let autoSaveInterval: ReturnType<typeof setInterval> | null = null
+let contentSaveInterval: ReturnType<typeof setInterval> | null = null
 
 // Store models and editor states for each tab
-const tabIdToMonacoModelMap = new Map()
-const tabIdToMonacoEditorViewStateMap = new Map()
+const tabIdToMonacoModelMap = new Map<string, monaco.editor.ITextModel>()
+const tabIdToMonacoEditorViewStateMap = new Map<string, monaco.editor.ICodeEditorViewState | null>()
 
 // Get stores
 const tabsStore = useTabsStore()
@@ -66,26 +77,26 @@ const transformationStore = useTransformationStore()
 const activeTabId = computed(() => tabsStore.getActiveTabId)
 
 // Show error
-const showErrorPopup = ref(false)
-const errorMessage = ref('')
+const showErrorPopup = ref<boolean>(false)
+const errorMessage = ref<string>('')
 
 // Bcrypt dialog
-const showBcryptDialog = ref(false)
+const showBcryptDialog = ref<boolean>(false)
 
 // Create a new tab
-const createNewTab = () => {
-  const tab = tabsStore.addTab({
+const createNewTab = (): void => {
+  const tabId = tabsStore.addTab({
     title: 'Untitled',
     content: '',
     isUnsaved: true
   })
   if (!activeTabId.value) {
-    tabsStore.setActiveTab(tab.id)
+    tabsStore.setActiveTab(tabId)
   }
 }
 
 // Extract filename from a path (works with both forward and backslashes)
-const getFilenameFromPath = (filePath) => {
+const getFilenameFromPath = (filePath: string | null): string => {
   if (!filePath) return 'Untitled'
   // Replace backslashes with forward slashes for consistency
   const normalizedPath = filePath.replace(/\\/g, '/')
@@ -94,7 +105,7 @@ const getFilenameFromPath = (filePath) => {
 }
 
 // Open a file
-const openFile = async () => {
+const openFile = async (): Promise<void> => {
   try {
     // Pass the last directory from settings if available
     const result = await window.api.openFile({ lastDirectory: settingsStore.lastDirectory })
@@ -117,7 +128,7 @@ const openFile = async () => {
 }
 
 // Save the current file
-const saveFile = async () => {
+const saveFile = async (): Promise<void> => {
   const activeTab = tabsStore.getActiveTab
   if (!activeTab) return
 
@@ -145,7 +156,7 @@ const saveFile = async () => {
 }
 
 // Save the current file as a new file
-const saveFileAs = async () => {
+const saveFileAs = async (): Promise<void> => {
   const activeTab = tabsStore.getActiveTab
   if (!activeTab) return
 
@@ -172,7 +183,7 @@ const saveFileAs = async () => {
   }
 }
 
-const undo = async () => {
+const undo = async (): Promise<void> => {
   if (!editor) {
     console.error('Editor not initialized')
     return
@@ -180,13 +191,13 @@ const undo = async () => {
 
   try {
     await editor.focus()
-    await editor.trigger('keyboard', 'undo')
+    await editor.trigger('keyboard', 'undo', null)
   } catch (error) {
     console.error('Undo action failed:', error)
   }
 }
 
-const redo = async () => {
+const redo = async (): Promise<void> => {
   if (!editor) {
     console.error('Editor not initialized')
     return
@@ -194,13 +205,13 @@ const redo = async () => {
 
   try {
     await editor.focus()
-    await editor.trigger('keyboard', 'redo')
+    await editor.trigger('keyboard', 'redo', null)
   } catch (error) {
     console.error('Redo action failed:', error)
   }
 }
 
-const cut = async () => {
+const cut = async (): Promise<void> => {
   if (!editor) {
     console.error('Editor not initialized')
     return
@@ -214,7 +225,7 @@ const cut = async () => {
   }
 }
 
-const copy = async () => {
+const copy = async (): Promise<void> => {
   if (!editor) {
     console.error('Editor not initialized')
     return
@@ -228,7 +239,7 @@ const copy = async () => {
   }
 }
 
-const paste = async () => {
+const paste = async (): Promise<void> => {
   if (!editor) {
     console.error('Editor not initialized')
     return
@@ -242,7 +253,7 @@ const paste = async () => {
   }
 }
 
-const selectAll = async () => {
+const selectAll = async (): Promise<void> => {
   if (!editor) {
     console.error('Editor not initialized')
     return
@@ -256,125 +267,126 @@ const selectAll = async () => {
   }
 }
 
-const processBase64Encode = async () => {
+const processBase64Encode = async (): Promise<void> => {
   processTransformation(transformations.base64Encode)
 }
 
-const processBase64Decode = async () => {
+const processBase64Decode = async (): Promise<void> => {
   processTransformation(transformations.base64Decode)
 }
 
-const processJsonPrettify = async () => {
+const processJsonPrettify = async (): Promise<void> => {
   processTransformation(transformations.jsonPrettify)
 }
 
-const processJsonCompact = async () => {
+const processJsonCompact = async (): Promise<void> => {
   processTransformation(transformations.jsonCompact)
 }
 
-const processUrlEncode = async () => {
+const processUrlEncode = async (): Promise<void> => {
   processTransformation(transformations.urlEncode)
 }
 
-const processUrlDecode = async () => {
+const processUrlDecode = async (): Promise<void> => {
   processTransformation(transformations.urlDecode)
 }
 
-const processToUpperCase = async () => {
+const processToUpperCase = async (): Promise<void> => {
   processTransformation(transformations.toUpperCase)
 }
 
-const processToLowerCase = async () => {
+const processToLowerCase = async (): Promise<void> => {
   processTransformation(transformations.toLowerCase)
 }
 
-const processToTitleCase = async () => {
+const processToTitleCase = async (): Promise<void> => {
   processTransformation(transformations.toTitleCase)
 }
 
-const processXmlPrettify = async () => {
+const processXmlPrettify = async (): Promise<void> => {
   processTransformation(transformations.xmlPrettify)
 }
 
-const processXmlCompact = async () => {
+const processXmlCompact = async (): Promise<void> => {
   processTransformation(transformations.xmlCompact)
 }
 
-const processSortLines = async () => {
+const processSortLines = async (): Promise<void> => {
   processTransformation(transformations.sortLines)
 }
 
-const processDeduplicateLines = async () => {
+const processDeduplicateLines = async (): Promise<void> => {
   processTransformation(transformations.deduplicateLines)
 }
 
-const processReverseLines = async () => {
+const processReverseLines = async (): Promise<void> => {
   processTransformation(transformations.reverseLines)
 }
 
-const processHtmlEncode = async () => {
+const processHtmlEncode = async (): Promise<void> => {
   processTransformation(transformations.htmlEncode)
 }
 
-const processHtmlDecode = async () => {
+const processHtmlDecode = async (): Promise<void> => {
   processTransformation(transformations.htmlDecode)
 }
 
-const processMd5Hash = async () => {
+const processMd5Hash = async (): Promise<void> => {
   processTransformation(transformations.md5Hash)
 }
 
-const processSha1Hash = async () => {
+const processSha1Hash = async (): Promise<void> => {
   processTransformation(transformations.sha1Hash)
 }
 
-const processSha256Hash = async () => {
+const processSha256Hash = async (): Promise<void> => {
   processTransformation(transformations.sha256Hash)
 }
 
-const processBcryptHash = async () => {
+const processBcryptHash = async (): Promise<void> => {
   // Show the bcrypt dialog instead of directly applying the transformation
   showBcryptDialog.value = true
 }
 
 // Close the bcrypt dialog
-const closeBcryptDialog = () => {
+const closeBcryptDialog = (): void => {
   showBcryptDialog.value = false
 }
 
 // Apply bcrypt hash with custom rounds
-const applyBcryptHash = (rounds) => {
+const applyBcryptHash = (rounds: number): void => {
   // Create a function that will use the specified rounds
-  const bcryptWithCustomRounds = async (text) => transformations.bcryptHash(text, rounds)
+  const bcryptWithCustomRounds = async (text: string): Promise<string> =>
+    transformations.bcryptHash(text, rounds)
   processTransformation(bcryptWithCustomRounds)
 }
 
-const processUnicodeEscape = async () => {
+const processUnicodeEscape = async (): Promise<void> => {
   processTransformation(transformations.unicodeEscape)
 }
 
-const processUnicodeUnescape = async () => {
+const processUnicodeUnescape = async (): Promise<void> => {
   processTransformation(transformations.unicodeUnescape)
 }
 
-const processJsonToYaml = async () => {
+const processJsonToYaml = async (): Promise<void> => {
   processTransformation(transformations.jsonToYaml)
 }
 
-const processYamlToJson = async () => {
+const processYamlToJson = async (): Promise<void> => {
   processTransformation(transformations.yamlToJson)
 }
 
-const processPropertiesToYaml = async () => {
+const processPropertiesToYaml = async (): Promise<void> => {
   processTransformation(transformations.propertiesFileToYaml)
 }
 
-const processYamlToProperties = async () => {
+const processYamlToProperties = async (): Promise<void> => {
   processTransformation(transformations.yamlToPropertiesFile)
 }
 
 // Get transformation name from function
-const getTransformationName = (transformFn) => {
+const getTransformationName = (transformFn: TransformationFunction): string => {
   // Find the transformation name by comparing the function reference
   for (const [key, value] of Object.entries(transformations)) {
     if (value === transformFn) {
@@ -385,7 +397,7 @@ const getTransformationName = (transformFn) => {
   return 'Transformation' // Default name if not found
 }
 
-const processTransformation = async (transformFn) => {
+const processTransformation = async (transformFn: TransformationFunction): Promise<void> => {
   if (!editor) return
 
   const model = editor.getModel()
@@ -441,13 +453,13 @@ const processTransformation = async (transformFn) => {
   }
 }
 
-const closeErrorPopup = () => {
+const closeErrorPopup = (): void => {
   showErrorPopup.value = false
   errorMessage.value = ''
 }
 
 // Detect language from file extension
-const detectLanguage = (filename) => {
+const detectLanguage = (filename: string | null): string => {
   if (!filename) return 'plaintext'
 
   // Handle filenames with multiple dots correctly
@@ -494,7 +506,7 @@ const detectLanguage = (filename) => {
 }
 
 // Create or get a model for a tab
-const getOrCreateModel = (tabId) => {
+const getOrCreateModel = (tabId: string | null): monaco.editor.ITextModel | null => {
   if (!tabId) return null
 
   // Check if we already have a model for this tab
@@ -518,7 +530,7 @@ const getOrCreateModel = (tabId) => {
 }
 
 // Dispose of a model for a tab
-const disposeModel = (tabId) => {
+const disposeModel = (tabId): void => {
   if (tabIdToMonacoModelMap.has(tabId)) {
     const model = tabIdToMonacoModelMap.get(tabId)
     model.dispose()
@@ -532,7 +544,7 @@ const disposeModel = (tabId) => {
 }
 
 // Initialize the editor
-const initEditor = () => {
+const initEditor = (): void => {
   if (!monacoContainer.value) return
 
   // Create the editor without a model initially
@@ -594,7 +606,7 @@ const initEditor = () => {
 }
 
 // Set up auto-save
-const setupAutoSave = () => {
+const setupAutoSave = (): void => {
   if (autoSaveInterval) {
     clearInterval(autoSaveInterval)
     autoSaveInterval = null
@@ -613,7 +625,7 @@ const setupAutoSave = () => {
 }
 
 // Update editor settings
-const updateEditorSettings = () => {
+const updateEditorSettings = (): void => {
   if (!editor) return
 
   editor.updateOptions({
@@ -630,7 +642,7 @@ const updateEditorSettings = () => {
 }
 
 // Function to save content before unloading
-const saveBeforeUnload = () => {
+const saveBeforeUnload = (): void => {
   const activeTab = tabsStore.getActiveTab
   if (editor && activeTab) {
     // Make sure the current tab content is saved
@@ -642,7 +654,7 @@ const saveBeforeUnload = () => {
 }
 
 // Configure Monaco Editor workers
-const configureMonacoWorkers = () => {
+const configureMonacoWorkers = (): undefined => {
   // Configure Monaco Editor workers
   window.MonacoEnvironment = {
     getWorker(_, label) {

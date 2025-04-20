@@ -31,14 +31,16 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
 // Define props and emits
-const emit = defineEmits(['close'])
+const emit = defineEmits<{
+  close: []
+}>()
 
 // App version
-const appVersion = ref('Loading...')
+const appVersion = ref<string>('Loading...')
 
 // Get app version on mount
 onMounted(async () => {
@@ -51,7 +53,7 @@ onMounted(async () => {
 })
 
 // Close the about dialog
-const close = () => {
+const close = (): void => {
   emit('close')
 }
 </script>

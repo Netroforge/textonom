@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
 
@@ -34,10 +34,10 @@ import { useTabsStore } from '../store/tabsStore'
 const tabsStore = useTabsStore()
 
 // State for a window maximized status
-const isMaximized = ref(false)
+const isMaximized = ref<boolean>(false)
 
 // Computed property for the app title
-const appTitle = computed(() => {
+const appTitle = computed((): string => {
   const activeTab = tabsStore.getActiveTab
   if (!activeTab) {
     return 'Textonom'
@@ -73,21 +73,21 @@ onBeforeUnmount(() => {
 })
 
 // Check if window is maximized
-const checkMaximizedState = async () => {
+const checkMaximizedState = async (): Promise<void> => {
   isMaximized.value = await window.api.isWindowMaximized()
 }
 
 // Window control functions
-const minimizeWindow = () => {
+const minimizeWindow = (): void => {
   window.api.minimizeWindow()
 }
 
-const toggleMaximize = async () => {
+const toggleMaximize = async (): Promise<void> => {
   const maximized = await window.api.maximizeWindow()
   isMaximized.value = maximized
 }
 
-const closeWindow = () => {
+const closeWindow = (): void => {
   window.api.closeWindow()
 }
 </script>

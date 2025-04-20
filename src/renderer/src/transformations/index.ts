@@ -218,7 +218,7 @@ export const propertiesFileToYaml: TransformationFunction = async (
     if (!text) return ''
     // Handle different types of newlines (CR, LF, CRLF)
     const lines = text.split(/\r\n|\r|\n/)
-    const result: Record<string, any> = {}
+    const result: Record<string, unknown> = {}
 
     for (const line of lines) {
       // Skip comments and empty lines
@@ -238,9 +238,9 @@ export const propertiesFileToYaml: TransformationFunction = async (
         for (let i = 0; i < keyParts.length - 1; i++) {
           const part = keyParts[i]
           if (!current[part]) {
-            current[part] = {}
+            current[part] = {} as Record<string, unknown>
           }
-          current = current[part]
+          current = current[part] as Record<string, unknown>
         }
 
         // Set the value for the last key part
@@ -260,14 +260,14 @@ export const yamlToPropertiesFile: TransformationFunction = async (
   text: string
 ): Promise<string> => {
   try {
-    const parsed = yaml.load(text) as Record<string, any>
+    const parsed = yaml.load(text) as Record<string, unknown>
     const lines: string[] = []
 
     // Recursive function to flatten nested objects
-    const flattenObject = (obj: Record<string, any>, prefix = '') => {
+    const flattenObject = (obj: Record<string, unknown>, prefix = ''): void => {
       for (const key in obj) {
         if (typeof obj[key] === 'object' && obj[key] !== null) {
-          flattenObject(obj[key], prefix + key + '.')
+          flattenObject(obj[key] as Record<string, unknown>, prefix + key + '.')
         } else {
           lines.push(prefix + key + '=' + obj[key])
         }

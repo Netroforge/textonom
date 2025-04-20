@@ -33,40 +33,43 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useSettingsStore } from '../store/settingsStore'
 
 // Define props and emits
-const emit = defineEmits(['close', 'apply'])
+const emit = defineEmits<{
+  close: []
+  apply: [rounds: number]
+}>()
 
 // Get the settings store
 const settingsStore = useSettingsStore()
 
 // Create reactive ref for rounds
-const rounds = ref(settingsStore.bcryptRounds)
+const rounds = ref<number>(settingsStore.bcryptRounds)
 
 // Validate rounds to ensure they're within range
-const validateRounds = () => {
+const validateRounds = (): void => {
   // Convert to number and clamp between 1 and 20
   rounds.value = Math.max(1, Math.min(20, Number(rounds.value) || 1))
 }
 
 // Save the current rounds as the default in settings
-const saveAsDefault = () => {
+const saveAsDefault = (): void => {
   settingsStore.setBcryptRounds(rounds.value)
   emit('apply', rounds.value)
   emit('close')
 }
 
 // Apply the current rounds just for this operation
-const applyOnce = () => {
+const applyOnce = (): void => {
   emit('apply', rounds.value)
   emit('close')
 }
 
 // Close the dialog
-const close = () => {
+const close = (): void => {
   emit('close')
 }
 
