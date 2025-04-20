@@ -6,7 +6,7 @@ import xmlFormat from 'xml-formatter'
 import { useSettingsStore } from '../store/settingsStore'
 
 // Base64 transformations
-export const base64Encode = (text) => {
+export const base64Encode = async (text) => {
   try {
     return Base64.encode(text)
   } catch (error) {
@@ -15,7 +15,7 @@ export const base64Encode = (text) => {
   }
 }
 
-export const base64Decode = (text) => {
+export const base64Decode = async (text) => {
   try {
     return Base64.decode(text)
   } catch (error) {
@@ -25,7 +25,7 @@ export const base64Decode = (text) => {
 }
 
 // JSON transformations
-export const jsonPrettify = (text) => {
+export const jsonPrettify = async (text) => {
   try {
     const parsed = JSON.parse(text)
     return JSON.stringify(parsed, null, 2)
@@ -35,7 +35,7 @@ export const jsonPrettify = (text) => {
   }
 }
 
-export const jsonCompact = (text) => {
+export const jsonCompact = async (text) => {
   try {
     const parsed = JSON.parse(text)
     return JSON.stringify(parsed)
@@ -46,7 +46,7 @@ export const jsonCompact = (text) => {
 }
 
 // URL transformations
-export const urlEncode = (text) => {
+export const urlEncode = async (text) => {
   try {
     return encodeURIComponent(text)
   } catch (error) {
@@ -55,7 +55,7 @@ export const urlEncode = (text) => {
   }
 }
 
-export const urlDecode = (text) => {
+export const urlDecode = async (text) => {
   try {
     return decodeURIComponent(text)
   } catch (error) {
@@ -65,9 +65,9 @@ export const urlDecode = (text) => {
 }
 
 // Case transformations
-export const toUpperCase = (text) => text.toUpperCase()
-export const toLowerCase = (text) => text.toLowerCase()
-export const toTitleCase = (text) => {
+export const toUpperCase = async (text) => text.toUpperCase()
+export const toLowerCase = async (text) => text.toLowerCase()
+export const toTitleCase = async (text) => {
   return text
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -75,7 +75,7 @@ export const toTitleCase = (text) => {
 }
 
 // XML transformations
-export const xmlPrettify = (text) => {
+export const xmlPrettify = async (text) => {
   try {
     return xmlFormat(text)
   } catch (error) {
@@ -84,7 +84,7 @@ export const xmlPrettify = (text) => {
   }
 }
 
-export const xmlCompact = (text) => {
+export const xmlCompact = async (text) => {
   try {
     return xmlFormat.minify(text, {
       filter: (node) => node.type !== 'Comment',
@@ -97,21 +97,21 @@ export const xmlCompact = (text) => {
 }
 
 // Line operations
-export const sortLines = (text) => {
+export const sortLines = async (text) => {
   if (!text) return text
   // Handle different types of newlines (CR, LF, CRLF)
   const lines = text.split(/\r\n|\r|\n/)
   return lines.sort().join('\n')
 }
 
-export const deduplicateLines = (text) => {
+export const deduplicateLines = async (text) => {
   if (!text) return text
   // Handle different types of newlines (CR, LF, CRLF)
   const lines = text.split(/\r\n|\r|\n/)
   return [...new Set(lines)].join('\n')
 }
 
-export const reverseLines = (text) => {
+export const reverseLines = async (text) => {
   if (!text) return text
   // Handle different types of newlines (CR, LF, CRLF)
   const lines = text.split(/\r\n|\r|\n/)
@@ -119,32 +119,32 @@ export const reverseLines = (text) => {
 }
 
 // HTML transformations
-export const htmlEncode = (text) => {
+export const htmlEncode = async (text) => {
   const el = document.createElement('div')
   el.innerText = text
   return el.innerHTML
 }
 
-export const htmlDecode = (text) => {
+export const htmlDecode = async (text) => {
   const el = document.createElement('div')
   el.innerHTML = text
   return el.innerText
 }
 
 // Hash generation
-export const md5Hash = (text) => {
+export const md5Hash = async (text) => {
   return CryptoJS.MD5(text).toString()
 }
 
-export const sha1Hash = (text) => {
+export const sha1Hash = async (text) => {
   return CryptoJS.SHA1(text).toString()
 }
 
-export const sha256Hash = (text) => {
+export const sha256Hash = async (text) => {
   return CryptoJS.SHA256(text).toString()
 }
 
-export const bcryptHash = (text, costFactor) => {
+export const bcryptHash = async (text, costFactor) => {
   // If no cost factor is provided, use the one from settings
   if (costFactor === undefined) {
     const settingsStore = useSettingsStore()
@@ -154,24 +154,34 @@ export const bcryptHash = (text, costFactor) => {
   // Ensure the cost factor is within the allowed range (1-20)
   costFactor = Math.max(1, Math.min(20, Number(costFactor)))
 
-  return bcrypt.hashSync(text, costFactor)
+  // Use the async version of bcrypt hash to prevent UI freezing
+  // This wraps the callback-based hash in a Promise
+  return new Promise((resolve, reject) => {
+    bcrypt.hash(text, costFactor, (err, hash) => {
+      if (err) {
+        reject(new Error('Failed to generate bcrypt hash: ' + err.message))
+      } else {
+        resolve(hash)
+      }
+    })
+  })
 }
 
 // Unicode escaping
-export const unicodeEscape = (text) => {
+export const unicodeEscape = async (text) => {
   return text.replace(/[\u007F-\uFFFF]/g, (char) => {
     return '\\u' + ('0000' + char.charCodeAt(0).toString(16)).slice(-4)
   })
 }
 
-export const unicodeUnescape = (text) => {
+export const unicodeUnescape = async (text) => {
   return text.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => {
     return String.fromCharCode(parseInt(hex, 16))
   })
 }
 
 // JSON to YAML conversion
-export const jsonToYaml = (text) => {
+export const jsonToYaml = async (text) => {
   try {
     const parsed = JSON.parse(text)
     return yaml.dump(parsed)
@@ -181,7 +191,7 @@ export const jsonToYaml = (text) => {
   }
 }
 
-export const yamlToJson = (text) => {
+export const yamlToJson = async (text) => {
   try {
     const parsed = yaml.load(text)
     return JSON.stringify(parsed, null, 2)
@@ -192,7 +202,7 @@ export const yamlToJson = (text) => {
 }
 
 // Spring Boot properties conversion
-export const propertiesFileToYaml = (text) => {
+export const propertiesFileToYaml = async (text) => {
   try {
     if (!text) return ''
     // Handle different types of newlines (CR, LF, CRLF)
@@ -234,7 +244,7 @@ export const propertiesFileToYaml = (text) => {
   }
 }
 
-export const yamlToPropertiesFile = (text) => {
+export const yamlToPropertiesFile = async (text) => {
   try {
     const parsed = yaml.load(text)
     const lines = []

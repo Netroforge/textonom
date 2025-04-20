@@ -24,6 +24,9 @@
 
     <!-- Bcrypt Dialog -->
     <BcryptDialog v-if="showBcryptDialog" @close="closeBcryptDialog" @apply="applyBcryptHash" />
+
+    <!-- Transformation Overlay -->
+    <TransformationOverlay />
   </div>
 </template>
 
@@ -37,9 +40,11 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
+import { useTransformationStore } from '../store/transformationStore'
 import { applyTheme } from '../styles/themes'
 import transformations from '../transformations'
 import BcryptDialog from './BcryptDialog.vue'
+import TransformationOverlay from './TransformationOverlay.vue'
 
 // Refs
 const editorContainer = ref(null)
@@ -55,6 +60,7 @@ const tabIdToMonacoEditorViewStateMap = new Map()
 // Get stores
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
+const transformationStore = useTransformationStore()
 
 // Computed properties
 const activeTabId = computed(() => tabsStore.getActiveTabId)
@@ -339,7 +345,7 @@ const closeBcryptDialog = () => {
 // Apply bcrypt hash with custom rounds
 const applyBcryptHash = (rounds) => {
   // Create a function that will use the specified rounds
-  const bcryptWithCustomRounds = (text) => transformations.bcryptHash(text, rounds)
+  const bcryptWithCustomRounds = async (text) => transformations.bcryptHash(text, rounds)
   processTransformation(bcryptWithCustomRounds)
 }
 
@@ -367,38 +373,69 @@ const processYamlToProperties = async () => {
   processTransformation(transformations.yamlToPropertiesFile)
 }
 
-const processTransformation = (transformFn) => {
+// Get transformation name from function
+const getTransformationName = (transformFn) => {
+  // Find the transformation name by comparing the function reference
+  for (const [key, value] of Object.entries(transformations)) {
+    if (value === transformFn) {
+      // Convert camelCase to Title Case
+      return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
+    }
+  }
+  return 'Transformation' // Default name if not found
+}
+
+const processTransformation = async (transformFn) => {
   if (!editor) return
 
   const model = editor.getModel()
   if (!model) return
 
+  // Get a transformation name for display
+  const transformationName = getTransformationName(transformFn)
+
+  // Start transformation and show overlay
+  transformationStore.startTransformation(transformationName)
+
   try {
     // Get the current selection or use an entire document
     const selection = editor.getSelection()
     let text
+    let transformedText
 
+    // Process the transformation
     if (selection && !selection.isEmpty()) {
       // Transform selected text only
       text = model.getValueInRange(selection)
-      const transformedText = transformFn(text)
-
-      // Apply the transformation as an edit operation to preserve undo history
-      editor.executeEdits('transformation', [{ range: selection, text: transformedText }])
+      transformedText = await transformFn(text)
     } else {
       // Transform entire document
       text = model.getValue()
-      const transformedText = transformFn(text)
+      transformedText = await transformFn(text)
+    }
 
+    // Add a small delay to ensure the animation is visible even for quick transformations
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // Apply the transformation
+    if (selection && !selection.isEmpty()) {
+      // Apply the transformation as an edit operation to preserve undo history
+      editor.executeEdits('transformation', [{ range: selection, text: transformedText }])
+    } else {
       // Calculate the full document range
       const fullRange = model.getFullModelRange()
 
       // Apply the transformation as an edit operation to preserve undo history
       editor.executeEdits('transformation', [{ range: fullRange, text: transformedText }])
     }
+
     editor.focus()
+
+    // End transformation and hide overlay
+    transformationStore.endTransformation()
   } catch (error) {
     console.error('Transformation failed:', error)
+    transformationStore.cancelTransformation()
     showErrorPopup.value = true
     errorMessage.value = error.message
   }
