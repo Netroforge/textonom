@@ -74,4 +74,4 @@ The following table outlines the detailed project requirements of Textonom app.
 
 ## Tech stack
 
-JavaScript, Vue, Electron, electron-vite, monaco-editor
+TypeScript, Vue, Electron, electron-vite
