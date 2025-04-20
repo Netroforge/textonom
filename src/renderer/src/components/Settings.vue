@@ -383,6 +383,9 @@ onMounted(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  height: 44px; /* Fixed height to match section title */
+  display: flex;
+  align-items: center;
 }
 
 .settings-nav-item:hover {
@@ -423,6 +426,9 @@ onMounted(() => {
   border-bottom: 1px solid var(--border);
   z-index: 5;
   font-weight: bold;
+  height: 44px; /* Fixed height to match nav items */
+  display: flex;
+  align-items: center;
 }
 
 .settings-section-content {
