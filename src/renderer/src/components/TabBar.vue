@@ -46,7 +46,7 @@ const createNewTab = (): void => {
 </script>
 
 <style scoped>
-/* Local tab styling */
+/* Tab styling */
 .tabs-container {
   display: flex;
   position: relative;
@@ -61,6 +61,44 @@ const createNewTab = (): void => {
   white-space: nowrap;
   flex: 1;
   padding-right: 40px; /* Make space for the new tab button */
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: var(--tabBackground);
+  color: var(--tabText);
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+.tab.active {
+  background-color: var(--tabActiveBackground);
+  color: var(--tabActiveText);
+  border-bottom: 2px solid var(--tabActiveBorder);
+}
+
+.tab:hover:not(.active) {
+  background-color: var(--tabHoverBackground);
+}
+
+.tab-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-close {
+  margin-left: 0.5rem;
+  opacity: 0.7;
+}
+
+.tab-close:hover {
+  opacity: 1;
 }
 
 .new-tab-button {

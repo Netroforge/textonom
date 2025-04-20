@@ -362,7 +362,62 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Menu styling is in global.css */
+/* Top navigation bar */
+.top-nav {
+  display: flex;
+  background-color: var(--surface);
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.top-nav-item {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  color: var(--text);
+  position: relative;
+}
+
+.top-nav-item:hover {
+  background-color: var(--menuHoverBackground);
+}
+
+/* Menu styling */
+.menu-container {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--menuBackground);
+  border: 1px solid var(--menuBorder);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.menu-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.menu-item .hotkey-hint {
+  margin-left: 20px;
+  opacity: 0.7;
+  font-size: 0.85em;
+  color: var(--text);
+}
+
+.menu-item:hover {
+  background-color: var(--menuHoverBackground);
+}
+
 .menu-item.has-submenu {
   position: relative;
 }
@@ -371,19 +426,16 @@ onMounted(() => {
   position: absolute;
   left: 100%;
   top: 0;
+  background-color: var(--menuBackground);
+  border: 1px solid var(--menuBorder);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  min-width: 200px;
   z-index: 1001;
-}
-
-.menu-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.hotkey-hint {
-  margin-left: 20px;
-  opacity: 0.7;
-  font-size: 0.85em;
-  color: var(--text);
+  /* Ensure submenu appears above other elements */
+  margin-left: 0;
+  /* Ensure no margin is pushing the submenu */
+  margin-top: 0;
+  /* Ensure no margin is pushing the submenu */
 }
 </style>

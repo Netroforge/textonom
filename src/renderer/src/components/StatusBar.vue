@@ -44,6 +44,19 @@ const currentTheme = computed((): string => {
 </script>
 
 <style scoped>
+/* Status bar */
+.status-bar {
+  display: flex;
+  background-color: var(--surface);
+  padding: 0.25rem 0.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  justify-content: space-between;
+  height: 24px;
+  min-height: auto;
+  overflow: hidden;
+}
+
 .status-left, .status-right {
   display: flex;
   align-items: center;
@@ -60,5 +73,6 @@ const currentTheme = computed((): string => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-right: 1rem;
 }
 </style>

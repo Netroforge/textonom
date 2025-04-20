@@ -381,12 +381,79 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Settings dialog */
+.settings-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.settings-content {
+  background-color: var(--surface);
+  border-radius: 8px;
+  width: 80%;
+  max-width: 900px;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background-color: var(--surface);
+  z-index: 10;
+  width: 100%;
+  padding: 1rem 1rem 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.settings-label {
+  flex: 1;
+}
+
+.settings-control {
+  flex: 2;
+}
+
 .settings-description {
   margin-left: 8px;
   font-size: 0.9em;
   color: var(--text);
   opacity: 0.8;
 }
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid var(--border);
+  background-color: var(--surface);
+}
+
 /* Settings layout styling */
 .settings-layout {
   display: flex;
@@ -470,6 +537,22 @@ onMounted(() => {
   max-width: 500px;
 }
 
+/* Update notification button */
+.check-updates-btn {
+  background-color: var(--primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.check-updates-btn:hover {
+  background-color: var(--info);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .settings-layout {
@@ -489,6 +572,20 @@ onMounted(() => {
 
   .settings-section {
     position: relative;
+  }
+
+  .settings-content {
+    width: 95%;
+  }
+
+  .settings-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .settings-control {
+    width: 100%;
+    margin-top: 0.25rem;
   }
 }
 </style>
