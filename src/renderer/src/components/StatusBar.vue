@@ -44,5 +44,21 @@ const currentTheme = computed((): string => {
 </script>
 
 <style scoped>
-/* Status bar styling is in global.css */
+.status-left, .status-right {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.status-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.status-item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>

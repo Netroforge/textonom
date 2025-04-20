@@ -11,7 +11,13 @@
         </div>
       </div>
     </div>
-    <div ref="monacoContainer" class="monaco-container"></div>
+    <textarea
+      v-if="activeTabId"
+      ref="textareaEditor"
+      class="textarea-editor"
+      spellcheck="false"
+      @input="handleTextareaInput"
+    ></textarea>
 
     <!-- Error Popup -->
     <div v-if="showErrorPopup" class="error-popup">
@@ -32,22 +38,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import * as monaco from 'monaco-editor'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import { useTabsStore } from '../store/tabsStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { useTransformationStore } from '../store/transformationStore'
@@ -59,14 +49,9 @@ import { TransformationFunction } from '../types'
 
 // Refs
 const editorContainer = ref<HTMLElement | null>(null)
-const monacoContainer = ref<HTMLElement | null>(null)
-let editor: monaco.editor.IStandaloneCodeEditor | null = null
+const textareaEditor = ref<HTMLTextAreaElement | null>(null)
 let autoSaveInterval: ReturnType<typeof setInterval> | null = null
 let contentSaveInterval: ReturnType<typeof setInterval> | null = null
-
-// Store models and editor states for each tab
-const tabIdToMonacoModelMap = new Map<string, monaco.editor.ITextModel>()
-const tabIdToMonacoEditorViewStateMap = new Map<string, monaco.editor.ICodeEditorViewState | null>()
 
 // Get stores
 const tabsStore = useTabsStore()
@@ -133,8 +118,7 @@ const saveFile = async (): Promise<void> => {
   if (!activeTab) return
 
   try {
-    const model = editor.getModel()
-    const content = model.getValue()
+    const content = textareaEditor.value?.value || ''
     const result = await window.api.saveFile({
       filePath: activeTab.filePath,
       content,
@@ -161,8 +145,7 @@ const saveFileAs = async (): Promise<void> => {
   if (!activeTab) return
 
   try {
-    const model = editor.getModel()
-    const content = model.getValue()
+    const content = textareaEditor.value?.value || ''
     const result = await window.api.saveFileAs({
       content,
       currentPath: activeTab.filePath,
@@ -183,164 +166,146 @@ const saveFileAs = async (): Promise<void> => {
   }
 }
 
-const undo = async (): Promise<void> => {
-  if (!editor) {
-    console.error('Editor not initialized')
-    return
-  }
+const undo = (): void => {
+  if (!textareaEditor.value) return
 
   try {
-    await editor.focus()
-    await editor.trigger('keyboard', 'undo', null)
+    textareaEditor.value.focus()
+    document.execCommand('undo')
   } catch (error) {
     console.error('Undo action failed:', error)
   }
 }
 
-const redo = async (): Promise<void> => {
-  if (!editor) {
-    console.error('Editor not initialized')
-    return
-  }
+const redo = (): void => {
+  if (!textareaEditor.value) return
 
   try {
-    await editor.focus()
-    await editor.trigger('keyboard', 'redo', null)
+    textareaEditor.value.focus()
+    document.execCommand('redo')
   } catch (error) {
     console.error('Redo action failed:', error)
   }
 }
 
-const cut = async (): Promise<void> => {
-  if (!editor) {
-    console.error('Editor not initialized')
-    return
-  }
+const cut = (): void => {
+  if (!textareaEditor.value) return
 
   try {
-    editor.focus()
-    await editor.trigger('keyboard', 'editor.action.clipboardCutAction', null)
+    textareaEditor.value.focus()
+    document.execCommand('cut')
   } catch (error) {
     console.error('Cut action failed:', error)
   }
 }
 
-const copy = async (): Promise<void> => {
-  if (!editor) {
-    console.error('Editor not initialized')
-    return
-  }
+const copy = (): void => {
+  if (!textareaEditor.value) return
 
   try {
-    editor.focus()
-    await editor.trigger('keyboard', 'editor.action.clipboardCopyAction', null)
+    textareaEditor.value.focus()
+    document.execCommand('copy')
   } catch (error) {
     console.error('Copy action failed:', error)
   }
 }
 
-const paste = async (): Promise<void> => {
-  if (!editor) {
-    console.error('Editor not initialized')
-    return
-  }
+const paste = (): void => {
+  if (!textareaEditor.value) return
 
   try {
-    editor.focus()
-    await editor.trigger('keyboard', 'editor.action.clipboardPasteAction', null)
+    textareaEditor.value.focus()
+    document.execCommand('paste')
   } catch (error) {
     console.error('Paste action failed:', error)
   }
 }
 
-const selectAll = async (): Promise<void> => {
-  if (!editor) {
-    console.error('Editor not initialized')
-    return
-  }
+const selectAll = (): void => {
+  if (!textareaEditor.value) return
 
   try {
-    editor.focus()
-    await editor.trigger('keyboard', 'editor.action.selectAll', null)
+    textareaEditor.value.focus()
+    textareaEditor.value.select()
   } catch (error) {
     console.error('Select all action failed:', error)
   }
 }
 
 const processBase64Encode = async (): Promise<void> => {
-  processTransformation(transformations.base64Encode)
+  await processTransformation(transformations.base64Encode)
 }
 
 const processBase64Decode = async (): Promise<void> => {
-  processTransformation(transformations.base64Decode)
+  await processTransformation(transformations.base64Decode)
 }
 
 const processJsonPrettify = async (): Promise<void> => {
-  processTransformation(transformations.jsonPrettify)
+  await processTransformation(transformations.jsonPrettify)
 }
 
 const processJsonCompact = async (): Promise<void> => {
-  processTransformation(transformations.jsonCompact)
+  await processTransformation(transformations.jsonCompact)
 }
 
 const processUrlEncode = async (): Promise<void> => {
-  processTransformation(transformations.urlEncode)
+  await processTransformation(transformations.urlEncode)
 }
 
 const processUrlDecode = async (): Promise<void> => {
-  processTransformation(transformations.urlDecode)
+  await processTransformation(transformations.urlDecode)
 }
 
 const processToUpperCase = async (): Promise<void> => {
-  processTransformation(transformations.toUpperCase)
+  await processTransformation(transformations.toUpperCase)
 }
 
 const processToLowerCase = async (): Promise<void> => {
-  processTransformation(transformations.toLowerCase)
+  await processTransformation(transformations.toLowerCase)
 }
 
 const processToTitleCase = async (): Promise<void> => {
-  processTransformation(transformations.toTitleCase)
+  await processTransformation(transformations.toTitleCase)
 }
 
 const processXmlPrettify = async (): Promise<void> => {
-  processTransformation(transformations.xmlPrettify)
+  await processTransformation(transformations.xmlPrettify)
 }
 
 const processXmlCompact = async (): Promise<void> => {
-  processTransformation(transformations.xmlCompact)
+  await processTransformation(transformations.xmlCompact)
 }
 
 const processSortLines = async (): Promise<void> => {
-  processTransformation(transformations.sortLines)
+  await processTransformation(transformations.sortLines)
 }
 
 const processDeduplicateLines = async (): Promise<void> => {
-  processTransformation(transformations.deduplicateLines)
+  await processTransformation(transformations.deduplicateLines)
 }
 
 const processReverseLines = async (): Promise<void> => {
-  processTransformation(transformations.reverseLines)
+  await processTransformation(transformations.reverseLines)
 }
 
 const processHtmlEncode = async (): Promise<void> => {
-  processTransformation(transformations.htmlEncode)
+  await processTransformation(transformations.htmlEncode)
 }
 
 const processHtmlDecode = async (): Promise<void> => {
-  processTransformation(transformations.htmlDecode)
+  await processTransformation(transformations.htmlDecode)
 }
 
 const processMd5Hash = async (): Promise<void> => {
-  processTransformation(transformations.md5Hash)
+  await processTransformation(transformations.md5Hash)
 }
 
 const processSha1Hash = async (): Promise<void> => {
-  processTransformation(transformations.sha1Hash)
+  await processTransformation(transformations.sha1Hash)
 }
 
 const processSha256Hash = async (): Promise<void> => {
-  processTransformation(transformations.sha256Hash)
+  await processTransformation(transformations.sha256Hash)
 }
 
 const processBcryptHash = async (): Promise<void> => {
@@ -354,35 +319,35 @@ const closeBcryptDialog = (): void => {
 }
 
 // Apply bcrypt hash with custom rounds
-const applyBcryptHash = (rounds: number): void => {
+const applyBcryptHash = async (rounds: number): Promise<void> => {
   // Create a function that will use the specified rounds
   const bcryptWithCustomRounds = async (text: string): Promise<string> =>
     transformations.bcryptHash(text, rounds)
-  processTransformation(bcryptWithCustomRounds)
+  await processTransformation(bcryptWithCustomRounds)
 }
 
 const processUnicodeEscape = async (): Promise<void> => {
-  processTransformation(transformations.unicodeEscape)
+  await processTransformation(transformations.unicodeEscape)
 }
 
 const processUnicodeUnescape = async (): Promise<void> => {
-  processTransformation(transformations.unicodeUnescape)
+  await processTransformation(transformations.unicodeUnescape)
 }
 
 const processJsonToYaml = async (): Promise<void> => {
-  processTransformation(transformations.jsonToYaml)
+  await processTransformation(transformations.jsonToYaml)
 }
 
 const processYamlToJson = async (): Promise<void> => {
-  processTransformation(transformations.yamlToJson)
+  await processTransformation(transformations.yamlToJson)
 }
 
 const processPropertiesToYaml = async (): Promise<void> => {
-  processTransformation(transformations.propertiesFileToYaml)
+  await processTransformation(transformations.propertiesFileToYaml)
 }
 
 const processYamlToProperties = async (): Promise<void> => {
-  processTransformation(transformations.yamlToPropertiesFile)
+  await processTransformation(transformations.yamlToPropertiesFile)
 }
 
 // Get transformation name from function
@@ -398,10 +363,7 @@ const getTransformationName = (transformFn: TransformationFunction): string => {
 }
 
 const processTransformation = async (transformFn: TransformationFunction): Promise<void> => {
-  if (!editor) return
-
-  const model = editor.getModel()
-  if (!model) return
+  if (!textareaEditor.value) return
 
   // Get a transformation name for display
   const transformationName = getTransformationName(transformFn)
@@ -410,19 +372,22 @@ const processTransformation = async (transformFn: TransformationFunction): Promi
   transformationStore.startTransformation(transformationName)
 
   try {
-    // Get the current selection or use an entire document
-    const selection = editor.getSelection()
+    // Get the current selection or use the entire content
+    const textarea = textareaEditor.value
+    const selectionStart = textarea.selectionStart
+    const selectionEnd = textarea.selectionEnd
+    const hasSelection = selectionStart !== selectionEnd
     let text
     let transformedText
 
     // Process the transformation
-    if (selection && !selection.isEmpty()) {
+    if (hasSelection) {
       // Transform selected text only
-      text = model.getValueInRange(selection)
+      text = textarea.value.substring(selectionStart, selectionEnd)
       transformedText = await transformFn(text)
     } else {
       // Transform entire document
-      text = model.getValue()
+      text = textarea.value
       transformedText = await transformFn(text)
     }
 
@@ -430,18 +395,25 @@ const processTransformation = async (transformFn: TransformationFunction): Promi
     await new Promise((resolve) => setTimeout(resolve, 500))
 
     // Apply the transformation
-    if (selection && !selection.isEmpty()) {
-      // Apply the transformation as an edit operation to preserve undo history
-      editor.executeEdits('transformation', [{ range: selection, text: transformedText }])
-    } else {
-      // Calculate the full document range
-      const fullRange = model.getFullModelRange()
+    if (hasSelection) {
+      // Apply the transformation to the selected text
+      const beforeSelection = textarea.value.substring(0, selectionStart)
+      const afterSelection = textarea.value.substring(selectionEnd)
+      textarea.value = beforeSelection + transformedText + afterSelection
 
-      // Apply the transformation as an edit operation to preserve undo history
-      editor.executeEdits('transformation', [{ range: fullRange, text: transformedText }])
+      // Update selection to cover the transformed text
+      textarea.setSelectionRange(selectionStart, selectionStart + transformedText.length)
+    } else {
+      // Replace the entire content
+      textarea.value = transformedText
     }
 
-    editor.focus()
+    // Update the tab content in the store
+    if (activeTabId.value) {
+      tabsStore.updateTabContent(activeTabId.value, textarea.value, false)
+    }
+
+    textarea.focus()
 
     // End transformation and hide overlay
     transformationStore.endTransformation()
@@ -458,148 +430,40 @@ const closeErrorPopup = (): void => {
   errorMessage.value = ''
 }
 
-// Detect language from file extension
-const detectLanguage = (filename: string | null): string => {
-  if (!filename) return 'plaintext'
+// Handle textarea input event
+const handleTextareaInput = (event: Event): void => {
+  if (!activeTabId.value) return
 
-  // Handle filenames with multiple dots correctly
-  const parts = filename.split('.')
-  const extension = parts.length > 1 ? parts.pop().toLowerCase() : ''
+  const content = (event.target as HTMLTextAreaElement).value
 
-  // Map common extensions to languages
-  const languageMap = {
-    js: 'javascript',
-    jsx: 'javascript',
-    ts: 'typescript',
-    tsx: 'typescript',
-    html: 'html',
-    htm: 'html',
-    css: 'css',
-    scss: 'scss',
-    less: 'less',
-    json: 'json',
-    xml: 'xml',
-    md: 'markdown',
-    php: 'php',
-    py: 'python',
-    rb: 'ruby',
-    java: 'java',
-    c: 'c',
-    cpp: 'cpp',
-    h: 'cpp',
-    cs: 'csharp',
-    go: 'go',
-    rs: 'rust',
-    swift: 'swift',
-    sql: 'sql',
-    sh: 'shell',
-    bash: 'shell',
-    yaml: 'yaml',
-    yml: 'yaml',
-    ini: 'ini',
-    bat: 'bat',
-    ps1: 'powershell',
-    txt: 'plaintext'
+  // Update tab content in store without triggering a re-render of the editor
+  tabsStore.updateTabContent(activeTabId.value, content, false)
+
+  // Schedule a save to localStorage after a short delay
+  if (contentSaveInterval) {
+    clearTimeout(contentSaveInterval)
   }
-
-  return languageMap[extension] || 'plaintext'
+  contentSaveInterval = setTimeout(() => {
+    tabsStore.saveTabs()
+  }, 1000) // Save after 1 second of inactivity
 }
 
-// Create or get a model for a tab
-const getOrCreateModel = (tabId: string | null): monaco.editor.ITextModel | null => {
-  if (!tabId) return null
-
-  // Check if we already have a model for this tab
-  if (tabIdToMonacoModelMap.has(tabId)) {
-    return tabIdToMonacoModelMap.get(tabId)
-  } else {
-    const tab = tabsStore.getTabById(tabId)
-    // Detect language based on file extension
-    const language = detectLanguage(tab.title)
-
-    // Create a new model for this tab
-    // Use the tab ID as part of the URI to ensure uniqueness
-    const uri = monaco.Uri.parse(`file:///${tab.id}/${tab.title || 'untitled'}`)
-    const model = monaco.editor.createModel(tab.content || '', language, uri)
-
-    // Store the model
-    tabIdToMonacoModelMap.set(tab.id, model)
-
-    return model
-  }
-}
-
-// Dispose of a model for a tab
-const disposeModel = (tabId): void => {
-  if (tabIdToMonacoModelMap.has(tabId)) {
-    const model = tabIdToMonacoModelMap.get(tabId)
-    model.dispose()
-    tabIdToMonacoModelMap.delete(tabId)
-  }
-
-  // Also remove any saved view state
-  if (tabIdToMonacoEditorViewStateMap.has(tabId)) {
-    tabIdToMonacoEditorViewStateMap.delete(tabId)
-  }
-}
-
-// Initialize the editor
+// Initialize the textarea editor
 const initEditor = (): void => {
-  if (!monacoContainer.value) return
+  if (!textareaEditor.value) return
 
-  // Create the editor without a model initially
-  editor = monaco.editor.create(monacoContainer.value, {
-    theme: settingsStore.theme === 'light' ? 'vs' : 'vs-dark',
-    automaticLayout: true,
-    smoothScrolling: true,
-    fontSize: settingsStore.fontSize,
-    fontFamily: settingsStore.fontFamily,
-    tabSize: settingsStore.tabSize,
-    insertSpaces: settingsStore.insertSpaces,
-    wordWrap: settingsStore.wordWrap,
-    lineNumbers: settingsStore.lineNumbers,
-    scrollBeyondLastLine: true,
-    minimap: {
-      enabled: true
-    },
-    scrollbar: {
-      vertical: 'visible',
-      horizontal: 'visible'
-    },
-    quickSuggestions: false
-  })
+  // Apply settings to the textarea
+  updateTextareaSettings()
 
+  // Get the active tab content
   const activeTab = tabsStore.getActiveTab
-  // If there's an active tab, set its model
   if (activeTab) {
-    const activeTab = tabsStore.getActiveTab
-    const model = getOrCreateModel(activeTab.id)
-    editor.setModel(model)
+    // Set the content
+    textareaEditor.value.value = activeTab.content || ''
+
+    // Focus the textarea
+    textareaEditor.value.focus()
   }
-
-  // Listen for content changes
-  editor.onDidChangeModelContent(() => {
-    if (!tabsStore.getActiveTabId) return
-
-    // Get the current model and its content
-    const model = editor.getModel()
-    if (!model) return
-
-    const content = model.getValue()
-
-    // Update tab content in store without triggering a re-render of the editor
-    // This prevents the cursor from jumping to the beginning of the file
-    tabsStore.updateTabContent(tabsStore.getActiveTabId, content, false)
-
-    // Schedule a save to localStorage after a short delay
-    // This ensures content is saved even if the user doesn't switch tabs
-    if (contentSaveInterval) {
-      clearTimeout(contentSaveInterval)
-    }
-    contentSaveInterval = setTimeout(() => {
-      tabsStore.saveTabs()
-    }, 1000) // Save after 1 second of inactivity
-  })
 
   // Set up auto-save if enabled
   setupAutoSave()
@@ -624,19 +488,19 @@ const setupAutoSave = (): void => {
   }
 }
 
-// Update editor settings
-const updateEditorSettings = (): void => {
-  if (!editor) return
+// Update textarea settings
+const updateTextareaSettings = (): void => {
+  if (!textareaEditor.value) return
 
-  editor.updateOptions({
-    fontSize: settingsStore.fontSize,
-    fontFamily: settingsStore.fontFamily,
-    tabSize: settingsStore.tabSize,
-    insertSpaces: settingsStore.insertSpaces,
-    wordWrap: settingsStore.wordWrap,
-    lineNumbers: settingsStore.lineNumbers,
-    theme: settingsStore.theme === 'light' ? 'vs' : 'vs-dark'
-  })
+  // Apply font settings
+  textareaEditor.value.style.fontSize = `${settingsStore.fontSize}px`
+  textareaEditor.value.style.fontFamily = settingsStore.fontFamily
+
+  // Apply tab size (indentation)
+  textareaEditor.value.style.tabSize = `${settingsStore.tabSize}`
+
+  // Apply word wrap
+  textareaEditor.value.style.whiteSpace = settingsStore.wordWrap === 'on' ? 'pre-wrap' : 'pre'
 
   setupAutoSave()
 }
@@ -644,42 +508,21 @@ const updateEditorSettings = (): void => {
 // Function to save content before unloading
 const saveBeforeUnload = (): void => {
   const activeTab = tabsStore.getActiveTab
-  if (editor && activeTab) {
+  if (textareaEditor.value && activeTab) {
     // Make sure the current tab content is saved
-    const model = editor.getModel()
-    if (model) {
-      tabsStore.updateTabContent(activeTab.id, model.getValue(), true)
-    }
+    tabsStore.updateTabContent(activeTab.id, textareaEditor.value.value, true)
   }
 }
 
-// Configure Monaco Editor workers
-const configureMonacoWorkers = (): undefined => {
-  // Configure Monaco Editor workers
-  window.MonacoEnvironment = {
-    getWorker(_, label) {
-      if (label === 'json') {
-        return new jsonWorker()
-      }
-      if (label === 'css' || label === 'scss' || label === 'less') {
-        return new cssWorker()
-      }
-      if (label === 'html' || label === 'handlebars' || label === 'razor') {
-        return new htmlWorker()
-      }
-      if (label === 'typescript' || label === 'javascript') {
-        return new tsWorker()
-      }
-      return new editorWorker()
-    }
+// Update textarea content
+const updateTextareaContent = (content: string): void => {
+  if (textareaEditor.value) {
+    textareaEditor.value.value = content
   }
 }
 
 // Lifecycle hooks
 onMounted(() => {
-  // Configure Monaco workers before initializing the editor
-  configureMonacoWorkers()
-
   // Initialize the editor if there's an active tab
   const activeTab = tabsStore.getActiveTab
   if (activeTab) {
@@ -696,19 +539,6 @@ onMounted(() => {
 onUnmounted(() => {
   // Save all tabs before unloading
   tabsStore.saveTabs()
-
-  // Dispose of the editor
-  if (editor) {
-    editor.dispose()
-    editor = null
-  }
-
-  // Dispose of all models
-  tabIdToMonacoModelMap.forEach((model) => {
-    model.dispose()
-  })
-  tabIdToMonacoModelMap.clear()
-  tabIdToMonacoEditorViewStateMap.clear()
 
   // Clear intervals
   if (autoSaveInterval) {
@@ -728,31 +558,21 @@ onUnmounted(() => {
 // Watch for changes in the active tab
 watch(
   activeTabId,
-  (newTabId, oldTabId) => {
-    if (!editor) {
+  (newTabId) => {
+    if (!textareaEditor.value) {
       if (newTabId) {
         initEditor()
       }
       return
     }
 
-    // If we're switching from one tab to another
-    if (oldTabId && oldTabId !== newTabId) {
-      // Save the view state of the old tab
-      tabIdToMonacoEditorViewStateMap.set(oldTabId, editor.saveViewState())
-    }
-
-    // If we have a new tab, set its model
+    // If we have a new tab, update the textarea content
     if (newTabId) {
-      const model = getOrCreateModel(newTabId)
-      editor.setModel(model)
-
-      // Restore the view state if we have one
-      const viewState = tabIdToMonacoEditorViewStateMap.get(newTabId)
-      if (viewState) {
-        editor.restoreViewState(viewState)
+      const tab = tabsStore.getTabById(newTabId)
+      if (tab) {
+        updateTextareaContent(tab.content || '')
+        textareaEditor.value.focus()
       }
-      editor.focus()
     }
   },
   { deep: true }
@@ -762,7 +582,7 @@ watch(
   () => settingsStore.theme,
   (newTheme) => {
     applyTheme(newTheme)
-    updateEditorSettings()
+    updateTextareaSettings()
   }
 )
 
@@ -787,27 +607,7 @@ watch(
     () => settingsStore.autoSaveInterval
   ],
   () => {
-    updateEditorSettings()
-  }
-)
-
-// Watch for tab closures to dispose of models
-watch(
-  () => tabsStore.tabs.length,
-  (newLength, oldLength) => {
-    // If the number of tabs decreased, a tab was closed
-    if (newLength < oldLength) {
-      // Find which tab was closed by comparing the current tabs with the models we have
-      const currentTabIds = new Set(tabsStore.tabs.map((tab) => tab.id))
-
-      // Find models that don't have a corresponding tab anymore
-      for (const tabId of tabIdToMonacoModelMap.keys()) {
-        if (!currentTabIds.has(tabId)) {
-          // This model's tab was closed, dispose it
-          disposeModel(tabId)
-        }
-      }
-    }
+    updateTextareaSettings()
   }
 )
 
@@ -859,11 +659,28 @@ defineExpose({
   height: 100%;
   width: 100%;
   position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.monaco-container {
+.textarea-editor {
   height: 100%;
   width: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 10px;
+  background-color: var(--editorBackground);
+  color: var(--editorForeground);
+  font-family: var(--fontFamily, 'monospace');
+  font-size: var(--fontSize, 14px);
+  line-height: 1.5;
+  tab-size: var(--tabSize, 4);
+  overflow: auto;
+  flex: 1;
 }
 
 .empty-editor {

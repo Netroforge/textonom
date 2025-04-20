@@ -369,4 +369,13 @@ onBeforeUnmount(() => {
   width: 100vw;
   overflow: hidden;
 }
+
+/* Ensure the CRTEffect container takes full height */
+.app-container > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
 </style>

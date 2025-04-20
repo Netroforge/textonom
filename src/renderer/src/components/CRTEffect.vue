@@ -226,6 +226,9 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .crt-scanlines {
@@ -307,6 +310,9 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .crt-glitch-overlay {
