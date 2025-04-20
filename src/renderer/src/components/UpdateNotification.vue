@@ -165,8 +165,8 @@ defineExpose({
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  background-color: var(--background-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 1);
   width: 350px;
@@ -188,20 +188,20 @@ defineExpose({
 .update-notification-header h3 {
   margin: 0;
   font-size: 16px;
-  color: var(--text-color);
+  color: var(--text);
 }
 
 .close-button {
   background: none;
   border: none;
-  color: var(--text-color);
+  color: var(--text);
   cursor: pointer;
   font-size: 16px;
   padding: 0;
 }
 
 .update-notification-body {
-  color: var(--text-color);
+  color: var(--text);
 }
 
 .release-notes {
@@ -209,7 +209,7 @@ defineExpose({
   overflow-y: auto;
   margin: 10px 0;
   padding: 10px;
-  background-color: var(--background-secondary-color);
+  background-color: var(--background);
   border-radius: 4px;
   font-size: 12px;
   white-space: pre-line;
@@ -227,13 +227,13 @@ defineExpose({
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  background-color: var(--button-background-color);
-  color: var(--button-text-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 .update-notification-actions button:first-child {
-  background-color: var(--primary-color);
+  background-color: var(--primary);
   color: white;
 }
 
