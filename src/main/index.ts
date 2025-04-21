@@ -1,14 +1,16 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import path, { join } from 'path'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/e55776f0-9aff-49ea-ba3c-7c796e1a98cf.png?asset'
 import fs from 'fs'
-import path from 'path'
 import { autoUpdater, UpdateCheckResult } from 'electron-updater'
 import electronLog from 'electron-log'
 
 // Default directory for file operations
 let lastDirectory = app.getPath('home')
+
+// Path for app state file
+const appStateFilePath = path.join(app.getPath('userData'), 'app-state.json')
 
 // Logger
 const log = electronLog
@@ -304,6 +306,32 @@ app.whenReady().then(() => {
       return true
     }
     return false
+  })
+
+  // App state persistence handlers
+  ipcMain.handle('save-app-state', (_, { state }: { state: string }) => {
+    try {
+      fs.writeFileSync(appStateFilePath, state, 'utf8')
+      return { success: true }
+    } catch (error) {
+      const err = error as Error
+      log.error('Error saving app state:', error)
+      return { success: false, error: err.message }
+    }
+  })
+
+  ipcMain.handle('load-app-state', () => {
+    try {
+      if (fs.existsSync(appStateFilePath)) {
+        const state = fs.readFileSync(appStateFilePath, 'utf8')
+        return { success: true, state }
+      }
+      return { success: false, error: 'App state file does not exist' }
+    } catch (error) {
+      const err = error as Error
+      log.error('Error loading app state:', error)
+      return { success: false, error: err.message }
+    }
   })
 
   // Set up auto-updater events

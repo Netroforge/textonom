@@ -1,75 +1,116 @@
 import { defineStore } from 'pinia'
+import { getTransformationById } from '../transformations/registry'
+import { useTabsContentStore } from './tabsContentStore'
+import { loadTabsState, saveTabsState } from '../services/persistenceService'
 
-interface Tab {
+// Tab interface
+export interface Tab {
   id: string
   title: string
-  content: string
-  savedContent: string | null
-  filePath: string | null
-  isUnsaved: boolean
+  transformationId: string
 }
 
+// State interface
 interface TabsState {
   tabs: Tab[]
   activeTabId: string | null
 }
 
-interface TabInput {
-  title?: string
-  content?: string
-  filePath?: string | null
-  isUnsaved?: boolean
-}
+// Load tabs from disk if available, otherwise start with empty tabs
+const loadTabs = async (): Promise<TabsState> => {
+  try {
+    // Try to load saved tabs state from disk
+    const savedState = await loadTabsState()
 
-// Load tabs from localStorage if available
-const loadTabs = (): TabsState => {
-  const savedTabs = localStorage.getItem('textonom-tabs')
-  if (savedTabs) {
-    try {
-      const parsedTabs = JSON.parse(savedTabs) as TabsState
-
-      // Initialize savedContent for existing tabs if it doesn't exist
-      if (parsedTabs.tabs) {
-        parsedTabs.tabs.forEach((tab) => {
-          if (!Object.prototype.hasOwnProperty.call(tab, 'savedContent')) {
-            // If the tab is not marked as unsaved, a set savedContent to current content
-            // Otherwise, set it to null
-            tab.savedContent = tab.isUnsaved ? null : tab.content
-          }
-        })
+    if (savedState) {
+      return {
+        tabs: savedState.tabs,
+        activeTabId: savedState.activeTabId
       }
-
-      return parsedTabs
-    } catch (e) {
-      console.error('Failed to parse saved tabs:', e)
     }
+  } catch (error) {
+    console.error('Failed to load tabs from disk:', error)
   }
 
+  // If no saved state or error occurred, return empty state
   return {
     tabs: [],
     activeTabId: null
   }
 }
 
+// Initialize with empty state, will be populated after async loading
 export const useTabsStore = defineStore('tabs', {
-  state: (): TabsState => loadTabs(),
+  state: (): TabsState => ({
+    tabs: [],
+    activeTabId: null
+  }),
 
   actions: {
-    // Add a new tab
-    addTab(tab: TabInput): string {
-      const content = tab.content || ''
-      const newTab: Tab = {
-        id: crypto.randomUUID().toString(),
-        title: tab.title || 'Untitled',
-        content: content,
-        savedContent: tab.isUnsaved ? null : content, // Track saved content
-        filePath: tab.filePath || null,
-        isUnsaved: tab.isUnsaved !== undefined ? tab.isUnsaved : true
+    // Initialize tabs from disk
+    async initializeFromDisk(): Promise<void> {
+      const loadedState = await loadTabs()
+      this.tabs = loadedState.tabs
+      this.activeTabId = loadedState.activeTabId
+    },
+
+    // Save tabs state to disk
+    async saveTabsToDisk(): Promise<void> {
+      // Create the state object to save (only tabs structure, not content)
+      const state = {
+        tabs: this.tabs,
+        activeTabId: this.activeTabId,
+        version: '1.0' // For future compatibility
       }
 
+      // Also save to localStorage for internal use
+      try {
+        localStorage.setItem(
+          'textonom-tabs',
+          JSON.stringify({
+            tabs: this.tabs,
+            activeTabId: this.activeTabId
+          })
+        )
+      } catch (error) {
+        console.error('Failed to save tabs to localStorage:', error)
+      }
+
+      // Save the state to disk
+      await saveTabsState(state)
+    },
+    // Add a new tab
+    addTab(transformationId: string): string {
+      // Create tab first, then save to disk
+      // Get transformation metadata
+      const transformation = getTransformationById(transformationId)
+      if (!transformation) {
+        console.error('TabsStore: Transformation not found:', transformationId)
+        return ''
+      }
+
+      // Check if a tab for this transformation already exists
+      const existingTab = this.tabs.find((tab) => tab.transformationId === transformationId)
+
+      if (existingTab) {
+        // If it exists, just activate it
+        this.activeTabId = existingTab.id
+        return existingTab.id
+      }
+
+      // Create a new tab
+      const newTab: Tab = {
+        id: crypto.randomUUID().toString(),
+        title: transformation.name,
+        transformationId: transformationId
+      }
       this.tabs.push(newTab)
       this.activeTabId = newTab.id
-      this.saveTabs()
+
+      // Save tabs state to disk
+      this.saveTabsToDisk().catch((error) => {
+        console.error('Failed to save tabs after adding a new tab:', error)
+      })
 
       return newTab.id
     },
@@ -78,6 +119,10 @@ export const useTabsStore = defineStore('tabs', {
     closeTab(tabId: string): void {
       const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
       if (tabIndex === -1) return
+
+      // Remove tab content from the content store
+      const tabContentStore = useTabsContentStore()
+      tabContentStore.removeTabContent(tabId)
 
       this.tabs.splice(tabIndex, 1)
 
@@ -91,7 +136,10 @@ export const useTabsStore = defineStore('tabs', {
         }
       }
 
-      this.saveTabs()
+      // Save tabs state to disk
+      this.saveTabsToDisk().catch((error) => {
+        console.error('Failed to save tabs after closing a tab:', error)
+      })
     },
 
     // Get an active tab
@@ -102,94 +150,47 @@ export const useTabsStore = defineStore('tabs', {
     // Set the active tab
     setActiveTab(tabId: string): void {
       this.activeTabId = tabId
-      this.saveTabs()
-    },
 
-    // Update tab content
-    updateTabContent(tabId: string, content: string, saveToLocalStorage = true): void {
-      // Find the tab index
-      const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
-
-      if (tabIndex !== -1) {
-        const currentTab = this.tabs[tabIndex]
-
-        // Ensure savedContent is initialized
-        if (currentTab.savedContent === undefined) {
-          currentTab.savedContent = currentTab.isUnsaved ? null : currentTab.content
-        }
-
-        // Check if content has changed from saved content
-        const hasChanged = currentTab.savedContent === null || content !== currentTab.savedContent
-
-        // Only update if content has actually changed to prevent recursive updates
-        if (currentTab.content !== content || currentTab.isUnsaved !== hasChanged) {
-          // Create a new tab object with updated content
-          const updatedTab: Tab = {
-            ...currentTab,
-            content,
-            isUnsaved: hasChanged
-          }
-
-          // Replace the tab in the array
-          this.tabs.splice(tabIndex, 1, updatedTab)
-
-          // Only save to localStorage if explicitly requested
-          // This prevents unnecessary updates that can cause cursor position issues
-          if (saveToLocalStorage) {
-            this.saveTabs()
-          }
-        }
-      } else {
-        console.error('Tab not found for ID:', tabId)
-      }
-    },
-
-    // Update tab after save
-    updateTabAfterSave(tabId: string, filePath: string, title: string): void {
-      const tabIndex = this.tabs.findIndex((tab) => tab.id === tabId)
-      if (tabIndex !== -1) {
-        const currentTab = this.tabs[tabIndex]
-
-        // Check if anything has actually changed to prevent recursive updates
-        if (
-          currentTab.filePath !== filePath ||
-          currentTab.title !== title ||
-          currentTab.savedContent !== currentTab.content ||
-          currentTab.isUnsaved !== false
-        ) {
-          // Create a new tab object with updated properties
-          const updatedTab: Tab = {
-            ...currentTab,
-            filePath,
-            title,
-            savedContent: currentTab.content, // Store the saved content
-            isUnsaved: false
-          }
-
-          // Replace the tab in the array
-          this.tabs.splice(tabIndex, 1, updatedTab)
-
-          this.saveTabs()
-        }
-      }
+      // Save tabs state to disk
+      this.saveTabsToDisk().catch((error) => {
+        console.error('Failed to save tabs after changing active tab:', error)
+      })
     },
 
     // Clear all tabs
     clearTabs(): void {
+      // Clear all tab content from the content store
+      const tabContentStore = useTabsContentStore()
+      tabContentStore.clearAllTabContents()
+
       this.tabs = []
       this.activeTabId = null
-      this.saveTabs()
+
+      // Save tabs state to disk
+      this.saveTabsToDisk().catch((error) => {
+        console.error('Failed to save tabs after clearing tabs:', error)
+      })
     },
 
-    // Save tabs to localStorage
-    saveTabs(): void {
-      localStorage.setItem(
-        'textonom-tabs',
-        JSON.stringify({
-          tabs: this.tabs,
-          activeTabId: this.activeTabId
-        })
-      )
+    // Reorder tabs (for drag and drop functionality)
+    reorderTabs(fromIndex: number, toIndex: number): void {
+      if (
+        fromIndex < 0 ||
+        fromIndex >= this.tabs.length ||
+        toIndex < 0 ||
+        toIndex >= this.tabs.length
+      ) {
+        return
+      }
+
+      // Remove the tab from the old position and insert it at the new position
+      const [movedTab] = this.tabs.splice(fromIndex, 1)
+      this.tabs.splice(toIndex, 0, movedTab)
+
+      // Save tabs state to disk
+      this.saveTabsToDisk().catch((error) => {
+        console.error('Failed to save tabs after reordering tabs:', error)
+      })
     }
   },
 
@@ -204,9 +205,9 @@ export const useTabsStore = defineStore('tabs', {
       return this.tabs.find((tab) => tab.id === this.activeTabId)
     },
 
-    // Check if there are unsaved tabs
-    hasUnsavedTabs(): boolean {
-      return this.tabs.some((tab) => tab.isUnsaved)
+    // Check if there is an active tab
+    hasActiveTab(): boolean {
+      return this.activeTabId !== null
     }
   }
 })

@@ -1,12 +1,13 @@
-import { THEMES } from '../store/settingsStore'
-import { useSettingsStore } from '../store/settingsStore'
+import { THEMES, useSettingsStore } from '../store/settingsStore'
 import type { ThemeType } from '../types'
 
 interface Theme {
   primary: string
+  primaryDark: string
   secondary: string
   background: string
   surface: string
+  surfaceHover: string
   text: string
   border: string
   divider: string
@@ -14,6 +15,8 @@ interface Theme {
   success: string
   warning: string
   info: string
+  infoDark: string
+  inputBackground: string
   editorBackground: string
   editorForeground: string
   editorLineNumbers: string
@@ -37,9 +40,11 @@ interface Theme {
 // Light theme colors
 export const lightTheme: Theme = {
   primary: '#007bff',
+  primaryDark: '#0069d9',
   secondary: '#6c757d',
   background: '#ffffff',
   surface: '#f8f9fa',
+  surfaceHover: '#e9ecef',
   text: '#212529',
   border: '#dee2e6',
   divider: '#e9ecef',
@@ -47,6 +52,8 @@ export const lightTheme: Theme = {
   success: '#28a745',
   warning: '#ffc107',
   info: '#17a2b8',
+  infoDark: '#138496',
+  inputBackground: '#ffffff',
   editorBackground: '#ffffff',
   editorForeground: '#212529',
   editorLineNumbers: '#6c757d',
@@ -69,9 +76,11 @@ export const lightTheme: Theme = {
 // Dark theme colors
 export const darkTheme: Theme = {
   primary: '#0d6efd',
+  primaryDark: '#0b5ed7',
   secondary: '#6c757d',
   background: '#212529',
   surface: '#343a40',
+  surfaceHover: '#495057',
   text: '#f8f9fa',
   border: '#495057',
   divider: '#343a40',
@@ -79,6 +88,8 @@ export const darkTheme: Theme = {
   success: '#28a745',
   warning: '#ffc107',
   info: '#17a2b8',
+  infoDark: '#138496',
+  inputBackground: '#2a2e33',
   editorBackground: '#1e1e1e',
   editorForeground: '#d4d4d4',
   editorLineNumbers: '#858585',
@@ -101,9 +112,11 @@ export const darkTheme: Theme = {
 // Cyberpunk theme colors
 export const cyberpunkTheme: Theme = {
   primary: '#ff00ff', // Magenta
+  primaryDark: '#cc00cc', // Darker magenta
   secondary: '#00ffff', // Cyan
   background: '#0a0a16', // Dark blue-black
   surface: '#1a1a2e', // Dark blue
+  surfaceHover: '#2a2a4e', // Lighter blue
   text: '#00ffff', // Cyan
   border: '#ff00ff', // Magenta
   divider: '#1a1a2e', // Dark blue
@@ -111,6 +124,8 @@ export const cyberpunkTheme: Theme = {
   success: '#00ff9f', // Neon green
   warning: '#ffcc00', // Neon yellow
   info: '#00ffff', // Cyan
+  infoDark: '#00cccc', // Darker cyan
+  inputBackground: '#12122a', // Dark blue with slight purple tint
   editorBackground: '#0a0a16', // Dark blue-black
   editorForeground: '#00ffff', // Cyan
   editorLineNumbers: '#ff00ff', // Magenta
@@ -158,6 +173,28 @@ export const generateCssVariables = (theme: Theme): string => {
     .join('\\n')
 }
 
+// Helper function to convert hex color to RGB values
+const hexToRgb = (hex: string): string => {
+  // Remove the hash if it exists
+  hex = hex.replace(/^#/, '')
+
+  // Parse the hex values
+  let r, g, b
+  if (hex.length === 3) {
+    // Short notation (e.g., #ABC)
+    r = parseInt(hex.charAt(0) + hex.charAt(0), 16)
+    g = parseInt(hex.charAt(1) + hex.charAt(1), 16)
+    b = parseInt(hex.charAt(2) + hex.charAt(2), 16)
+  } else {
+    // Full notation (e.g., #AABBCC)
+    r = parseInt(hex.substring(0, 2), 16)
+    g = parseInt(hex.substring(2, 4), 16)
+    b = parseInt(hex.substring(4, 6), 16)
+  }
+
+  return `${r}, ${g}, ${b}`
+}
+
 // Apply theme to document
 export const applyTheme = (themeName: ThemeType): void => {
   const theme = getThemeByName(themeName)
@@ -165,7 +202,13 @@ export const applyTheme = (themeName: ThemeType): void => {
   const root = document.documentElement
 
   Object.entries(theme).forEach(([key, value]) => {
-    if (typeof value === 'string') {
+    if (typeof value === 'string' && value.startsWith('#')) {
+      // Set the color variable
+      root.style.setProperty(`--${key}`, value)
+
+      // Also set the RGB version for rgba() usage
+      root.style.setProperty(`--${key}Rgb`, hexToRgb(value))
+    } else if (typeof value === 'string') {
       root.style.setProperty(`--${key}`, value)
     }
   })

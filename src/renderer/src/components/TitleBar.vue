@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
 
 // Get the tabs store
@@ -43,13 +43,8 @@ const appTitle = computed((): string => {
     return 'Textonom'
   }
 
-  // If it's a real file (has a filePath), show the full file path
-  if (activeTab.filePath) {
-    return `Textonom - ${activeTab.filePath}${activeTab.isUnsaved ? '*' : ''}`
-  }
-
-  // If it's a new file, show the tab title
-  return `Textonom - ${activeTab.title}${activeTab.isUnsaved ? '*' : ''}`
+  // Show the transformation name
+  return `Textonom - ${activeTab.title}`
 })
 
 // Watch for changes in the active tab and update the window title

@@ -34,6 +34,17 @@ export interface ElectronAPI {
   }>
   setLastDirectory: (directory: string) => Promise<boolean>
 
+  // App state persistence
+  saveAppState: (data: { state: string }) => Promise<{
+    success: boolean
+    error?: string
+  }>
+  loadAppState: () => Promise<{
+    success: boolean
+    state?: string
+    error?: string
+  }>
+
   // Auto-update operations
   checkForUpdates: () => Promise<{
     updateAvailable: boolean
@@ -55,15 +66,8 @@ export interface Settings {
   turboMode: boolean
   fontSize: number
   fontFamily: string
-  tabSize: number
-  insertSpaces: boolean
-  wordWrap: 'on' | 'off' | 'wordWrapColumn' | 'bounded'
-  lineNumbers: 'on' | 'off' | 'relative' | 'interval'
-  autoSave: boolean
-  autoSaveInterval: number
   autoUpdate: boolean
   checkForUpdatesOnStartup: boolean
-  lastDirectory: string
   bcryptRounds: number
 }
 

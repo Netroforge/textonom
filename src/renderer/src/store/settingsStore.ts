@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Settings, ThemeType } from '../types'
+import { applyTheme } from '../styles/themes'
 
 // Define available themes
 export const THEMES = {
@@ -14,15 +15,8 @@ const defaultSettings: Settings = {
   turboMode: true, // Enable Turbo Mode (CRT effects) by default
   fontSize: 14,
   fontFamily: 'Consolas, "Courier New", monospace',
-  tabSize: 2,
-  insertSpaces: true,
-  wordWrap: 'on',
-  lineNumbers: 'on',
-  autoSave: false,
-  autoSaveInterval: 30000, // 30 seconds
   autoUpdate: true, // Enable auto-update by default
   checkForUpdatesOnStartup: true, // Check for updates on startup by default
-  lastDirectory: '', // Last directory used for file operations
   bcryptRounds: 12 // Default bcrypt rounds (cost factor)
 }
 
@@ -47,60 +41,32 @@ export const useSettingsStore = defineStore('settings', {
     setTheme(theme: ThemeType): void {
       this.theme = theme
       this.saveSettings()
+      // Apply the theme immediately
+      applyTheme(theme)
     },
 
     // Update turbo mode
     setTurboMode(enabled: boolean): void {
       this.turboMode = enabled
       this.saveSettings()
+      // Re-apply the theme to update CRT effects
+      applyTheme(this.theme)
     },
 
     // Update font size
     setFontSize(fontSize: number | string): void {
       this.fontSize = Number(fontSize)
       this.saveSettings()
+      // Update font size in CSS variables
+      document.documentElement.style.setProperty('--fontSize', `${this.fontSize}px`)
     },
 
     // Update font family
     setFontFamily(fontFamily: string): void {
       this.fontFamily = fontFamily
       this.saveSettings()
-    },
-
-    // Update tab size
-    setTabSize(tabSize: number | string): void {
-      this.tabSize = Number(tabSize)
-      this.saveSettings()
-    },
-
-    // Update insert spaces
-    setInsertSpaces(insertSpaces: boolean): void {
-      this.insertSpaces = insertSpaces
-      this.saveSettings()
-    },
-
-    // Update word wrap
-    setWordWrap(wordWrap: 'on' | 'off' | 'wordWrapColumn' | 'bounded'): void {
-      this.wordWrap = wordWrap
-      this.saveSettings()
-    },
-
-    // Update line numbers
-    setLineNumbers(lineNumbers: 'on' | 'off' | 'relative' | 'interval'): void {
-      this.lineNumbers = lineNumbers
-      this.saveSettings()
-    },
-
-    // Update auto save
-    setAutoSave(autoSave: boolean): void {
-      this.autoSave = autoSave
-      this.saveSettings()
-    },
-
-    // Update auto save interval
-    setAutoSaveInterval(autoSaveInterval: number | string): void {
-      this.autoSaveInterval = Number(autoSaveInterval)
-      this.saveSettings()
+      // Update font family in CSS variables
+      document.documentElement.style.setProperty('--fontFamily', this.fontFamily)
     },
 
     // Update auto update setting
@@ -115,12 +81,6 @@ export const useSettingsStore = defineStore('settings', {
       this.saveSettings()
     },
 
-    // Update last directory setting
-    setLastDirectory(lastDirectory: string): void {
-      this.lastDirectory = lastDirectory
-      this.saveSettings()
-    },
-
     // Update bcrypt rounds setting
     setBcryptRounds(bcryptRounds: number | string): void {
       // Ensure the value is within the allowed range (1-20)
@@ -132,6 +92,8 @@ export const useSettingsStore = defineStore('settings', {
     resetSettings(): void {
       Object.assign(this, defaultSettings)
       this.saveSettings()
+      // Apply the default theme
+      applyTheme(this.theme)
     },
 
     // Save settings to localStorage

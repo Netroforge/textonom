@@ -14,6 +14,10 @@ app.use(pinia)
 // Mount the app
 app.mount('#app')
 
-// Apply the theme from settings
+// Apply the theme and font settings from settings
 const settingsStore = useSettingsStore()
 applyTheme(settingsStore.theme)
+
+// Apply font settings
+document.documentElement.style.setProperty('--fontSize', `${settingsStore.fontSize}px`)
+document.documentElement.style.setProperty('--fontFamily', settingsStore.fontFamily)

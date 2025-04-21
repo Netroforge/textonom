@@ -2,10 +2,7 @@
   <div class="status-bar">
     <div class="status-left">
       <div v-if="activeTab" class="status-item">
-        {{ activeTab.filePath || 'Unsaved file' }}
-      </div>
-      <div v-if="activeTab" class="status-item">
-        {{ activeTab.isUnsaved ? 'Modified' : 'Saved' }}
+        {{ activeTab.title }}
       </div>
     </div>
     <div class="status-right">
@@ -19,7 +16,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
-import { useSettingsStore, THEMES } from '../store/settingsStore'
+import { THEMES, useSettingsStore } from '../store/settingsStore'
 
 // Get stores
 const tabsStore = useTabsStore()

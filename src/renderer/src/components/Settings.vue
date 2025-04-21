@@ -71,86 +71,6 @@
             </div>
           </div>
 
-          <!-- Editor Settings -->
-          <div v-show="activeSection === 'editor'" class="settings-section">
-            <h3 class="settings-section-title">Editor</h3>
-            <div class="settings-section-content">
-              <div class="settings-row">
-                <label class="settings-label">Tab Size</label>
-                <div class="settings-control">
-                  <input v-model="tabSize" type="number" min="1" max="8" />
-                </div>
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">Insert Spaces</label>
-                <div class="settings-control">
-                  <input v-model="insertSpaces" type="checkbox" />
-                </div>
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">Word Wrap</label>
-                <div class="settings-control">
-                  <select v-model="wordWrap">
-                    <option value="off">Off</option>
-                    <option value="on">On</option>
-                    <option value="wordWrapColumn">Wrap at Column</option>
-                    <option value="bounded">Bounded</option>
-                  </select>
-                </div>
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">Line Numbers</label>
-                <div class="settings-control">
-                  <select v-model="lineNumbers">
-                    <option value="on">On</option>
-                    <option value="off">Off</option>
-                    <option value="relative">Relative</option>
-                    <option value="interval">Interval</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Auto Save Settings -->
-          <div v-show="activeSection === 'autosave'" class="settings-section">
-            <h3 class="settings-section-title">Auto Save</h3>
-            <div class="settings-section-content">
-              <div class="settings-row">
-                <label class="settings-label">Enable Auto Save</label>
-                <div class="settings-control">
-                  <input v-model="autoSave" type="checkbox" />
-                </div>
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">Auto Save Interval (ms)</label>
-                <div class="settings-control">
-                  <input
-                    v-model="autoSaveInterval"
-                    type="number"
-                    min="1000"
-                    max="60000"
-                    step="1000"
-                    :disabled="!autoSave"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- File Settings -->
-          <div v-show="activeSection === 'files'" class="settings-section">
-            <h3 class="settings-section-title">Files</h3>
-            <div class="settings-section-content">
-              <div class="settings-row">
-                <label class="settings-label">Last Directory</label>
-                <div class="settings-control">
-                  <input v-model="lastDirectory" type="text" readonly />
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Auto Update Settings -->
           <div v-show="activeSection === 'updates'" class="settings-section">
             <h3 class="settings-section-title">Updates</h3>
@@ -198,14 +118,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Hotkeys Settings -->
-          <div v-show="activeSection === 'hotkeys'" class="settings-section">
-            <h3 class="settings-section-title">Keyboard Shortcuts</h3>
-            <div class="settings-section-content">
-              <HotkeySettings />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -218,9 +130,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
-import { useSettingsStore, THEMES } from '../store/settingsStore'
-import HotkeySettings from './HotkeySettings.vue'
+import { onMounted, ref, watch } from 'vue'
+import { THEMES, useSettingsStore } from '../store/settingsStore'
 import { ThemeType } from '../types'
 
 // Define props and emits
@@ -240,12 +151,8 @@ interface Section {
 const sections: Section[] = [
   { id: 'theme', title: 'Theme' },
   { id: 'font', title: 'Font' },
-  { id: 'editor', title: 'Editor' },
-  { id: 'autosave', title: 'Auto Save' },
-  { id: 'files', title: 'Files' },
   { id: 'updates', title: 'Updates' },
-  { id: 'transformations', title: 'Transformations' },
-  { id: 'hotkeys', title: 'Keyboard Shortcuts' }
+  { id: 'transformations', title: 'Transformations' }
 ]
 
 // Define available font options
@@ -281,15 +188,8 @@ const theme = ref<ThemeType>(settingsStore.theme)
 const turboMode = ref<boolean>(settingsStore.turboMode)
 const fontSize = ref<number>(settingsStore.fontSize)
 const fontFamily = ref<string>(findMatchingFontOption(settingsStore.fontFamily))
-const tabSize = ref<number>(settingsStore.tabSize)
-const insertSpaces = ref<boolean>(settingsStore.insertSpaces)
-const wordWrap = ref<'on' | 'off' | 'wordWrapColumn' | 'bounded'>(settingsStore.wordWrap)
-const lineNumbers = ref<'on' | 'off' | 'relative' | 'interval'>(settingsStore.lineNumbers)
-const autoSave = ref<boolean>(settingsStore.autoSave)
-const autoSaveInterval = ref<number>(settingsStore.autoSaveInterval)
 const autoUpdate = ref<boolean>(settingsStore.autoUpdate)
 const checkForUpdatesOnStartup = ref<boolean>(settingsStore.checkForUpdatesOnStartup)
-const lastDirectory = ref<string>(settingsStore.lastDirectory)
 const bcryptRounds = ref<number>(settingsStore.bcryptRounds)
 
 // Watch for changes and update the store
@@ -307,30 +207,6 @@ watch(fontSize, (newValue) => {
 
 watch(fontFamily, (newValue) => {
   settingsStore.setFontFamily(newValue)
-})
-
-watch(tabSize, (newValue) => {
-  settingsStore.setTabSize(Number(newValue))
-})
-
-watch(insertSpaces, (newValue) => {
-  settingsStore.setInsertSpaces(newValue)
-})
-
-watch(wordWrap, (newValue) => {
-  settingsStore.setWordWrap(newValue)
-})
-
-watch(lineNumbers, (newValue) => {
-  settingsStore.setLineNumbers(newValue)
-})
-
-watch(autoSave, (newValue) => {
-  settingsStore.setAutoSave(newValue)
-})
-
-watch(autoSaveInterval, (newValue) => {
-  settingsStore.setAutoSaveInterval(Number(newValue))
 })
 
 watch(autoUpdate, (newValue) => {
@@ -355,15 +231,8 @@ const resetSettings = (): void => {
     turboMode.value = settingsStore.turboMode
     fontSize.value = settingsStore.fontSize
     fontFamily.value = findMatchingFontOption(settingsStore.fontFamily)
-    tabSize.value = settingsStore.tabSize
-    insertSpaces.value = settingsStore.insertSpaces
-    wordWrap.value = settingsStore.wordWrap
-    lineNumbers.value = settingsStore.lineNumbers
-    autoSave.value = settingsStore.autoSave
-    autoSaveInterval.value = settingsStore.autoSaveInterval
     autoUpdate.value = settingsStore.autoUpdate
     checkForUpdatesOnStartup.value = settingsStore.checkForUpdatesOnStartup
-    lastDirectory.value = settingsStore.lastDirectory
     bcryptRounds.value = settingsStore.bcryptRounds
   }
 }

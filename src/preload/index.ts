@@ -50,6 +50,20 @@ const api = {
   setLastDirectory: (directory: string): Promise<boolean> =>
     ipcRenderer.invoke('set-last-directory', directory),
 
+  // App state persistence
+  saveAppState: (data: {
+    state: string
+  }): Promise<{
+    success: boolean
+    error?: string
+  }> => ipcRenderer.invoke('save-app-state', data),
+
+  loadAppState: (): Promise<{
+    success: boolean
+    state?: string
+    error?: string
+  }> => ipcRenderer.invoke('load-app-state'),
+
   // Auto-update operations
   checkForUpdates: (): Promise<{
     updateAvailable: boolean

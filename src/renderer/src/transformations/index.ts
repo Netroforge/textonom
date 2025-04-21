@@ -1,14 +1,14 @@
 // Import transformations from category modules
-import { base64Encode, base64Decode } from './base64'
-import { jsonPrettify, jsonCompact } from './json'
-import { urlEncode, urlDecode } from './url'
-import { toUpperCase, toLowerCase, toTitleCase } from './case'
-import { xmlPrettify, xmlCompact } from './xml'
-import { sortLines, deduplicateLines, reverseLines } from './lines'
-import { htmlEncode, htmlDecode } from './html'
-import { md5Hash, sha1Hash, sha256Hash, bcryptHash } from './hash'
+import { base64Decode, base64Encode } from './base64'
+import { jsonCompact, jsonPrettify } from './json'
+import { urlDecode, urlEncode } from './url'
+import { toLowerCase, toTitleCase, toUpperCase } from './case'
+import { xmlCompact, xmlPrettify } from './xml'
+import { deduplicateLines, reverseLines, sortLines } from './lines'
+import { htmlDecode, htmlEncode } from './html'
+import { bcryptHash, md5Hash, sha1Hash, sha256Hash } from './hash'
 import { unicodeEscape, unicodeUnescape } from './unicode'
-import { jsonToYaml, yamlToJson, propertiesFileToYaml, yamlToPropertiesFile } from './conversion'
+import { jsonToYaml, propertiesFileToYaml, yamlToJson, yamlToPropertiesFile } from './conversion'
 
 // Export individual transformations
 export {
