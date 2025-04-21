@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch, type ComponentPublicInstance } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
 
 // Define emits
@@ -58,7 +58,7 @@ const activeTabId = computed(() => tabsStore.activeTabId)
 
 // Refs for DOM elements
 const tabsContainer = ref<HTMLElement | null>(null)
-const tabRefs = ref<HTMLElement[]>([])
+const tabRefs = ref<(HTMLElement | Element | ComponentPublicInstance | null)[]>([])
 
 // Drag and drop state
 const draggedTab = ref<string | null>(null)
@@ -90,22 +90,28 @@ const goToHome = (): void => {
 
 // Calculate the drop position based on mouse position
 const calculateDropPosition = (event: DragEvent, currentIndex: number): number => {
-  if (!tabRefs.value[currentIndex]) return currentIndex
-
   const tabElement = tabRefs.value[currentIndex]
-  const tabRect = tabElement.getBoundingClientRect()
-  const mouseX = event.clientX
+  if (!tabElement) return currentIndex
 
-  // If mouse is on the left half of the tab, drop before; otherwise, drop after
-  const tabMiddleX = tabRect.left + tabRect.width / 2
+  // Ensure tabElement is an Element with getBoundingClientRect
+  if ('getBoundingClientRect' in tabElement) {
+    const tabRect = tabElement.getBoundingClientRect()
+    const mouseX = event.clientX
 
-  if (mouseX < tabMiddleX) {
-    // Drop before this tab
-    return currentIndex
-  } else {
-    // Drop after this tab
-    return currentIndex + 1
+    // If mouse is on the left half of the tab, drop before; otherwise, drop after
+    const tabMiddleX = tabRect.left + tabRect.width / 2
+
+    if (mouseX < tabMiddleX) {
+      // Drop before this tab
+      return currentIndex
+    } else {
+      // Drop after this tab
+      return currentIndex + 1
+    }
   }
+
+  // Default fallback if getBoundingClientRect is not available
+  return currentIndex
 }
 
 // Update the drop indicator position
@@ -115,9 +121,9 @@ const updateDropIndicator = (targetIndex: number): void => {
   // If dropping at the end
   if (targetIndex === tabs.value.length) {
     const lastTab = tabRefs.value[tabs.value.length - 1]
-    if (lastTab) {
+    if (lastTab && 'getBoundingClientRect' in lastTab && tabsContainer.value) {
       const rect = lastTab.getBoundingClientRect()
-      dropIndicatorLeft.value = rect.right - tabsContainer.value!.getBoundingClientRect().left
+      dropIndicatorLeft.value = rect.right - tabsContainer.value.getBoundingClientRect().left
     }
     return
   }
@@ -125,6 +131,9 @@ const updateDropIndicator = (targetIndex: number): void => {
   // Get the target tab element
   const targetTab = tabRefs.value[targetIndex]
   if (!targetTab || !tabsContainer.value) return
+
+  // Ensure targetTab is an Element with getBoundingClientRect
+  if (!('getBoundingClientRect' in targetTab)) return
 
   // Calculate the position relative to the tabs container
   const containerRect = tabsContainer.value.getBoundingClientRect()
