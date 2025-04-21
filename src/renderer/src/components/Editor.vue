@@ -53,6 +53,38 @@ const textareaEditor = ref<HTMLTextAreaElement | null>(null)
 let autoSaveInterval: ReturnType<typeof setInterval> | null = null
 let contentSaveInterval: ReturnType<typeof setInterval> | null = null
 
+// Request clipboard permissions if needed
+const requestClipboardPermission = async (): Promise<boolean> => {
+  try {
+    // In some browsers, we can check for permissions
+    if (navigator.permissions && navigator.permissions.query) {
+      // Check for clipboard-write permission
+      const writePermission = await navigator.permissions.query({
+        name: 'clipboard-write' as PermissionName
+      })
+      // Check for clipboard-read permission
+      const readPermission = await navigator.permissions.query({
+        name: 'clipboard-read' as PermissionName
+      })
+
+      // Return true if both permissions are granted or prompt
+      return (
+        writePermission.state === 'granted' ||
+        writePermission.state === 'prompt' ||
+        readPermission.state === 'granted' ||
+        readPermission.state === 'prompt'
+      )
+    }
+
+    // If the permissions API is not available, we'll try to use the clipboard API directly
+    // and catch any errors
+    return true
+  } catch (error) {
+    console.error('Error checking clipboard permissions:', error)
+    return false
+  }
+}
+
 // Get stores
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -188,34 +220,108 @@ const redo = (): void => {
   }
 }
 
-const cut = (): void => {
+const cut = async (): Promise<void> => {
   if (!textareaEditor.value) return
 
   try {
     textareaEditor.value.focus()
-    document.execCommand('cut')
+
+    // Check if Clipboard API is available and we have permission
+    if (await requestClipboardPermission()) {
+      // Get the selected text
+      const textarea = textareaEditor.value
+      const selectionStart = textarea.selectionStart
+      const selectionEnd = textarea.selectionEnd
+
+      if (selectionStart !== selectionEnd) {
+        // Get the selected text
+        const selectedText = textarea.value.substring(selectionStart, selectionEnd)
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(selectedText)
+
+        // Remove the selected text
+        const beforeSelection = textarea.value.substring(0, selectionStart)
+        const afterSelection = textarea.value.substring(selectionEnd)
+        textarea.value = beforeSelection + afterSelection
+
+        // Update cursor position
+        textarea.setSelectionRange(selectionStart, selectionStart)
+
+        // Update the tab content in the store
+        if (activeTabId.value) {
+          tabsStore.updateTabContent(activeTabId.value, textarea.value, false)
+        }
+      }
+    }
   } catch (error) {
     console.error('Cut action failed:', error)
   }
 }
 
-const copy = (): void => {
+const copy = async (): Promise<void> => {
   if (!textareaEditor.value) return
 
   try {
     textareaEditor.value.focus()
-    document.execCommand('copy')
+
+    // Check if Clipboard API is available and we have permission
+    if (await requestClipboardPermission()) {
+      // Get the selected text
+      const textarea = textareaEditor.value
+      const selectionStart = textarea.selectionStart
+      const selectionEnd = textarea.selectionEnd
+
+      if (selectionStart !== selectionEnd) {
+        // Get the selected text
+        const selectedText = textarea.value.substring(selectionStart, selectionEnd)
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(selectedText)
+      } else {
+        // If no selection, copy the entire content
+        await navigator.clipboard.writeText(textarea.value)
+      }
+    }
   } catch (error) {
     console.error('Copy action failed:', error)
   }
 }
 
-const paste = (): void => {
+const paste = async (): Promise<void> => {
   if (!textareaEditor.value) return
 
   try {
     textareaEditor.value.focus()
-    document.execCommand('paste')
+
+    // Check if Clipboard API is available and we have permission
+    if (await requestClipboardPermission()) {
+      try {
+        // Read text from clipboard
+        const clipboardText = await navigator.clipboard.readText()
+
+        // Get the current selection or cursor position
+        const textarea = textareaEditor.value
+        const selectionStart = textarea.selectionStart
+        const selectionEnd = textarea.selectionEnd
+
+        // Insert the clipboard text at the current cursor position or replace selection
+        const beforeSelection = textarea.value.substring(0, selectionStart)
+        const afterSelection = textarea.value.substring(selectionEnd)
+        textarea.value = beforeSelection + clipboardText + afterSelection
+
+        // Update cursor position to after the pasted text
+        const newCursorPosition = selectionStart + clipboardText.length
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition)
+
+        // Update the tab content in the store
+        if (activeTabId.value) {
+          tabsStore.updateTabContent(activeTabId.value, textarea.value, false)
+        }
+      } catch (readError) {
+        console.error('Error reading from clipboard:', readError)
+      }
+    }
   } catch (error) {
     console.error('Paste action failed:', error)
   }
@@ -521,6 +627,15 @@ const updateTextareaContent = (content: string): void => {
   }
 }
 
+// Initialize clipboard permissions
+const initClipboardPermissions = async (): Promise<void> => {
+  try {
+    await requestClipboardPermission()
+  } catch (error) {
+    console.error('Failed to initialize clipboard permissions:', error)
+  }
+}
+
 // Lifecycle hooks
 onMounted(() => {
   // Initialize the editor if there's an active tab
@@ -531,6 +646,9 @@ onMounted(() => {
 
   // Apply the current theme
   applyTheme(settingsStore.theme)
+
+  // Initialize clipboard permissions
+  initClipboardPermissions()
 
   // Add event listener to save tabs before a window unloaded
   window.addEventListener('beforeunload', saveBeforeUnload)

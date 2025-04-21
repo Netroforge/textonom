@@ -57,7 +57,8 @@ const currentTheme = computed((): string => {
   overflow: hidden;
 }
 
-.status-left, .status-right {
+.status-left,
+.status-right {
   display: flex;
   align-items: center;
   overflow: hidden;
