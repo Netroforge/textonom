@@ -45,7 +45,7 @@
     "@types/node": "^22.14.1",
     "@types/xml-formatter": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
-    "@typescript-eslint/parser": "^8.30.1",
+    "@typescript-eslint/parser": "^8.31.0",
     "@vitejs/plugin-vue": "^5.2.3",
     "electron": "^35.2.0",
     "electron-builder": "^26.0.12",
