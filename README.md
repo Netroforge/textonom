@@ -11,30 +11,88 @@ Helps make your sensitive data safe.
 
 ![Screenshot.png](Screenshot.png)
 
+## Supported Transformations
+
+Textonom supports the following text transformation operations:
+
+### Encoding & Decoding
+*Encode or decode text using various algorithms*
+
+- **Base64 Encode**: Encode text to Base64 format
+- **Base64 Decode**: Decode Base64 encoded text
+- **URL Encode**: Encode text for use in URLs
+- **URL Decode**: Decode URL encoded text
+- **HTML Encode**: Encode special characters for HTML
+- **HTML Decode**: Decode HTML entities to characters
+- **Unicode Escape**: Escape Unicode characters to \uXXXX format
+- **Unicode Unescape**: Convert \uXXXX format to actual Unicode characters
+
+### Formatting
+*Format and prettify various data formats*
+
+- **JSON Prettify**: Format JSON with proper indentation
+- **JSON Compact**: Compact JSON by removing whitespace
+- **XML Prettify**: Format XML with proper indentation
+- **XML Compact**: Compact XML by removing whitespace
+
+### Case Conversion
+*Convert text case (uppercase, lowercase, etc.)*
+
+- **To Uppercase**: Convert text to uppercase
+- **To Lowercase**: Convert text to lowercase
+- **To Title Case**: Convert text to title case (first letter of each word capitalized)
+
+### Text Operations
+*Various text manipulation operations*
+
+- **Sort Lines**: Sort lines alphabetically
+- **Deduplicate Lines**: Remove duplicate lines
+- **Reverse Lines**: Reverse the order of lines
+
+### Hashing
+*Generate cryptographic hashes*
+
+- **MD5 Hash**: Generate MD5 hash of text
+- **SHA-1 Hash**: Generate SHA-1 hash of text
+- **SHA-256 Hash**: Generate SHA-256 hash of text
+- **Bcrypt Hash**: Generate Bcrypt hash of text (with configurable rounds)
+
+### Format Conversion
+*Convert between different data formats*
+
+- **JSON to YAML**: Convert JSON to YAML format
+- **YAML to JSON**: Convert YAML to JSON format
+- **Properties to YAML**: Convert Java properties file to YAML
+- **YAML to Properties**: Convert YAML to Java properties file format
+
 ## Project Setup
 
 ### Install
 
-```bash
+```shell
 $ npm install
 ```
 
 ### Development
 
-```bash
+```shell
 $ npm run dev
 ```
 
 ### Build
 
-```bash
-# For windows
+For Windows
+```shell
 $ npm run build:win
+```
 
-# For macOS
+For Mac
+```shell
 $ npm run build:mac
+```
 
-# For Linux
+For Linux
+```shell
 $ npm run build:linux
 ```
 
