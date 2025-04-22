@@ -3,10 +3,17 @@
     <CRTEffect>
       <TitleBar />
       <TopNavBar @menu-action="handleMenuAction" @open-settings="showSettings = true" />
-      <TabBar @show-home="showHomePage = true" @hide-home="showHomePage = false" />
+      <TabBar
+        :is-home-active="tabsStore.showHomePage"
+        @show-home="tabsStore.setShowHomePage(true)"
+        @hide-home="tabsStore.setShowHomePage(false)"
+      />
 
       <!-- Show HomePage when no tabs are open or when home is requested -->
-      <HomePage v-if="!activeTabId || showHomePage" @transformation-opened="showHomePage = false" />
+      <HomePage
+        v-if="!activeTabId || tabsStore.showHomePage"
+        @transformation-opened="tabsStore.setShowHomePage(false)"
+      />
 
       <!-- Show dedicated transformation page for tabs -->
       <component
@@ -48,20 +55,15 @@ import { getTransformationPageByTransformationId } from './components/transforma
 const updateNotificationRef = ref<InstanceType<typeof UpdateNotification> | null>(null)
 const showSettings = ref<boolean>(false)
 const showAbout = ref<boolean>(false)
-const showHomePage = ref<boolean>(true)
 
 // Get stores
 const settingsStore = useSettingsStore()
 const tabsStore = useTabsStore()
 
-// Watch for active tab changes to hide home page when a tab is activated
+// Watch for active tab changes to save the tab state
 watch(
   () => tabsStore.activeTabId,
-  (newActiveTabId) => {
-    if (newActiveTabId) {
-      showHomePage.value = false
-    }
-
+  () => {
     // Ensure tab state is saved to disk when active tab changes
     tabsStore.saveTabsToDisk().catch((error) => {
       console.error('Failed to save tabs after active tab changed:', error)
@@ -71,11 +73,12 @@ watch(
 
 // Computed properties for tab management
 const activeTabId = computed(() => {
-  return tabsStore.getActiveTabId
+  return tabsStore.activeTabId
 })
 
 const activeTransformationId = computed(() => {
-  const tab = tabsStore.getActiveTab
+  if (!activeTabId.value) return ''
+  const tab = tabsStore.tabs.find((tab) => tab.id === activeTabId.value)
   return tab ? tab.transformationId : ''
 })
 
@@ -142,6 +145,7 @@ const saveStateBeforeUnload = (): void => {
     const state = {
       tabs: tabsStore.tabs,
       activeTabId: tabsStore.activeTabId,
+      showHomePage: tabsStore.showHomePage,
       version: '1.0'
     }
 
@@ -166,8 +170,9 @@ onMounted(async () => {
     await tabsStore.initializeFromDisk()
 
     // If we have tabs, update the showHomePage state
-    if (tabsStore.tabs.length > 0 && tabsStore.activeTabId) {
-      showHomePage.value = false
+    if (tabsStore.tabs.length > 0 && tabsStore.activeTabId && !tabsStore.showHomePage) {
+      // The showHomePage state is already loaded from disk in tabsStore.initializeFromDisk()
+      // We don't need to set it here as it would override the saved state
     }
   } catch (error) {
     console.error('Error initializing tabs from disk:', error)

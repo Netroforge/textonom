@@ -1,6 +1,8 @@
 <template>
   <div class="tabs-container">
-    <button class="home-button" title="Home" @click="goToHome">Home</button>
+    <button class="home-button" :class="{ active: isHomeActive }" title="Home" @click="goToHome">
+      Home
+    </button>
 
     <div ref="tabsContainer" class="tabs-scroll-area">
       <!-- Drop indicator that shows where the tab will be placed -->
@@ -20,7 +22,8 @@
         "
         class="tab"
         :class="{
-          active: tab.id === activeTabId,
+          active: tab.id === activeTabId && !isHomeActive,
+          inactive: isHomeActive,
           dragging: draggedTab === tab.id
         }"
         draggable="true"
@@ -42,6 +45,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch, type ComponentPublicInstance } from 'vue'
 import { useTabsStore } from '../store/tabsStore'
+
+// Define props
+defineProps<{
+  isHomeActive: boolean
+}>()
 
 // Define emits
 const emit = defineEmits<{
@@ -263,7 +271,11 @@ onBeforeUnmount(() => {
   border-bottom: 2px solid var(--tabActiveBorder); /* Colored border for active tab */
 }
 
-.tab:hover:not(.active):not(.dragging) {
+.tab.inactive {
+  opacity: 0.7;
+}
+
+.tab:hover:not(.active):not(.dragging):not(.inactive) {
   background-color: var(--tabHoverBackground);
 }
 
@@ -332,9 +344,16 @@ onBeforeUnmount(() => {
   z-index: 10;
   box-sizing: border-box; /* Ensure padding and border are included in height calculation */
   user-select: none; /* Prevent text selection */
+  transition: background-color 0.15s ease;
 }
 
-.home-button:hover {
+.home-button:hover:not(.active) {
   background-color: var(--tabHoverBackground);
+}
+
+.home-button.active {
+  background-color: var(--tabActiveBackground);
+  color: var(--tabActiveText);
+  border-bottom: 2px solid var(--tabActiveBorder); /* Colored border for active home button */
 }
 </style>

@@ -16,7 +16,8 @@ Helps make your sensitive data safe.
 Textonom supports the following text transformation operations:
 
 ### Encoding & Decoding
-*Encode or decode text using various algorithms*
+
+_Encode or decode text using various algorithms_
 
 - **Base64 Encode**: Encode text to Base64 format
 - **Base64 Decode**: Decode Base64 encoded text
@@ -28,7 +29,8 @@ Textonom supports the following text transformation operations:
 - **Unicode Unescape**: Convert \uXXXX format to actual Unicode characters
 
 ### Formatting
-*Format and prettify various data formats*
+
+_Format and prettify various data formats_
 
 - **JSON Prettify**: Format JSON with proper indentation
 - **JSON Compact**: Compact JSON by removing whitespace
@@ -36,21 +38,24 @@ Textonom supports the following text transformation operations:
 - **XML Compact**: Compact XML by removing whitespace
 
 ### Case Conversion
-*Convert text case (uppercase, lowercase, etc.)*
+
+_Convert text case (uppercase, lowercase, etc.)_
 
 - **To Uppercase**: Convert text to uppercase
 - **To Lowercase**: Convert text to lowercase
 - **To Title Case**: Convert text to title case (first letter of each word capitalized)
 
 ### Text Operations
-*Various text manipulation operations*
+
+_Various text manipulation operations_
 
 - **Sort Lines**: Sort lines alphabetically
 - **Deduplicate Lines**: Remove duplicate lines
 - **Reverse Lines**: Reverse the order of lines
 
 ### Hashing
-*Generate cryptographic hashes*
+
+_Generate cryptographic hashes_
 
 - **MD5 Hash**: Generate MD5 hash of text
 - **SHA-1 Hash**: Generate SHA-1 hash of text
@@ -58,7 +63,8 @@ Textonom supports the following text transformation operations:
 - **Bcrypt Hash**: Generate Bcrypt hash of text (with configurable rounds)
 
 ### Format Conversion
-*Convert between different data formats*
+
+_Convert between different data formats_
 
 - **JSON to YAML**: Convert JSON to YAML format
 - **YAML to JSON**: Convert YAML to JSON format
@@ -82,16 +88,19 @@ $ npm run dev
 ### Build
 
 For Windows
+
 ```shell
 $ npm run build:win
 ```
 
 For Mac
+
 ```shell
 $ npm run build:mac
 ```
 
 For Linux
+
 ```shell
 $ npm run build:linux
 ```

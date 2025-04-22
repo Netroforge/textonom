@@ -5,7 +5,7 @@ This document outlines the current implementation and features of the Textonom a
 ## Core Functionality
 
 | Requirement ID | Description                           | Implementation Status                                                                                                                            |
-|----------------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | CF001          | Home page with transformation catalog | Implemented. The application features a home page that displays all available transformations organized by categories with search functionality. |
 | CF002          | Dedicated transformation pages        | Implemented. Each transformation has its own dedicated page with input/output forms and action buttons.                                          |
 | CF003          | Tab-based navigation                  | Implemented. Transformations are opened in tabs that can be navigated between. Tabs are draggable to reorder them.                               |
@@ -15,7 +15,7 @@ This document outlines the current implementation and features of the Textonom a
 ## Text Transformations
 
 | Requirement ID | Category            | Transformation                          | Description                                          | Implementation Status                                 |
-|----------------|---------------------|-----------------------------------------|------------------------------------------------------|-------------------------------------------------------|
+| -------------- | ------------------- | --------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------- |
 | TT001          | Encoding & Decoding | Base64 Encode/Decode                    | Convert text to/from Base64 format                   | Implemented                                           |
 | TT002          | Encoding & Decoding | URL Encode/Decode                       | Convert text to/from URL-encoded format              | Implemented                                           |
 | TT003          | Encoding & Decoding | HTML Encode/Decode                      | Convert special characters to/from HTML entities     | Implemented                                           |
@@ -31,7 +31,7 @@ This document outlines the current implementation and features of the Textonom a
 ## UI and Settings
 
 | Requirement ID | Description              | Implementation Status                                                                        |
-|----------------|--------------------------|----------------------------------------------------------------------------------------------|
+| -------------- | ------------------------ | -------------------------------------------------------------------------------------------- |
 | UI001          | Theme selection          | Implemented. The application provides Light, Dark, and Cyberpunk themes.                     |
 | UI002          | Turbo Mode (CRT effects) | Implemented. Users can enable/disable CRT effects for any theme.                             |
 | UI003          | Font customization       | Implemented. Users can select font family and size.                                          |
@@ -43,7 +43,7 @@ This document outlines the current implementation and features of the Textonom a
 ## File Operations
 
 | Requirement ID | Description             | Implementation Status                                                                                                                             |
-|----------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | FO001          | Open file               | Implemented. Users can open text files from their local disk.                                                                                     |
 | FO002          | Save file               | Implemented. Users can save the current content to disk.                                                                                          |
 | FO003          | Save file as            | Implemented. Users can save the current content to a new location.                                                                                |
@@ -54,7 +54,7 @@ This document outlines the current implementation and features of the Textonom a
 ## Visual Effects
 
 | Requirement ID | Description              | Implementation Status                                                                              |
-|----------------|--------------------------|----------------------------------------------------------------------------------------------------|
+| -------------- | ------------------------ | -------------------------------------------------------------------------------------------------- |
 | VE001          | CRT monitor effect       | Implemented. The application includes a comprehensive CRT effect when Turbo Mode is enabled.       |
 | VE002          | Scanlines                | Implemented. Horizontal scanlines with appropriate spacing and intensity.                          |
 | VE003          | Screen flicker           | Implemented. Subtle screen flicker effect that simulates CRT monitor behavior.                     |
@@ -66,7 +66,7 @@ This document outlines the current implementation and features of the Textonom a
 ## Auto-Update Functionality
 
 | Requirement ID | Description          | Implementation Status                                                         |
-|----------------|----------------------|-------------------------------------------------------------------------------|
+| -------------- | -------------------- | ----------------------------------------------------------------------------- |
 | AU001          | Check for updates    | Implemented. The application can check for updates manually or automatically. |
 | AU002          | Download updates     | Implemented. Updates can be downloaded with progress indication.              |
 | AU003          | Install updates      | Implemented. Downloaded updates can be installed.                             |
@@ -76,7 +76,7 @@ This document outlines the current implementation and features of the Textonom a
 ## State Persistence
 
 | Requirement ID | Description           | Implementation Status                                                                                                   |
-|----------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
+| -------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | SP001          | Settings persistence  | Implemented. User settings are saved to localStorage.                                                                   |
 | SP002          | Tab state persistence | Implemented. Open tabs are saved to disk and restored on application restart.                                           |
 | SP003          | Home page state       | Implemented. The state of the home page (scroll position, search query, etc.) is preserved when switching between tabs. |
@@ -84,7 +84,7 @@ This document outlines the current implementation and features of the Textonom a
 ## About Section
 
 | Requirement ID | Description       | Implementation Status                                                  |
-|----------------|-------------------|------------------------------------------------------------------------|
+| -------------- | ----------------- | ---------------------------------------------------------------------- |
 | AB001          | About dialog      | Implemented. Shows application information, version, and logo.         |
 | AB002          | Version display   | Implemented. Shows the current application version.                    |
 | AB003          | Check for updates | Implemented. Users can manually check for updates from the About menu. |

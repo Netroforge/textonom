@@ -5,6 +5,7 @@ import { Tab } from '../store/tabsStore'
 export interface SavedTabsState {
   tabs: Tab[]
   activeTabId: string | null
+  showHomePage: boolean
   version: string // For future compatibility
 }
 

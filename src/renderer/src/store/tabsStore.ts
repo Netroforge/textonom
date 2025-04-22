@@ -14,6 +14,7 @@ export interface Tab {
 interface TabsState {
   tabs: Tab[]
   activeTabId: string | null
+  showHomePage: boolean
 }
 
 // Load tabs from disk if available, otherwise start with empty tabs
@@ -25,7 +26,8 @@ const loadTabs = async (): Promise<TabsState> => {
     if (savedState) {
       return {
         tabs: savedState.tabs,
-        activeTabId: savedState.activeTabId
+        activeTabId: savedState.activeTabId,
+        showHomePage: savedState.showHomePage !== undefined ? savedState.showHomePage : true
       }
     }
   } catch (error) {
@@ -35,7 +37,8 @@ const loadTabs = async (): Promise<TabsState> => {
   // If no saved state or error occurred, return empty state
   return {
     tabs: [],
-    activeTabId: null
+    activeTabId: null,
+    showHomePage: true
   }
 }
 
@@ -43,7 +46,8 @@ const loadTabs = async (): Promise<TabsState> => {
 export const useTabsStore = defineStore('tabs', {
   state: (): TabsState => ({
     tabs: [],
-    activeTabId: null
+    activeTabId: null,
+    showHomePage: true
   }),
 
   actions: {
@@ -52,6 +56,7 @@ export const useTabsStore = defineStore('tabs', {
       const loadedState = await loadTabs()
       this.tabs = loadedState.tabs
       this.activeTabId = loadedState.activeTabId
+      this.showHomePage = loadedState.showHomePage
     },
 
     // Save tabs state to disk
@@ -60,6 +65,7 @@ export const useTabsStore = defineStore('tabs', {
       const state = {
         tabs: this.tabs,
         activeTabId: this.activeTabId,
+        showHomePage: this.showHomePage,
         version: '1.0' // For future compatibility
       }
 
@@ -69,7 +75,8 @@ export const useTabsStore = defineStore('tabs', {
           'textonom-tabs',
           JSON.stringify({
             tabs: this.tabs,
-            activeTabId: this.activeTabId
+            activeTabId: this.activeTabId,
+            showHomePage: this.showHomePage
           })
         )
       } catch (error) {
@@ -154,6 +161,16 @@ export const useTabsStore = defineStore('tabs', {
       // Save tabs state to disk
       this.saveTabsToDisk().catch((error) => {
         console.error('Failed to save tabs after changing active tab:', error)
+      })
+    },
+
+    // Set home page visibility
+    setShowHomePage(show: boolean): void {
+      this.showHomePage = show
+
+      // Save tabs state to disk
+      this.saveTabsToDisk().catch((error) => {
+        console.error('Failed to save tabs after changing home page visibility:', error)
       })
     },
 
