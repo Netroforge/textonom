@@ -34,7 +34,8 @@
       </div>
       <div class="update-notification-body">
         <p>A new version ({{ updateInfo.version }}) is available.</p>
-        <p v-if="updateInfo.releaseNotes" class="release-notes">{{ updateInfo.releaseNotes }}</p>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <p v-if="updateInfo.releaseNotes" class="release-notes" v-html="updateInfo.releaseNotes" />
         <div class="update-notification-actions">
           <button v-if="!updateReadyToInstall" :disabled="downloading" @click="downloadUpdate">
             {{ downloadButtonText }}
