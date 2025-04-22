@@ -345,10 +345,6 @@ onBeforeUnmount(() => {
   box-sizing: border-box; /* Ensure padding and border are included in height calculation */
   user-select: none; /* Prevent text selection */
   transition: background-color 0.15s ease;
-  /* Match font styling with tabs */
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
 }
 
 .home-button:hover:not(.active) {
