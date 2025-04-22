@@ -6,8 +6,7 @@ import fs from 'fs'
 import { autoUpdater, UpdateCheckResult } from 'electron-updater'
 import electronLog from 'electron-log'
 
-// Default directory for file operations
-let lastDirectory = app.getPath('home')
+// Default directory for file operations has been removed
 
 // Path for app state file
 const appStateFilePath = path.join(app.getPath('userData'), 'app-state.json')
@@ -121,136 +120,7 @@ app.whenReady().then(() => {
     return window ? window.isMaximized() : false
   })
 
-  // File operations IPC handlers
-  ipcMain.handle('open-file', async (_, { lastDirectory: userLastDirectory } = {}) => {
-    const dialogDefaultPath = userLastDirectory || lastDirectory
-
-    const { canceled, filePaths } = await dialog.showOpenDialog({
-      properties: ['openFile'],
-      filters: [{ name: 'All Files', extensions: ['*'] }],
-      defaultPath: dialogDefaultPath
-    })
-
-    if (!canceled && filePaths.length > 0) {
-      const filePath = filePaths[0]
-      lastDirectory = path.dirname(filePath)
-
-      try {
-        const content = fs.readFileSync(filePath, 'utf8')
-        return {
-          success: true,
-          filePath,
-          content,
-          lastDirectory
-        }
-      } catch (error) {
-        const err = error as Error
-        return {
-          success: false,
-          error: err.message
-        }
-      }
-    }
-
-    return { success: false, canceled: true }
-  })
-
-  ipcMain.handle(
-    'save-file',
-    async (
-      _,
-      {
-        filePath,
-        content,
-        lastDirectory: userLastDirectory
-      }: {
-        filePath?: string
-        content: string
-        lastDirectory?: string
-      }
-    ) => {
-      let savePath = filePath
-      const dialogDefaultPath = userLastDirectory || lastDirectory
-
-      if (!savePath) {
-        const { canceled, filePath: selectedPath } = await dialog.showSaveDialog({
-          filters: [{ name: 'Text Files', extensions: ['txt'] }],
-          defaultPath: path.join(dialogDefaultPath, 'untitled.txt')
-        })
-
-        if (canceled || !selectedPath) {
-          return { success: false, canceled: true }
-        }
-
-        savePath = selectedPath
-        lastDirectory = path.dirname(savePath)
-      }
-
-      try {
-        fs.writeFileSync(savePath, content, 'utf8')
-        return {
-          success: true,
-          filePath: savePath,
-          lastDirectory
-        }
-      } catch (error) {
-        const err = error as Error
-        return {
-          success: false,
-          error: err.message
-        }
-      }
-    }
-  )
-
-  ipcMain.handle(
-    'save-file-as',
-    async (
-      _,
-      {
-        content,
-        currentPath,
-        lastDirectory: userLastDirectory
-      }: {
-        content: string
-        currentPath?: string
-        lastDirectory?: string
-      }
-    ) => {
-      const dialogDefaultPath = userLastDirectory || lastDirectory
-      const defaultPath = currentPath || path.join(dialogDefaultPath, 'untitled.txt')
-      const defaultExtension = path.extname(defaultPath).slice(1) || 'txt'
-
-      const { canceled, filePath } = await dialog.showSaveDialog({
-        filters: [
-          { name: 'Current Type', extensions: [defaultExtension] },
-          { name: 'All Files', extensions: ['*'] }
-        ],
-        defaultPath
-      })
-
-      if (canceled || !filePath) {
-        return { success: false, canceled: true }
-      }
-
-      lastDirectory = path.dirname(filePath)
-
-      try {
-        fs.writeFileSync(filePath, content, 'utf8')
-        return {
-          success: true,
-          filePath,
-          lastDirectory
-        }
-      } catch (error) {
-        const err = error as Error
-        return {
-          success: false,
-          error: err.message
-        }
-      }
-    }
-  )
+  // File operations IPC handlers have been removed
 
   // Auto-update IPC handlers
   ipcMain.handle('check-for-updates', async () => {
@@ -290,14 +160,7 @@ app.whenReady().then(() => {
     return app.getVersion()
   })
 
-  // Set the last directory from renderer
-  ipcMain.handle('set-last-directory', (_, directory: string) => {
-    if (directory && typeof directory === 'string') {
-      lastDirectory = directory
-      return true
-    }
-    return false
-  })
+  // Last directory handler has been removed
 
   // Set the window title
   ipcMain.handle('set-window-title', (_, title: string) => {

@@ -9,30 +9,7 @@ export interface ElectronAPI {
   isWindowMaximized: () => Promise<boolean>
   setWindowTitle: (title: string) => Promise<boolean>
 
-  // File operations
-  openFile: (data?: { lastDirectory?: string }) => Promise<{
-    success: boolean
-    filePath?: string
-    content?: string
-    lastDirectory?: string
-    error?: string
-    canceled?: boolean
-  }>
-  saveFile: (data: { filePath?: string; content: string; lastDirectory?: string }) => Promise<{
-    success: boolean
-    filePath?: string
-    lastDirectory?: string
-    error?: string
-    canceled?: boolean
-  }>
-  saveFileAs: (data: { content: string; currentPath?: string; lastDirectory?: string }) => Promise<{
-    success: boolean
-    filePath?: string
-    lastDirectory?: string
-    error?: string
-    canceled?: boolean
-  }>
-  setLastDirectory: (directory: string) => Promise<boolean>
+  // File operations have been removed
 
   // App state persistence
   saveAppState: (data: { state: string }) => Promise<{

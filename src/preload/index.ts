@@ -11,44 +11,7 @@ const api = {
   setWindowTitle: (title: string): Promise<boolean> =>
     ipcRenderer.invoke('set-window-title', title),
 
-  // File operations
-  openFile: (data?: {
-    lastDirectory?: string
-  }): Promise<{
-    success: boolean
-    filePath?: string
-    content?: string
-    lastDirectory?: string
-    error?: string
-    canceled?: boolean
-  }> => ipcRenderer.invoke('open-file', data),
-
-  saveFile: (data: {
-    filePath?: string
-    content: string
-    lastDirectory?: string
-  }): Promise<{
-    success: boolean
-    filePath?: string
-    lastDirectory?: string
-    error?: string
-    canceled?: boolean
-  }> => ipcRenderer.invoke('save-file', data),
-
-  saveFileAs: (data: {
-    content: string
-    currentPath?: string
-    lastDirectory?: string
-  }): Promise<{
-    success: boolean
-    filePath?: string
-    lastDirectory?: string
-    error?: string
-    canceled?: boolean
-  }> => ipcRenderer.invoke('save-file-as', data),
-
-  setLastDirectory: (directory: string): Promise<boolean> =>
-    ipcRenderer.invoke('set-last-directory', directory),
+  // File operations have been removed
 
   // App state persistence
   saveAppState: (data: {

@@ -1,0 +1,133 @@
+.bcrypt-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.bcrypt-dialog {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 500px;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bcrypt-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bcrypt-dialog-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.close-button:hover {
+  background-color: var(--surfaceHover);
+}
+
+.bcrypt-dialog-content {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.bcrypt-dialog-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.bcrypt-dialog-row label {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.bcrypt-dialog-row input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--inputBackground);
+  color: var(--text);
+}
+
+.bcrypt-dialog-info {
+  background-color: var(--background);
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 16px;
+}
+
+.bcrypt-dialog-info p {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.bcrypt-dialog-info ul {
+  margin: 0 0 12px;
+  padding-left: 24px;
+}
+
+.bcrypt-dialog-info li {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.bcrypt-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  opacity: 0.9;
+}
+
+.apply-button {
+  padding: 8px 16px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.apply-button:hover {
+  background-color: var(--primaryDark);
+}

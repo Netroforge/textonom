@@ -1,0 +1,93 @@
+/* Top navigation bar */
+.top-nav {
+  display: flex;
+  background-color: var(--surface);
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+  user-select: none;
+}
+
+.menu-container {
+  position: relative;
+  height: 100%;
+}
+
+.top-nav-item {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  color: var(--text);
+  position: relative;
+}
+
+.top-nav-item:hover {
+  background-color: var(--menuHoverBackground);
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--menuBackground);
+  border: 1px solid var(--menuBorder);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.menu-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  color: var(--menuText);
+}
+
+.menu-item:hover {
+  background-color: var(--menuHoverBackground);
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: var(--border);
+  margin: 4px 0;
+}
+
+/* Submenu styling */
+.menu-item.has-submenu {
+  position: relative;
+}
+
+.submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background-color: var(--menuBackground);
+  border: 1px solid var(--menuBorder);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  min-width: 200px;
+  z-index: 1001;
+  margin-left: 0;
+  margin-top: 0;
+}
+
+/* Menu item with icon */
+.menu-item-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Menu item with keyboard shortcut */
+.menu-item-shortcut {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.7;
+  padding-left: 16px;
+}

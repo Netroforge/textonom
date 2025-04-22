@@ -1,31 +1,31 @@
 // Import all transformation pages
-import { Component } from 'vue'
-import Base64EncodePage from './Base64EncodePage.vue'
-import Base64DecodePage from './Base64DecodePage.vue'
-import JsonPrettifyPage from './JsonPrettifyPage.vue'
-import JsonCompactPage from './JsonCompactPage.vue'
-import UrlEncodePage from './UrlEncodePage.vue'
-import UrlDecodePage from './UrlDecodePage.vue'
-import BcryptHashPage from './BcryptHashPage.vue'
-import JsonToYamlPage from './JsonToYamlPage.vue'
-import YamlToJsonPage from './YamlToJsonPage.vue'
-import ToUpperCasePage from './ToUpperCasePage.vue'
-import ToLowerCasePage from './ToLowerCasePage.vue'
-import ToTitleCasePage from './ToTitleCasePage.vue'
-import XmlPrettifyPage from './XmlPrettifyPage.vue'
-import XmlCompactPage from './XmlCompactPage.vue'
-import SortLinesPage from './SortLinesPage.vue'
-import DeduplicateLinesPage from './DeduplicateLinesPage.vue'
-import ReverseLinesPage from './ReverseLinesPage.vue'
-import HtmlEncodePage from './HtmlEncodePage.vue'
-import HtmlDecodePage from './HtmlDecodePage.vue'
-import Md5HashPage from './Md5HashPage.vue'
-import Sha1HashPage from './Sha1HashPage.vue'
-import Sha256HashPage from './Sha256HashPage.vue'
-import UnicodeEscapePage from './UnicodeEscapePage.vue'
-import UnicodeUnescapePage from './UnicodeUnescapePage.vue'
-import PropertiesFileToYamlPage from './PropertiesFileToYamlPage.vue'
-import YamlToPropertiesFilePage from './YamlToPropertiesFilePage.vue'
+import { ComponentType } from 'react'
+import Base64EncodePage from './Base64EncodePage'
+import Base64DecodePage from './Base64DecodePage'
+import JsonPrettifyPage from './JsonPrettifyPage'
+import JsonCompactPage from './JsonCompactPage'
+import UrlEncodePage from './UrlEncodePage'
+import UrlDecodePage from './UrlDecodePage'
+import ToUpperCasePage from './ToUpperCasePage'
+import ToLowerCasePage from './ToLowerCasePage'
+import ToTitleCasePage from './ToTitleCasePage'
+import XmlPrettifyPage from './XmlPrettifyPage'
+import XmlCompactPage from './XmlCompactPage'
+import SortLinesPage from './SortLinesPage'
+import DeduplicateLinesPage from './DeduplicateLinesPage'
+import ReverseLinesPage from './ReverseLinesPage'
+import HtmlEncodePage from './HtmlEncodePage'
+import HtmlDecodePage from './HtmlDecodePage'
+import BcryptHashPage from './BcryptHashPage'
+import Md5HashPage from './Md5HashPage'
+import Sha1HashPage from './Sha1HashPage'
+import Sha256HashPage from './Sha256HashPage'
+import UnicodeEscapePage from './UnicodeEscapePage'
+import UnicodeUnescapePage from './UnicodeUnescapePage'
+import JsonToYamlPage from './JsonToYamlPage'
+import YamlToJsonPage from './YamlToJsonPage'
+import PropertiesFileToYamlPage from './PropertiesFileToYamlPage'
+import YamlToPropertiesFilePage from './YamlToPropertiesFilePage'
 
 // Export all transformation pages
 export {
@@ -35,9 +35,6 @@ export {
   JsonCompactPage,
   UrlEncodePage,
   UrlDecodePage,
-  BcryptHashPage,
-  JsonToYamlPage,
-  YamlToJsonPage,
   ToUpperCasePage,
   ToLowerCasePage,
   ToTitleCasePage,
@@ -48,29 +45,29 @@ export {
   ReverseLinesPage,
   HtmlEncodePage,
   HtmlDecodePage,
+  BcryptHashPage,
   Md5HashPage,
   Sha1HashPage,
   Sha256HashPage,
   UnicodeEscapePage,
   UnicodeUnescapePage,
+  JsonToYamlPage,
+  YamlToJsonPage,
   PropertiesFileToYamlPage,
   YamlToPropertiesFilePage
 }
 
 // Define type for transformation page components
-export type TransformationPageComponent = Component
+export type TransformationPageComponent = ComponentType<{ tabId: string }>
 
 // Map transformation IDs to their respective components
-export const transformationPageMap: Record<string, TransformationPageComponent> = {
+const transformationPageMap: Record<string, TransformationPageComponent> = {
   base64Encode: Base64EncodePage,
   base64Decode: Base64DecodePage,
   jsonPrettify: JsonPrettifyPage,
   jsonCompact: JsonCompactPage,
   urlEncode: UrlEncodePage,
   urlDecode: UrlDecodePage,
-  bcryptHash: BcryptHashPage,
-  jsonToYaml: JsonToYamlPage,
-  yamlToJson: YamlToJsonPage,
   toUpperCase: ToUpperCasePage,
   toLowerCase: ToLowerCasePage,
   toTitleCase: ToTitleCasePage,
@@ -81,18 +78,27 @@ export const transformationPageMap: Record<string, TransformationPageComponent> 
   reverseLines: ReverseLinesPage,
   htmlEncode: HtmlEncodePage,
   htmlDecode: HtmlDecodePage,
+  bcryptHash: BcryptHashPage,
   md5Hash: Md5HashPage,
   sha1Hash: Sha1HashPage,
   sha256Hash: Sha256HashPage,
   unicodeEscape: UnicodeEscapePage,
   unicodeUnescape: UnicodeUnescapePage,
+  jsonToYaml: JsonToYamlPage,
+  yamlToJson: YamlToJsonPage,
   propertiesFileToYaml: PropertiesFileToYamlPage,
   yamlToPropertiesFile: YamlToPropertiesFilePage
 }
 
-// Get transformation page component by ID
-export const getTransformationPageByTransformationId = (
-  id: string
-): TransformationPageComponent | undefined => {
-  return transformationPageMap[id as keyof typeof transformationPageMap]
+// Function to get a transformation page component by ID
+export const getTransformationPageComponent = (id: string): TransformationPageComponent => {
+  const component = transformationPageMap[id]
+  if (!component) {
+    console.error(`Transformation page component not found for ID: ${id}`)
+    // Return a default component or the first one as a fallback
+    return Base64EncodePage
+  }
+  return component
 }
+
+export default transformationPageMap

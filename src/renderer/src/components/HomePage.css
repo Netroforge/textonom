@@ -1,0 +1,143 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: var(--background);
+  color: var(--text);
+}
+
+.home-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.home-header h1 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--inputBackground);
+  color: var(--text);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primaryRgb), 0.2);
+}
+
+.categories-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.category {
+  margin-bottom: 1.5rem;
+}
+
+.category-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+}
+
+.category-description {
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.transformations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.transformation-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+  height: 100%;
+  position: relative;
+}
+
+.transformation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary);
+}
+
+.transformation-card-open {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 12px rgba(var(--primaryRgb), 0.7);
+  position: relative;
+  background-color: rgba(var(--primaryRgb), 0.15);
+  transform: translateY(-2px);
+  /* Always appear slightly raised */
+}
+
+.transformation-card-open::after {
+  content: '✓ Open';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: var(--primary);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.transformation-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  padding: 1rem 1rem 0.5rem 1rem;
+}
+
+.transformation-description {
+  font-size: 0.9rem;
+  color: var(--text);
+  padding: 0 1rem 1rem 1rem;
+}
+
+.no-results {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 2rem;
+  background-color: var(--surface);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}

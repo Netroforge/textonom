@@ -1,5 +1,5 @@
 // Persistence service for saving and loading application state
-import { Tab } from '../store/tabsStore'
+import { Tab } from '../contexts/TabsContext'
 
 // Interface for the tabs state that will be saved to disk
 export interface SavedTabsState {

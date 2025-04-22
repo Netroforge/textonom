@@ -1,5 +1,11 @@
-import { THEMES, useSettingsStore } from '../store/settingsStore'
-import type { ThemeType } from '../types'
+// Import theme types
+export const THEMES = {
+  LIGHT: 'light',
+  DARK: 'dark',
+  CYBERPUNK: 'cyberpunk'
+} as const
+
+export type ThemeType = (typeof THEMES)[keyof typeof THEMES]
 
 interface Theme {
   primary: string
@@ -111,38 +117,38 @@ export const darkTheme: Theme = {
 
 // Cyberpunk theme colors
 export const cyberpunkTheme: Theme = {
-  primary: '#ff00ff', // Magenta
-  primaryDark: '#cc00cc', // Darker magenta
-  secondary: '#00ffff', // Cyan
-  background: '#0a0a16', // Dark blue-black
-  surface: '#1a1a2e', // Dark blue
-  surfaceHover: '#2a2a4e', // Lighter blue
-  text: '#00ffff', // Cyan
+  primary: '#00ffb3', // Neon teal
+  primaryDark: '#00cc8f', // Darker teal
+  secondary: '#ff00ff', // Magenta
+  background: '#0a0a1a', // Dark blue-black
+  surface: '#16162e', // Dark blue
+  surfaceHover: '#252550', // Lighter blue
+  text: '#e0f0ff', // Light blue-white
   border: '#ff00ff', // Magenta
-  divider: '#1a1a2e', // Dark blue
-  error: '#ff0055', // Neon red
+  divider: '#16162e', // Dark blue
+  error: '#ff3366', // Neon red
   success: '#00ff9f', // Neon green
   warning: '#ffcc00', // Neon yellow
   info: '#00ffff', // Cyan
   infoDark: '#00cccc', // Darker cyan
   inputBackground: '#12122a', // Dark blue with slight purple tint
-  editorBackground: '#0a0a16', // Dark blue-black
-  editorForeground: '#00ffff', // Cyan
+  editorBackground: '#0a0a1a', // Dark blue-black
+  editorForeground: '#e0f0ff', // Light blue-white
   editorLineNumbers: '#ff00ff', // Magenta
   editorSelectionBackground: '#3d1a7a', // Purple
   editorCursor: '#00ffff', // Cyan
-  tabBackground: '#1a1a2e', // Dark blue
-  tabActiveBackground: '#0a0a16', // Dark blue-black
-  tabHoverBackground: '#2a2a4e', // Lighter blue
-  tabActiveBorder: '#ff00ff', // Magenta
-  tabText: '#00ffff', // Cyan
+  tabBackground: '#16162e', // Dark blue
+  tabActiveBackground: '#0a0a1a', // Dark blue-black
+  tabHoverBackground: '#252550', // Lighter blue
+  tabActiveBorder: '#00ffb3', // Neon teal
+  tabText: '#e0f0ff', // Light blue-white
   tabActiveText: '#00ffff', // Cyan
-  menuBackground: '#1a1a2e', // Dark blue
-  menuHoverBackground: '#2a2a4e', // Lighter blue
-  menuText: '#00ffff', // Cyan
+  menuBackground: '#16162e', // Dark blue
+  menuHoverBackground: '#252550', // Lighter blue
+  menuText: '#e0f0ff', // Light blue-white
   menuBorder: '#ff00ff', // Magenta
   scrollbarThumb: '#ff00ff', // Magenta
-  scrollbarTrack: '#1a1a2e', // Dark blue
+  scrollbarTrack: '#16162e', // Dark blue
   textGlow: true // Enable text glow effect
 }
 
@@ -198,9 +204,31 @@ const hexToRgb = (hex: string): string => {
 // Apply theme to document
 export const applyTheme = (themeName: ThemeType): void => {
   const theme = getThemeByName(themeName)
-  const settingsStore = useSettingsStore()
   const root = document.documentElement
 
+  // Apply CRT effect based on settings
+  try {
+    const settingsString = localStorage.getItem('textonom-settings')
+    if (settingsString) {
+      const settings = JSON.parse(settingsString)
+      // In the React version, crtEffect is equivalent to turboMode in Vue
+      const turboMode = settings.state?.settings?.crtEffect || false
+      const textGlowEffect = settings.state?.settings?.textGlowEffect || false
+
+      root.setAttribute('data-crt-effect', turboMode ? 'true' : 'false')
+      root.setAttribute('data-text-glow', textGlowEffect || theme.textGlow ? 'true' : 'false')
+    }
+  } catch (error) {
+    console.error('Failed to apply effects from settings:', error)
+    // Set defaults based on theme
+    root.setAttribute('data-crt-effect', 'true') // Default to true to match Vue version
+    root.setAttribute('data-text-glow', theme.textGlow ? 'true' : 'false')
+  }
+
+  // Set data attribute for theme
+  root.setAttribute('data-theme', themeName)
+
+  // Apply all theme variables
   Object.entries(theme).forEach(([key, value]) => {
     if (typeof value === 'string' && value.startsWith('#')) {
       // Set the color variable
@@ -212,9 +240,4 @@ export const applyTheme = (themeName: ThemeType): void => {
       root.style.setProperty(`--${key}`, value)
     }
   })
-
-  // Set data attributes for special effects
-  root.setAttribute('data-theme', themeName)
-  root.setAttribute('data-crt-effect', settingsStore.turboMode ? 'true' : 'false')
-  root.setAttribute('data-text-glow', theme.textGlow ? 'true' : 'false')
 }

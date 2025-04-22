@@ -4,12 +4,21 @@
 
 [![slack](https://img.shields.io/badge/slack-join-brightgreen.svg?style=for-the-badge&logo=slack)](https://join.slack.com/t/netroforge/shared_invite/zt-335byot5g-Z6PVCx45OgKKiTjJxz7odw)
 
-# textonom
+# Textonom
 
 A text editor that lets you perform common text transformations locally.
 Helps make your sensitive data safe.
 
 ![Screenshot.png](Screenshot.png)
+
+## Technology
+
+Textonom is built with:
+
+- **Electron**: Cross-platform desktop application framework
+- **React**: UI library for building the user interface
+- **TypeScript**: Type-safe JavaScript
+- **CSS**: Styling with custom themes (light, dark, and cyberpunk)
 
 ## Supported Transformations
 

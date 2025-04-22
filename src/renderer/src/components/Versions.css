@@ -1,0 +1,24 @@
+.versions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.version-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.version-label {
+  font-weight: bold;
+}
+
+.version-value {
+  color: var(--primary);
+}

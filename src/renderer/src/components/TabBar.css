@@ -1,0 +1,208 @@
+.tabs-container {
+  display: flex;
+  height: 42px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  z-index: 5;
+  position: relative;
+}
+
+.tabs-scroll-area {
+  display: flex;
+  position: relative;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.tabs-scroll-area::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabs-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tabs-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--scrollbarThumb);
+  border-radius: 2px;
+}
+
+.home-button {
+  padding: 0 16px;
+  height: 100%;
+  background-color: var(--tabBackground);
+  color: var(--tabText);
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 80px;
+}
+
+.home-button.active {
+  background-color: var(--tabActiveBackground);
+  color: var(--tabActiveText);
+  border-bottom: 2px solid var(--tabActiveBorder);
+  position: relative;
+}
+
+.home-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary);
+  box-shadow:
+    0 0 8px var(--primary),
+    0 0 16px var(--primary);
+}
+
+.home-button:hover {
+  background-color: var(--tabHoverBackground);
+}
+
+.tab {
+  padding: 0 16px;
+  height: 100%;
+  min-width: 140px;
+  max-width: 220px;
+  background-color: var(--tabBackground);
+  color: var(--tabText);
+  border-right: 1px solid var(--border);
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.tab.active {
+  background-color: var(--tabActiveBackground);
+  color: var(--tabActiveText);
+  border-bottom: 2px solid var(--tabActiveBorder);
+  position: relative;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary);
+  box-shadow:
+    0 0 8px var(--primary),
+    0 0 16px var(--primary);
+}
+
+.tab.inactive {
+  opacity: 0.7;
+}
+
+.tab.dragging {
+  opacity: 0.5;
+}
+
+.tab:hover {
+  background-color: var(--tabHoverBackground);
+}
+
+.tab-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.tab-close {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  transition: all 0.15s ease;
+  margin-left: 8px;
+  opacity: 0.7;
+}
+
+.tab-close:hover {
+  background-color: rgba(var(--errorRgb), 0.2);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.tab.active .tab-close {
+  opacity: 0.9;
+}
+
+.drop-indicator {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background-color: var(--primary);
+  z-index: 10;
+  pointer-events: none;
+  box-shadow:
+    0 0 8px var(--primary),
+    0 0 16px var(--primary);
+  animation: pulse 1.5s infinite;
+}
+
+/* Tab animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* New tab animation */
+.tab-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.tab-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.tab-exit {
+  opacity: 1;
+}
+
+.tab-exit-active {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}

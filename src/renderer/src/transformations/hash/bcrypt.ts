@@ -1,5 +1,4 @@
 import * as bcrypt from 'bcryptjs'
-import { useSettingsStore } from '../../store/settingsStore'
 import type { TransformationFunction } from '../../types'
 
 /**
@@ -18,10 +17,9 @@ const bcryptHash: TransformationFunction = async (
     return ''
   }
 
-  // If no cost factor is provided, use the one from settings
+  // If no cost factor is provided, use a default value
   if (costFactor === undefined) {
-    const settingsStore = useSettingsStore()
-    costFactor = settingsStore.bcryptRounds
+    costFactor = 12 // Default value
   }
 
   // Validate cost factor
