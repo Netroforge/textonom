@@ -1,7 +1,8 @@
 <template>
   <div class="status-bar">
     <div class="status-left">
-      <div v-if="activeTab" class="status-item">
+      <div v-if="tabsStore.showHomePage" class="status-item">Home</div>
+      <div v-else-if="activeTab" class="status-item">
         {{ activeTab.title }}
       </div>
     </div>

@@ -1,186 +1,201 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Textonom - Text Transformation Tool</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="logo.png" type="image/png" />
+    <meta
+      name="description"
+      content="Textonom - A text editor that lets you perform common text transformations locally. Helps make your sensitive data safe."
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Textonom - Text Transformation Tool</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="logo.png" type="image/png" />
-  <meta name="description"
-    content="Textonom - A text editor that lets you perform common text transformations locally. Helps make your sensitive data safe." />
-</head>
+  <body class="cyberpunk" data-crt-effect="false">
+    <div class="crt-container">
+      <!-- CRT Effects (only visible when turbo mode is enabled) -->
+      <div class="crt-scanlines"></div>
+      <div class="crt-flicker-overlay"></div>
+      <div class="crt-glitch-overlay" data-text="GLITCH"></div>
+      <div class="crt-vignette"></div>
+      <div class="crt-glow"></div>
 
-<body class="cyberpunk" data-crt-effect="false">
-  <div class="crt-container">
-    <!-- CRT Effects (only visible when turbo mode is enabled) -->
-    <div class="crt-scanlines"></div>
-    <div class="crt-flicker-overlay"></div>
-    <div class="crt-glitch-overlay" data-text="GLITCH"></div>
-    <div class="crt-vignette"></div>
-    <div class="crt-glow"></div>
-
-    <header>
-      <div class="logo-container">
-        <img src="logo.png" alt="Textonom Logo" class="logo" />
-        <h1 class="glow-text">TEXTONOM</h1>
-      </div>
-      <div class="turbo-toggle">
-        <label class="switch">
-          <input type="checkbox" id="turbo-mode" />
-          <span class="slider"></span>
-        </label>
-        <span class="turbo-label glow-text">TURBO MODE</span>
-      </div>
-    </header>
-
-    <section class="hero">
-      <div class="hero-content">
-        <h2 class="glow-text">Text Transformations, <span class="accent-text">Locally</span></h2>
-        <p>
-          A text editor that lets you perform common text transformations locally. Helps make your
-          sensitive data safe.
-        </p>
-        <div class="cta-buttons">
-          <a href="https://github.com/Netroforge/textonom/releases" class="btn primary-btn glow-text">Download</a>
-          <a href="https://github.com/Netroforge/textonom" class="btn secondary-btn">View on GitHub</a>
+      <header>
+        <div class="logo-container">
+          <img src="logo.png" alt="Textonom Logo" class="logo" />
+          <h1 class="glow-text">TEXTONOM</h1>
         </div>
-      </div>
-      <div class="hero-image">
-        <img src="screenshot.png" alt="Textonom Screenshot" class="screenshot" />
-      </div>
-    </section>
+        <div class="turbo-toggle">
+          <label class="switch">
+            <input type="checkbox" id="turbo-mode" />
+            <span class="slider"></span>
+          </label>
+          <span class="turbo-label glow-text">TURBO MODE</span>
+        </div>
+      </header>
 
-    <section class="features">
-      <h2 class="section-title glow-text">Features</h2>
-      <div class="feature-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3>Local Processing</h3>
+      <section class="hero">
+        <div class="hero-content">
+          <h2 class="glow-text">Text Transformations, <span class="accent-text">Locally</span></h2>
           <p>
-            All transformations happen locally on your device. Your data never leaves your
-            computer.
+            A text editor that lets you perform common text transformations locally. Helps make your
+            sensitive data safe.
           </p>
+          <div class="cta-buttons">
+            <a
+              href="https://github.com/Netroforge/textonom/releases"
+              class="btn primary-btn glow-text"
+              >Download</a
+            >
+            <a href="https://github.com/Netroforge/textonom" class="btn secondary-btn"
+              >View on GitHub</a
+            >
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔄</div>
-          <h3>Multiple Transformations</h3>
-          <p>Over 20 different text transformations organized by category.</p>
+        <div class="hero-image">
+          <img src="screenshot.png" alt="Textonom Screenshot" class="screenshot" />
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎨</div>
-          <h3>Vibe Themes</h3>
-          <p>
-            Choose between Light, Dark, and Cyberpunk themes with optional Turbo Mode for that
-            retro CRT feel.
-          </p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔄</div>
-          <h3>Auto-Updates</h3>
-          <p>Stay up to date with the latest features and improvements.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⚙️</div>
-          <h3>Configurable Settings</h3>
-          <p>Customize font, size, and transformation parameters to your liking.</p>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="transformations">
-      <h2 class="section-title glow-text">Transformations</h2>
-      <div class="transformation-categories">
-        <div class="category">
-          <h3 class="category-title">Encoding & Decoding</h3>
-          <ul class="transformation-list">
-            <li>Base64 Encode/Decode</li>
-            <li>URL Encode/Decode</li>
-            <li>HTML Encode/Decode</li>
-            <li>Unicode Escape/Unescape</li>
-          </ul>
+      <section class="features">
+        <h2 class="section-title glow-text">Features</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Local Processing</h3>
+            <p>
+              All transformations happen locally on your device. Your data never leaves your
+              computer.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>Multiple Transformations</h3>
+            <p>Over 20 different text transformations organized by category.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>Vibe Themes</h3>
+            <p>
+              Choose between Light, Dark, and Cyberpunk themes with optional Turbo Mode for that
+              retro CRT feel.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>Auto-Updates</h3>
+            <p>Stay up to date with the latest features and improvements.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚙️</div>
+            <h3>Configurable Settings</h3>
+            <p>Customize font, size, and transformation parameters to your liking.</p>
+          </div>
         </div>
-        <div class="category">
-          <h3 class="category-title">Formatting</h3>
-          <ul class="transformation-list">
-            <li>JSON Prettify/Compact</li>
-            <li>XML Prettify/Compact</li>
-          </ul>
-        </div>
-        <div class="category">
-          <h3 class="category-title">Case Conversion</h3>
-          <ul class="transformation-list">
-            <li>To Uppercase</li>
-            <li>To Lowercase</li>
-            <li>To Title Case</li>
-          </ul>
-        </div>
-        <div class="category">
-          <h3 class="category-title">Text Operations</h3>
-          <ul class="transformation-list">
-            <li>Sort Lines</li>
-            <li>Deduplicate Lines</li>
-            <li>Reverse Lines</li>
-          </ul>
-        </div>
-        <div class="category">
-          <h3 class="category-title">Hashing</h3>
-          <ul class="transformation-list">
-            <li>MD5 Hash</li>
-            <li>SHA-1 Hash</li>
-            <li>SHA-256 Hash</li>
-            <li>Bcrypt Hash (configurable rounds)</li>
-          </ul>
-        </div>
-        <div class="category">
-          <h3 class="category-title">Format Conversion</h3>
-          <ul class="transformation-list">
-            <li>JSON to YAML / YAML to JSON</li>
-            <li>Properties to YAML / YAML to Properties</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="download">
-      <h2 class="section-title glow-text">Get Textonom</h2>
-      <p>Available for Windows, Mac, and Linux</p>
-      <div class="download-buttons">
-        <a href="https://github.com/Netroforge/textonom/releases" class="btn primary-btn glow-text">Download Latest
-          Release</a>
-        <a href="https://github.com/Netroforge/textonom" class="btn secondary-btn">View Source Code</a>
-      </div>
-    </section>
-
-    <footer>
-      <div class="footer-content">
-        <div class="footer-logo">
-          <img src="logo.png" alt="Textonom Logo" class="footer-logo-img" />
-          <span class="footer-logo-text glow-text">TEXTONOM</span>
+      <section class="transformations">
+        <h2 class="section-title glow-text">Transformations</h2>
+        <div class="transformation-categories">
+          <div class="category">
+            <h3 class="category-title">Encoding & Decoding</h3>
+            <ul class="transformation-list">
+              <li>Base64 Encode/Decode</li>
+              <li>URL Encode/Decode</li>
+              <li>HTML Encode/Decode</li>
+              <li>Unicode Escape/Unescape</li>
+            </ul>
+          </div>
+          <div class="category">
+            <h3 class="category-title">Formatting</h3>
+            <ul class="transformation-list">
+              <li>JSON Prettify/Compact</li>
+              <li>XML Prettify/Compact</li>
+            </ul>
+          </div>
+          <div class="category">
+            <h3 class="category-title">Case Conversion</h3>
+            <ul class="transformation-list">
+              <li>To Uppercase</li>
+              <li>To Lowercase</li>
+              <li>To Title Case</li>
+            </ul>
+          </div>
+          <div class="category">
+            <h3 class="category-title">Text Operations</h3>
+            <ul class="transformation-list">
+              <li>Sort Lines</li>
+              <li>Deduplicate Lines</li>
+              <li>Reverse Lines</li>
+            </ul>
+          </div>
+          <div class="category">
+            <h3 class="category-title">Hashing</h3>
+            <ul class="transformation-list">
+              <li>MD5 Hash</li>
+              <li>SHA-1 Hash</li>
+              <li>SHA-256 Hash</li>
+              <li>Bcrypt Hash (configurable rounds)</li>
+            </ul>
+          </div>
+          <div class="category">
+            <h3 class="category-title">Format Conversion</h3>
+            <ul class="transformation-list">
+              <li>JSON to YAML / YAML to JSON</li>
+              <li>Properties to YAML / YAML to Properties</li>
+            </ul>
+          </div>
         </div>
-        <div class="footer-links">
-          <a href="https://github.com/Netroforge/textonom">GitHub</a>
-          <a href="https://github.com/Netroforge/textonom/issues">Report Issues</a>
-          <a href="https://github.com/Netroforge/textonom/releases">Releases</a>
-        </div>
-        <div class="footer-badges">
-          <img src="https://img.shields.io/badge/vibe_coded-purple?style=for-the-badge&logo=musicbrainz&logoColor=white"
-            alt="Vibe Coded" />
-          <img
-            src="https://img.shields.io/badge/vibe_debuged-red?style=for-the-badge&logo=spring_creators&logoColor=white"
-            alt="Vibe Debugged" />
-          <img
-            src="https://img.shields.io/badge/vibe_refactored-blue?style=for-the-badge&logo=linuxcontainers&logoColor=white"
-            alt="Vibe Refactored" />
-        </div>
-      </div>
-      <div class="footer-copyright">
-        <p>&copy; 2023-2024 Textonom. Licensed under MIT.</p>
-      </div>
-    </footer>
-  </div>
+      </section>
 
-  <script src="script.js"></script>
-</body>
+      <section class="download">
+        <h2 class="section-title glow-text">Get Textonom</h2>
+        <p>Available for Windows, Mac, and Linux</p>
+        <div class="download-buttons">
+          <a
+            href="https://github.com/Netroforge/textonom/releases"
+            class="btn primary-btn glow-text"
+            >Download Latest Release</a
+          >
+          <a href="https://github.com/Netroforge/textonom" class="btn secondary-btn"
+            >View Source Code</a
+          >
+        </div>
+      </section>
 
+      <footer>
+        <div class="footer-content">
+          <div class="footer-logo">
+            <img src="logo.png" alt="Textonom Logo" class="footer-logo-img" />
+            <span class="footer-logo-text glow-text">TEXTONOM</span>
+          </div>
+          <div class="footer-links">
+            <a href="https://github.com/Netroforge/textonom">GitHub</a>
+            <a href="https://github.com/Netroforge/textonom/issues">Report Issues</a>
+            <a href="https://github.com/Netroforge/textonom/releases">Releases</a>
+          </div>
+          <div class="footer-badges">
+            <img
+              src="https://img.shields.io/badge/vibe_coded-purple?style=for-the-badge&logo=musicbrainz&logoColor=white"
+              alt="Vibe Coded"
+            />
+            <img
+              src="https://img.shields.io/badge/vibe_debuged-red?style=for-the-badge&logo=spring_creators&logoColor=white"
+              alt="Vibe Debugged"
+            />
+            <img
+              src="https://img.shields.io/badge/vibe_refactored-blue?style=for-the-badge&logo=linuxcontainers&logoColor=white"
+              alt="Vibe Refactored"
+            />
+          </div>
+        </div>
+        <div class="footer-copyright">
+          <p>&copy; 2023-2024 Textonom. Licensed under MIT.</p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
 </html>

@@ -38,6 +38,11 @@ const isMaximized = ref<boolean>(false)
 
 // Computed property for the app title
 const appTitle = computed((): string => {
+  // If the home page is active, show "Home" in the title
+  if (tabsStore.showHomePage) {
+    return 'Textonom - Home'
+  }
+
   const activeTab = tabsStore.getActiveTab
   if (!activeTab) {
     return 'Textonom'
@@ -47,10 +52,19 @@ const appTitle = computed((): string => {
   return `Textonom - ${activeTab.title}`
 })
 
-// Watch for changes in the active tab and update the window title
+// Watch for changes in the app title and update the window title
 watch(appTitle, (newTitle) => {
   window.api.setWindowTitle(newTitle)
 })
+
+// Also watch for changes in the home page state
+watch(
+  () => tabsStore.showHomePage,
+  () => {
+    // The appTitle computed property will update automatically
+    // and trigger the appTitle watcher above
+  }
+)
 
 // Check initial maximized state
 onMounted(async () => {
