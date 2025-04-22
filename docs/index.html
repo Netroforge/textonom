@@ -26,12 +26,20 @@
           <img src="logo.png" alt="Textonom Logo" class="logo" />
           <h1 class="glow-text">TEXTONOM</h1>
         </div>
-        <div class="turbo-toggle">
-          <label class="switch">
-            <input type="checkbox" id="turbo-mode" />
-            <span class="slider"></span>
-          </label>
-          <span class="turbo-label glow-text">TURBO MODE</span>
+        <div class="header-controls">
+          <div class="language-switcher-container">
+            <select id="language-switcher" class="language-switcher">
+              <option value="en">English</option>
+              <option value="ru">Русский</option>
+            </select>
+          </div>
+          <div class="turbo-toggle">
+            <label class="switch">
+              <input type="checkbox" id="turbo-mode" />
+              <span class="slider"></span>
+            </label>
+            <span class="turbo-label glow-text">TURBO MODE</span>
+          </div>
         </div>
       </header>
 
@@ -196,6 +204,7 @@
       </footer>
     </div>
 
+    <script src="js/language-switcher.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
