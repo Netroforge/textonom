@@ -21,6 +21,14 @@
       <div class="crt-vignette"></div>
       <div class="crt-glow"></div>
 
+      <!-- Lightbox for screenshots -->
+      <div id="screenshot-lightbox" class="lightbox">
+        <div class="lightbox-content">
+          <span class="close-lightbox">×</span>
+          <img id="lightbox-image" src="" alt="Скриншот в полном размере" />
+        </div>
+      </div>
+
       <header>
         <div class="logo-container">
           <img src="../logo.png" alt="Textonom Logo" class="logo" />
@@ -62,7 +70,15 @@
           </div>
         </div>
         <div class="hero-image">
-          <img src="../screenshot.png" alt="Textonom Screenshot" class="screenshot" />
+          <a
+            href="javascript:void(0)"
+            class="screenshot-link"
+            title="Нажмите, чтобы увидеть скриншот в полном размере"
+            data-src="../screenshot.png"
+          >
+            <img src="../screenshot.png" alt="Textonom Screenshot" class="screenshot" />
+            <div class="zoom-indicator"><span>🔍</span></div>
+          </a>
         </div>
       </section>
 

@@ -2,6 +2,46 @@ document.addEventListener('DOMContentLoaded', function () {
   // Get the turbo mode toggle
   const turboToggle = document.getElementById('turbo-mode')
 
+  // Lightbox functionality
+  const lightbox = document.getElementById('screenshot-lightbox')
+  const lightboxImage = document.getElementById('lightbox-image')
+  const closeButton = document.querySelector('.close-lightbox')
+  const screenshotLinks = document.querySelectorAll('.screenshot-link')
+
+  // Open lightbox when clicking on a screenshot
+  screenshotLinks.forEach((link) => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault()
+      const imageSrc = this.getAttribute('data-src')
+      lightboxImage.src = imageSrc
+      lightbox.classList.add('active')
+
+      // Add cyberpunk glitch effect when opening lightbox
+      if (turboToggle.checked) {
+        createRandomGlitch()
+      }
+    })
+  })
+
+  // Close lightbox when clicking the close button
+  closeButton.addEventListener('click', function () {
+    lightbox.classList.remove('active')
+  })
+
+  // Close lightbox when clicking outside the image
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) {
+      lightbox.classList.remove('active')
+    }
+  })
+
+  // Close lightbox with Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+      lightbox.classList.remove('active')
+    }
+  })
+
   // Check if there's a saved preference for turbo mode
   const savedTurboMode = localStorage.getItem('turboMode')
 
