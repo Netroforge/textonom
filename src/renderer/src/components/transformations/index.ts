@@ -20,12 +20,28 @@ import BcryptHashPage from './BcryptHashPage'
 import Md5HashPage from './Md5HashPage'
 import Sha1HashPage from './Sha1HashPage'
 import Sha256HashPage from './Sha256HashPage'
+import Sha512HashPage from './Sha512HashPage'
+import HmacHashPage from './HmacHashPage'
+import Argon2HashPage from './Argon2HashPage'
 import UnicodeEscapePage from './UnicodeEscapePage'
 import UnicodeUnescapePage from './UnicodeUnescapePage'
 import JsonToYamlPage from './JsonToYamlPage'
 import YamlToJsonPage from './YamlToJsonPage'
 import PropertiesFileToYamlPage from './PropertiesFileToYamlPage'
 import YamlToPropertiesFilePage from './YamlToPropertiesFilePage'
+import JwtDecodePage from './JwtDecodePage'
+import HexEncodePage from './HexEncodePage'
+import HexDecodePage from './HexDecodePage'
+import MarkdownToHtmlPage from './MarkdownToHtmlPage'
+import CsvToJsonPage from './CsvToJsonPage'
+import JsonToCsvPage from './JsonToCsvPage'
+import RemoveEmptyLinesPage from './RemoveEmptyLinesPage'
+import RemoveDuplicateWordsPage from './RemoveDuplicateWordsPage'
+import ToSnakeCasePage from './ToSnakeCasePage'
+import ToCamelCasePage from './ToCamelCasePage'
+import ToKebabCasePage from './ToKebabCasePage'
+import SqlFormatPage from './SqlFormatPage'
+import CodeFormatPage from './CodeFormatPage'
 
 // Export all transformation pages
 export {
@@ -49,12 +65,28 @@ export {
   Md5HashPage,
   Sha1HashPage,
   Sha256HashPage,
+  Sha512HashPage,
+  HmacHashPage,
+  Argon2HashPage,
   UnicodeEscapePage,
   UnicodeUnescapePage,
   JsonToYamlPage,
   YamlToJsonPage,
   PropertiesFileToYamlPage,
-  YamlToPropertiesFilePage
+  YamlToPropertiesFilePage,
+  JwtDecodePage,
+  HexEncodePage,
+  HexDecodePage,
+  MarkdownToHtmlPage,
+  CsvToJsonPage,
+  JsonToCsvPage,
+  RemoveEmptyLinesPage,
+  RemoveDuplicateWordsPage,
+  ToSnakeCasePage,
+  ToCamelCasePage,
+  ToKebabCasePage,
+  SqlFormatPage,
+  CodeFormatPage
 }
 
 // Define type for transformation page components
@@ -82,12 +114,28 @@ const transformationPageMap: Record<string, TransformationPageComponent> = {
   md5Hash: Md5HashPage,
   sha1Hash: Sha1HashPage,
   sha256Hash: Sha256HashPage,
+  sha512Hash: Sha512HashPage,
+  hmacHash: HmacHashPage,
+  argon2Hash: Argon2HashPage,
   unicodeEscape: UnicodeEscapePage,
   unicodeUnescape: UnicodeUnescapePage,
   jsonToYaml: JsonToYamlPage,
   yamlToJson: YamlToJsonPage,
   propertiesFileToYaml: PropertiesFileToYamlPage,
-  yamlToPropertiesFile: YamlToPropertiesFilePage
+  yamlToPropertiesFile: YamlToPropertiesFilePage,
+  jwtDecode: JwtDecodePage,
+  hexEncode: HexEncodePage,
+  hexDecode: HexDecodePage,
+  markdownToHtml: MarkdownToHtmlPage,
+  csvToJson: CsvToJsonPage,
+  jsonToCsv: JsonToCsvPage,
+  removeEmptyLines: RemoveEmptyLinesPage,
+  removeDuplicateWords: RemoveDuplicateWordsPage,
+  toSnakeCase: ToSnakeCasePage,
+  toCamelCase: ToCamelCasePage,
+  toKebabCase: ToKebabCasePage,
+  sqlFormat: SqlFormatPage,
+  codeFormat: CodeFormatPage
 }
 
 // Function to get a transformation page component by ID

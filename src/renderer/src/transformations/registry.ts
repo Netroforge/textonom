@@ -113,6 +113,27 @@ const transformationMetadata: Transformation[] = [
     category: 'case',
     fn: transformations.toTitleCase
   },
+  {
+    id: 'toSnakeCase',
+    name: 'To snake_case',
+    description: 'Convert text to snake_case (lowercase with underscores)',
+    category: 'case',
+    fn: transformations.toSnakeCase
+  },
+  {
+    id: 'toCamelCase',
+    name: 'To camelCase',
+    description: 'Convert text to camelCase (no spaces, first word lowercase, others capitalized)',
+    category: 'case',
+    fn: transformations.toCamelCase
+  },
+  {
+    id: 'toKebabCase',
+    name: 'To kebab-case',
+    description: 'Convert text to kebab-case (lowercase with hyphens)',
+    category: 'case',
+    fn: transformations.toKebabCase
+  },
 
   // XML
   {
@@ -152,6 +173,20 @@ const transformationMetadata: Transformation[] = [
     category: 'text',
     fn: transformations.reverseLines
   },
+  {
+    id: 'removeEmptyLines',
+    name: 'Remove Empty Lines',
+    description: 'Remove all empty lines from text',
+    category: 'text',
+    fn: transformations.removeEmptyLines
+  },
+  {
+    id: 'removeDuplicateWords',
+    name: 'Remove Duplicate Words',
+    description: 'Remove duplicate words from text (case-insensitive)',
+    category: 'text',
+    fn: transformations.removeDuplicateWords
+  },
 
   // HTML
   {
@@ -190,6 +225,73 @@ const transformationMetadata: Transformation[] = [
     description: 'Generate SHA-256 hash of text',
     category: 'hash',
     fn: transformations.sha256Hash
+  },
+  {
+    id: 'sha512Hash',
+    name: 'SHA-512 Hash',
+    description: 'Generate SHA-512 hash of text (stronger than SHA-256)',
+    category: 'hash',
+    fn: transformations.sha512Hash
+  },
+  {
+    id: 'hmacHash',
+    name: 'HMAC Hash',
+    description: 'Generate HMAC (Hash-based Message Authentication Code) using various algorithms',
+    category: 'hash',
+    parameters: [
+      {
+        name: 'key',
+        type: 'string',
+        description: 'Secret key for HMAC generation'
+      },
+      {
+        name: 'algorithm',
+        type: 'string',
+        description: 'Hash algorithm to use',
+        default: 'SHA256'
+      }
+    ],
+    fn: transformations.hmacHash
+  },
+  {
+    id: 'argon2Hash',
+    name: 'Argon2 Hash',
+    description:
+      'Generate Argon2-like hash of text (simulated using PBKDF2 for browser compatibility)',
+    category: 'hash',
+    parameters: [
+      {
+        name: 'type',
+        type: 'number',
+        description: 'Argon2 variant (0=argon2d, 1=argon2i, 2=argon2id)',
+        default: 2
+      },
+      {
+        name: 'memoryCost',
+        type: 'number',
+        description: 'Memory usage in KiB',
+        default: 1024,
+        min: 256,
+        max: 4096
+      },
+      {
+        name: 'timeCost',
+        type: 'number',
+        description: 'Number of iterations',
+        default: 3,
+        min: 1,
+        max: 10
+      },
+      {
+        name: 'parallelism',
+        type: 'number',
+        description: 'Degree of parallelism',
+        default: 1,
+        min: 1,
+        max: 16
+      }
+    ],
+    fn: transformations.argon2Hash
   },
   {
     id: 'bcryptHash',
@@ -253,6 +355,136 @@ const transformationMetadata: Transformation[] = [
     description: 'Convert YAML to Java properties file format',
     category: 'conversion',
     fn: transformations.yamlToPropertiesFile
+  },
+
+  // JWT
+  {
+    id: 'jwtDecode',
+    name: 'JWT Decode',
+    description: 'Decode JSON Web Token (JWT) to view its contents',
+    category: 'encoding',
+    fn: transformations.jwtDecode
+  },
+
+  // Hex
+  {
+    id: 'hexEncode',
+    name: 'Hex Encode',
+    description: 'Encode text to hexadecimal representation',
+    category: 'encoding',
+    fn: transformations.hexEncode
+  },
+  {
+    id: 'hexDecode',
+    name: 'Hex Decode',
+    description: 'Decode hexadecimal text to plain text',
+    category: 'encoding',
+    fn: transformations.hexDecode
+  },
+
+  // Markdown
+  {
+    id: 'markdownToHtml',
+    name: 'Markdown to HTML',
+    description: 'Convert Markdown text to HTML',
+    category: 'conversion',
+    fn: transformations.markdownToHtml
+  },
+  {
+    id: 'csvToJson',
+    name: 'CSV to JSON',
+    description: 'Convert CSV data to JSON format',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'delimiter',
+        type: 'string',
+        description: 'The delimiter character',
+        default: ','
+      },
+      {
+        name: 'hasHeader',
+        type: 'boolean',
+        description: 'Whether the CSV has a header row',
+        default: true
+      }
+    ],
+    fn: transformations.csvToJson
+  },
+  {
+    id: 'jsonToCsv',
+    name: 'JSON to CSV',
+    description: 'Convert JSON data to CSV format',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'delimiter',
+        type: 'string',
+        description: 'The delimiter character',
+        default: ','
+      },
+      {
+        name: 'includeHeader',
+        type: 'boolean',
+        description: 'Whether to include a header row',
+        default: true
+      }
+    ],
+    fn: transformations.jsonToCsv
+  },
+
+  // Formatting
+  {
+    id: 'sqlFormat',
+    name: 'SQL Formatter',
+    description: 'Format SQL queries with proper indentation and syntax',
+    category: 'formatting',
+    parameters: [
+      {
+        name: 'dialect',
+        type: 'string',
+        description: 'SQL dialect',
+        default: 'sql'
+      },
+      {
+        name: 'indentSize',
+        type: 'number',
+        description: 'Number of spaces for indentation',
+        default: 2,
+        min: 1,
+        max: 8
+      },
+      {
+        name: 'uppercase',
+        type: 'boolean',
+        description: 'Whether to uppercase keywords',
+        default: false
+      }
+    ],
+    fn: transformations.sqlFormat
+  },
+  {
+    id: 'codeFormat',
+    name: 'Code Formatter',
+    description: 'Format HTML, CSS, JavaScript, or XML code with proper indentation',
+    category: 'formatting',
+    parameters: [
+      {
+        name: 'language',
+        type: 'string',
+        description: 'Language of the code',
+        default: 'html'
+      },
+      {
+        name: 'indentSize',
+        type: 'number',
+        description: 'Number of spaces for indentation',
+        default: 2,
+        min: 1,
+        max: 8
+      }
+    ],
+    fn: transformations.codeFormat
   }
 ]
 

@@ -2,13 +2,32 @@
 import { base64Decode, base64Encode } from './base64'
 import { jsonCompact, jsonPrettify } from './json'
 import { urlDecode, urlEncode } from './url'
-import { toLowerCase, toTitleCase, toUpperCase } from './case'
+import {
+  toCamelCase,
+  toKebabCase,
+  toLowerCase,
+  toSnakeCase,
+  toTitleCase,
+  toUpperCase
+} from './case'
 import { xmlCompact, xmlPrettify } from './xml'
-import { deduplicateLines, reverseLines, sortLines } from './lines'
+import { deduplicateLines, removeEmptyLines, reverseLines, sortLines } from './lines'
 import { htmlDecode, htmlEncode } from './html'
-import { bcryptHash, md5Hash, sha1Hash, sha256Hash } from './hash'
+import { argon2Hash, bcryptHash, hmacHash, md5Hash, sha1Hash, sha256Hash, sha512Hash } from './hash'
 import { unicodeEscape, unicodeUnescape } from './unicode'
-import { jsonToYaml, propertiesFileToYaml, yamlToJson, yamlToPropertiesFile } from './conversion'
+import {
+  csvToJson,
+  jsonToCsv,
+  jsonToYaml,
+  propertiesFileToYaml,
+  yamlToJson,
+  yamlToPropertiesFile
+} from './conversion'
+import { jwtDecode } from './jwt'
+import { hexEncode, hexDecode } from './hex'
+import { markdownToHtml } from './markdown'
+import { removeDuplicateWords } from './text'
+import { sqlFormat, codeFormat } from './formatting'
 
 // Export individual transformations
 export {
@@ -28,6 +47,9 @@ export {
   toUpperCase,
   toLowerCase,
   toTitleCase,
+  toSnakeCase,
+  toCamelCase,
+  toKebabCase,
 
   // XML
   xmlPrettify,
@@ -37,6 +59,7 @@ export {
   sortLines,
   deduplicateLines,
   reverseLines,
+  removeEmptyLines,
 
   // HTML
   htmlEncode,
@@ -46,7 +69,10 @@ export {
   md5Hash,
   sha1Hash,
   sha256Hash,
+  sha512Hash,
+  hmacHash,
   bcryptHash,
+  argon2Hash,
 
   // Unicode
   unicodeEscape,
@@ -56,7 +82,26 @@ export {
   jsonToYaml,
   yamlToJson,
   propertiesFileToYaml,
-  yamlToPropertiesFile
+  yamlToPropertiesFile,
+  csvToJson,
+  jsonToCsv,
+
+  // JWT
+  jwtDecode,
+
+  // Hex
+  hexEncode,
+  hexDecode,
+
+  // Markdown
+  markdownToHtml,
+
+  // Text
+  removeDuplicateWords,
+
+  // Formatting
+  sqlFormat,
+  codeFormat
 }
 
 // Export all transformations as a group
@@ -70,23 +115,39 @@ export const transformations = {
   toUpperCase,
   toLowerCase,
   toTitleCase,
+  toSnakeCase,
+  toCamelCase,
+  toKebabCase,
   xmlPrettify,
   xmlCompact,
   sortLines,
   deduplicateLines,
   reverseLines,
+  removeEmptyLines,
   htmlEncode,
   htmlDecode,
   md5Hash,
   sha1Hash,
   sha256Hash,
+  sha512Hash,
+  hmacHash,
   bcryptHash,
+  argon2Hash,
   unicodeEscape,
   unicodeUnescape,
   jsonToYaml,
   yamlToJson,
   propertiesFileToYaml,
-  yamlToPropertiesFile
+  yamlToPropertiesFile,
+  csvToJson,
+  jsonToCsv,
+  jwtDecode,
+  hexEncode,
+  hexDecode,
+  markdownToHtml,
+  removeDuplicateWords,
+  sqlFormat,
+  codeFormat
 }
 
 // Also export as default for easier importing
