@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { codeFormat } from '../../transformations/formatting'
+import { cssFormat } from '../../transformations/formatting'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
 import './TransformationPage.css'
 
-interface CodeFormatPageProps {
+interface CssFormatPageProps {
   tabId: string
 }
 
-const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactElement => {
+const CssFormatPage: React.FC<CssFormatPageProps> = ({ tabId }): React.ReactElement => {
   const { getTabContent, saveTabContent } = useTabsContentStore()
 
   // Get initial state from tab content store
@@ -17,7 +17,6 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
   // Reactive state
   const [inputText, setInputText] = useState(initialContent.inputText)
   const [outputText, setOutputText] = useState(initialContent.outputText)
-  const [language, setLanguage] = useState(initialContent.paramValues?.language || 'html')
   const [indentSize, setIndentSize] = useState(Number(initialContent.paramValues?.indentSize ?? 2))
   const [isTransforming, setIsTransforming] = useState(false)
 
@@ -30,7 +29,7 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
 
     try {
       // Apply the transformation
-      const result = await codeFormat(inputText, { language, indentSize })
+      const result = await cssFormat(inputText, { indentSize })
       setOutputText(result)
 
       // End transformation after a short delay to show the animation
@@ -76,18 +75,16 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
     saveTabContent(tabId, {
       inputText,
       outputText,
-      paramValues: { language, indentSize }
+      paramValues: { indentSize }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabId, inputText, outputText, language, indentSize])
+  }, [tabId, inputText, outputText, indentSize])
 
   return (
     <div className="transformation-page">
       <div className="transformation-header">
-        <h1>Code Formatter</h1>
-        <p className="transformation-description">
-          Format HTML, CSS, JavaScript, or XML code with proper indentation
-        </p>
+        <h1>CSS Formatter</h1>
+        <p className="transformation-description">Format CSS code with proper indentation</p>
       </div>
 
       <div className="transformation-content">
@@ -99,7 +96,7 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               className="transformation-textarea"
-              placeholder="Enter code to format..."
+              placeholder="Enter CSS code to format..."
               spellCheck="false"
             ></textarea>
           </div>
@@ -107,21 +104,6 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
 
         <div className="actions-container">
           <div className="parameters-container">
-            <div className="parameter">
-              <label htmlFor="language-select">Language</label>
-              <select
-                id="language-select"
-                className="parameter-input"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                disabled={isTransforming}
-              >
-                <option value="html">HTML</option>
-                <option value="css">CSS</option>
-                <option value="js">JavaScript</option>
-                <option value="xml">XML</option>
-              </select>
-            </div>
             <div className="parameter">
               <label htmlFor="indent-size-input">Indent Size</label>
               <input
@@ -143,7 +125,7 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
             disabled={isTransforming}
             onClick={applyTransformation}
           >
-            Format Code
+            Format CSS
           </button>
           <button
             className="action-button clear-button"
@@ -165,13 +147,13 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
           <label htmlFor="output-textarea">Output</label>
           <div className="textarea-wrapper">
             {/* Transformation Animation */}
-            {isTransforming && <TransformationAnimation transformationName="Code Format" />}
+            {isTransforming && <TransformationAnimation transformationName="CSS Format" />}
             <textarea
               id="output-textarea"
               value={outputText}
               readOnly
               className="transformation-textarea"
-              placeholder="Formatted code will appear here..."
+              placeholder="Formatted CSS will appear here..."
               spellCheck="false"
             ></textarea>
           </div>
@@ -181,4 +163,4 @@ const CodeFormatPage: React.FC<CodeFormatPageProps> = ({ tabId }): React.ReactEl
   )
 }
 
-export default CodeFormatPage
+export default CssFormatPage

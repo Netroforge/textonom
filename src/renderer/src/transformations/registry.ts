@@ -464,17 +464,11 @@ const transformationMetadata: Transformation[] = [
     fn: transformations.sqlFormat
   },
   {
-    id: 'codeFormat',
-    name: 'Code Formatter',
-    description: 'Format HTML, CSS, JavaScript, or XML code with proper indentation',
+    id: 'htmlFormat',
+    name: 'HTML Formatter',
+    description: 'Format HTML code with proper indentation',
     category: 'formatting',
     parameters: [
-      {
-        name: 'language',
-        type: 'string',
-        description: 'Language of the code',
-        default: 'html'
-      },
       {
         name: 'indentSize',
         type: 'number',
@@ -484,7 +478,58 @@ const transformationMetadata: Transformation[] = [
         max: 8
       }
     ],
-    fn: transformations.codeFormat
+    fn: transformations.htmlFormat
+  },
+  {
+    id: 'cssFormat',
+    name: 'CSS Formatter',
+    description: 'Format CSS code with proper indentation',
+    category: 'formatting',
+    parameters: [
+      {
+        name: 'indentSize',
+        type: 'number',
+        description: 'Number of spaces for indentation',
+        default: 2,
+        min: 1,
+        max: 8
+      }
+    ],
+    fn: transformations.cssFormat
+  },
+  {
+    id: 'jsFormat',
+    name: 'JavaScript Formatter',
+    description: 'Format JavaScript code with proper indentation',
+    category: 'formatting',
+    parameters: [
+      {
+        name: 'indentSize',
+        type: 'number',
+        description: 'Number of spaces for indentation',
+        default: 2,
+        min: 1,
+        max: 8
+      }
+    ],
+    fn: transformations.jsFormat
+  },
+  {
+    id: 'xmlFormat',
+    name: 'XML Formatter',
+    description: 'Format XML code with proper indentation',
+    category: 'formatting',
+    parameters: [
+      {
+        name: 'indentSize',
+        type: 'number',
+        description: 'Number of spaces for indentation',
+        default: 2,
+        min: 1,
+        max: 8
+      }
+    ],
+    fn: transformations.xmlFormat
   }
 ]
 

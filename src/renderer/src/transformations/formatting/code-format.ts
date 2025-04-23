@@ -1,11 +1,9 @@
-import * as prettier from 'prettier/standalone'
-import * as prettierPluginBabel from 'prettier/plugins/babel'
-import * as prettierPluginEstree from 'prettier/plugins/estree'
-import * as prettierPluginHtml from 'prettier/plugins/html'
-import * as prettierPluginCss from 'prettier/plugins/postcss'
-import * as prettierPluginXml from '@prettier/plugin-xml'
 import type { TransformationFunction } from '../../types'
 import { TransformationParamValues } from '../../types/transformation'
+import htmlFormat from './html-format'
+import cssFormat from './css-format'
+import jsFormat from './js-format'
+import xmlFormat from './xml-format'
 
 /**
  * Formats code (HTML, CSS, JavaScript, XML) with proper indentation
@@ -15,6 +13,7 @@ import { TransformationParamValues } from '../../types/transformation'
  * @param params.indentSize - Number of spaces for indentation (default: 2)
  * @returns The formatted code
  * @throws Error if formatting fails
+ * @deprecated Use the specific language formatters instead (htmlFormat, cssFormat, jsFormat, xmlFormat)
  */
 const codeFormat: TransformationFunction = async (
   text: string,
@@ -29,42 +28,20 @@ const codeFormat: TransformationFunction = async (
     const language = (params?.language as string) || 'html'
     const indentSize = Number(params?.indentSize ?? 2)
 
-    // Determine parser based on language
-    let parser: string
+    // Use the appropriate formatter based on language
     switch (language.toLowerCase()) {
       case 'html':
-        parser = 'html'
-        break
+        return await htmlFormat(text, { indentSize })
       case 'css':
-        parser = 'css'
-        break
+        return await cssFormat(text, { indentSize })
       case 'js':
       case 'javascript':
-        parser = 'babel'
-        break
+        return await jsFormat(text, { indentSize })
       case 'xml':
-        parser = 'xml'
-        break
+        return await xmlFormat(text, { indentSize })
       default:
         throw new Error(`Unsupported language: ${language}`)
     }
-
-    // Format the code
-    const formatted = await prettier.format(text, {
-      parser,
-      plugins: [
-        prettierPluginBabel,
-        prettierPluginEstree,
-        prettierPluginHtml,
-        prettierPluginCss,
-        prettierPluginXml
-      ],
-      tabWidth: indentSize,
-      printWidth: 100,
-      singleQuote: true
-    })
-
-    return formatted
   } catch (error) {
     console.error('Error formatting code:', error)
     if (error instanceof Error) {

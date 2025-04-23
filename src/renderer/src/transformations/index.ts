@@ -27,7 +27,7 @@ import { jwtDecode } from './jwt'
 import { hexEncode, hexDecode } from './hex'
 import { markdownToHtml } from './markdown'
 import { removeDuplicateWords } from './text'
-import { sqlFormat, codeFormat } from './formatting'
+import { sqlFormat, htmlFormat, cssFormat, jsFormat, xmlFormat, codeFormat } from './formatting'
 
 // Export individual transformations
 export {
@@ -101,6 +101,10 @@ export {
 
   // Formatting
   sqlFormat,
+  htmlFormat,
+  cssFormat,
+  jsFormat,
+  xmlFormat,
   codeFormat
 }
 
@@ -147,6 +151,10 @@ export const transformations = {
   markdownToHtml,
   removeDuplicateWords,
   sqlFormat,
+  htmlFormat,
+  cssFormat,
+  jsFormat,
+  xmlFormat,
   codeFormat
 }
 

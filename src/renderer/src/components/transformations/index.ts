@@ -41,7 +41,10 @@ import ToSnakeCasePage from './ToSnakeCasePage'
 import ToCamelCasePage from './ToCamelCasePage'
 import ToKebabCasePage from './ToKebabCasePage'
 import SqlFormatPage from './SqlFormatPage'
-import CodeFormatPage from './CodeFormatPage'
+import HtmlFormatPage from './HtmlFormatPage'
+import CssFormatPage from './CssFormatPage'
+import JsFormatPage from './JsFormatPage'
+import XmlFormatPage from './XmlFormatPage'
 
 // Export all transformation pages
 export {
@@ -86,7 +89,10 @@ export {
   ToCamelCasePage,
   ToKebabCasePage,
   SqlFormatPage,
-  CodeFormatPage
+  HtmlFormatPage,
+  CssFormatPage,
+  JsFormatPage,
+  XmlFormatPage
 }
 
 // Define type for transformation page components
@@ -135,7 +141,10 @@ const transformationPageMap: Record<string, TransformationPageComponent> = {
   toCamelCase: ToCamelCasePage,
   toKebabCase: ToKebabCasePage,
   sqlFormat: SqlFormatPage,
-  codeFormat: CodeFormatPage
+  htmlFormat: HtmlFormatPage,
+  cssFormat: CssFormatPage,
+  jsFormat: JsFormatPage,
+  xmlFormat: XmlFormatPage
 }
 
 // Function to get a transformation page component by ID

@@ -78,11 +78,24 @@ export const useTabsStore = create<TabsState>()(
         // Update state based on conditions
         if (activeTabId === tabId) {
           if (newTabs.length > 0) {
-            // Try to activate the tab to the right, or if not available, the tab to the left
-            const newActiveTab = tabs[Math.min(tabIndex, tabs.length - 2)]
+            // Determine which tab to activate next
+            let nextTabIndex
+
+            // If there's a tab to the right, use it
+            if (tabIndex < newTabs.length) {
+              nextTabIndex = tabIndex
+            }
+            // Otherwise use the last tab (which would be the one to the left)
+            else {
+              nextTabIndex = newTabs.length - 1
+            }
+
+            const nextTabId = newTabs[nextTabIndex].id
+
             set({
               tabs: newTabs,
-              activeTabId: newActiveTab.id
+              activeTabId: nextTabId,
+              showHomePage: false
             })
           } else {
             // No tabs left, show home page
