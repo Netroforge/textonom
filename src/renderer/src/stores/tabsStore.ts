@@ -15,6 +15,9 @@ interface TabsState {
   setShowHomePage: (show: boolean) => void
   addTab: (transformationId: string) => string
   closeTab: (tabId: string) => void
+  closeOtherTabs: (tabId: string) => void
+  closeAllTabs: () => void
+  closeTabsToRight: (tabId: string) => void
   setActiveTab: (tabId: string) => void
   reorderTabs: (fromIndex: number, toIndex: number) => void
   saveTabsToDisk: () => Promise<void>
@@ -123,6 +126,46 @@ export const useTabsStore = create<TabsState>()(
           const [movedTab] = newTabs.splice(fromIndex, 1)
           newTabs.splice(toIndex, 0, movedTab)
           return { tabs: newTabs }
+        })
+      },
+
+      closeOtherTabs: (tabId) => {
+        const { tabs } = get()
+        const tabToKeep = tabs.find((tab) => tab.id === tabId)
+
+        if (!tabToKeep) return
+
+        // Keep only the specified tab
+        set({
+          tabs: [tabToKeep],
+          activeTabId: tabId,
+          showHomePage: false
+        })
+      },
+
+      closeAllTabs: () => {
+        set({
+          tabs: [],
+          activeTabId: null,
+          showHomePage: true
+        })
+      },
+
+      closeTabsToRight: (tabId) => {
+        const { tabs, activeTabId } = get()
+        const tabIndex = tabs.findIndex((tab) => tab.id === tabId)
+
+        if (tabIndex === -1) return
+
+        // Keep tabs up to and including the specified tab
+        const newTabs = tabs.slice(0, tabIndex + 1)
+
+        // If the active tab was closed, activate the specified tab
+        const wasActiveTabClosed = !newTabs.some((tab) => tab.id === activeTabId)
+
+        set({
+          tabs: newTabs,
+          activeTabId: wasActiveTabClosed ? tabId : activeTabId
         })
       },
 
