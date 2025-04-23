@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useTabsStore } from '../stores/tabsStore'
 import { useTabsContentStore } from '../stores/tabsContentStore'
 import './TopNavBar.css'
 
 interface TopNavBarProps {
-  onMenuAction: (action: string) => void
+  onMenuAction: (menuAction: string) => void
   onOpenSettings: () => void
 }
 
-const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuAction, onOpenSettings }) => {
+const TopNavBar: React.FC<TopNavBarProps> = ({
+  onMenuAction,
+  onOpenSettings
+}): React.ReactElement => {
   // Get state from Zustand stores
-  const { activeTabId, tabs } = useTabsStore()
-  const { getTabContent, saveTabContent } = useTabsContentStore()
+  const { activeTabId } = useTabsStore()
+  // We're not using these stores directly in this component
+  useTabsContentStore()
 
   // Menu state
   const [activeMenu, setActiveMenu] = useState('')
@@ -28,10 +32,10 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuAction, onOpenSettings }) =
   }
 
   // Close all menus
-  const closeAllMenus = (): void => {
+  const closeAllMenus = useCallback((): void => {
     setActiveMenu('')
     setMenuClicked(false)
-  }
+  }, [])
 
   // Handle click outside to close menus
   useEffect(() => {
@@ -54,10 +58,10 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuAction, onOpenSettings }) =
     document.addEventListener('click', handleOutsideClick)
 
     // Clean up
-    return () => {
+    return (): void => {
       document.removeEventListener('click', handleOutsideClick)
     }
-  }, []) // Empty dependency array means this effect runs once on mount
+  }, [closeAllMenus]) // Dependency on closeAllMenus
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -89,15 +93,15 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuAction, onOpenSettings }) =
     window.addEventListener('keydown', handleKeyDown)
 
     // Clean up
-    return () => {
+    return (): void => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [activeTabId]) // Re-run when active tab changes
+  }, [activeTabId, onOpenSettings, closeAllMenus]) // Re-run when dependencies change
 
   // Handle menu actions
-  const handleMenuAction = (action: string): void => {
+  const handleMenuAction = (menuAction: string): void => {
     closeAllMenus()
-    onMenuAction(action)
+    onMenuAction(menuAction)
   }
 
   // File operations have been removed

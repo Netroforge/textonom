@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { useState, useCallback, ReactNode } from 'react'
 import { TransformationParamValues } from '../types/transformation'
+import { TabsContentContext } from './TabsContentContextDef'
 
 // Tab content state interface
 export interface TabContentState {
@@ -8,21 +9,10 @@ export interface TabContentState {
   paramValues: TransformationParamValues
 }
 
-// Context interface
-interface TabsContentContextType {
-  getTabContent: (tabId: string) => TabContentState
-  saveTabContent: (tabId: string, content: TabContentState) => void
-  removeTabContent: (tabId: string) => void
-  clearAllTabContents: () => void
-}
-
 // Provider props
 interface TabsContentProviderProps {
   children: ReactNode
 }
-
-// Create context
-const TabsContentContext = createContext<TabsContentContextType | undefined>(undefined)
 
 // Default tab content
 const defaultTabContent: TabContentState = {
@@ -79,11 +69,4 @@ export const TabsContentProvider: React.FC<TabsContentProviderProps> = ({ childr
   )
 }
 
-// Hook for using the tabs content context
-export const useTabsContent = (): TabsContentContextType => {
-  const context = useContext(TabsContentContext)
-  if (context === undefined) {
-    throw new Error('useTabsContent must be used within a TabsContentProvider')
-  }
-  return context
-}
+// Hook moved to src/renderer/src/hooks/useTabsContent.ts

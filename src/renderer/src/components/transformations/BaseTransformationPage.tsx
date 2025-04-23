@@ -11,7 +11,8 @@ interface BaseTransformationPageProps {
   inputPlaceholder: string
   outputPlaceholder: string
   transformButtonText: string
-  transformFunction: (text: string, params?: TransformationParamValues) => Promise<string>
+
+  transformFunction: (_text: string, _params?: TransformationParamValues) => Promise<string>
   parameters?: React.ReactNode
 }
 
@@ -24,7 +25,7 @@ const BaseTransformationPage: React.FC<BaseTransformationPageProps> = ({
   transformButtonText,
   transformFunction,
   parameters
-}) => {
+}): React.ReactElement => {
   const { getTabContent, saveTabContent } = useTabsContentStore()
 
   // Get initial state from tab content store
@@ -88,7 +89,9 @@ const BaseTransformationPage: React.FC<BaseTransformationPageProps> = ({
     }
   }
 
-  // Update parameter value
+  // This function is intentionally not used directly in this component
+  // It's defined here for potential use in child components that extend this base component
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const updateParamValue = (name: string, value: string | number | boolean): void => {
     setParamValues((prev) => ({
       ...prev,

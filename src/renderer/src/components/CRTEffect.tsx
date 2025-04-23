@@ -1,47 +1,17 @@
-import React, { useEffect, useRef } from 'react'
-import { useSettingsStore } from '../stores/settingsStore'
+import React, { useEffect, useRef, useCallback } from 'react'
 import './CRTEffect.css'
 
 interface CRTEffectProps {
   children: React.ReactNode
 }
 
-const CRTEffect: React.FC<CRTEffectProps> = ({ children }) => {
-  const { settings } = useSettingsStore()
-  const glitchTimerRef = useRef<number | null>(null)
-
-  // Set up glitch effects
-  useEffect(() => {
-    // Only run effects if CRT effect is enabled
-    if (!settings.crtEffect) return
-
-    // Create random glitches at random intervals
-    const createGlitches = (): void => {
-      // Random interval between 2-10 seconds
-      const interval = 2000 + Math.random() * 8000
-
-      // Create a glitch
-      createGlitch()
-
-      // Schedule next glitch
-      glitchTimerRef.current = window.setTimeout(createGlitches, interval)
-    }
-
-    // Start the glitch cycle
-    createGlitches()
-
-    // Clean up on unmount
-    return () => {
-      if (glitchTimerRef.current !== null) {
-        clearTimeout(glitchTimerRef.current)
-      }
-    }
-  }, [settings.crtEffect])
+const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement => {
+  const glitchIntervalRef = useRef<number | null>(null)
 
   // Create a random glitch effect
-  const createGlitch = (): void => {
-    // Check if CRT effect is active
-    if (!settings.crtEffect) return
+  const createGlitch = useCallback((): void => {
+    // Check if CRT effect is active using the data attribute
+    if (document.documentElement.getAttribute('data-crt-effect') !== 'true') return
 
     // Determine which type of glitch to create
     const glitchType = Math.floor(Math.random() * 3)
@@ -60,7 +30,34 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }) => {
         createColorShift(duration)
         break
     }
-  }
+  }, []) // No dependencies as all functions are defined within the component
+
+  // Set up glitch effects
+  useEffect(() => {
+    // Create random glitches
+    const setupGlitchInterval = (): void => {
+      if (glitchIntervalRef.current) {
+        clearInterval(glitchIntervalRef.current)
+      }
+
+      glitchIntervalRef.current = window.setInterval(() => {
+        // Only create glitches 50% of the time
+        if (Math.random() < 0.5) {
+          createGlitch()
+        }
+      }, 1000) // Check every 1 second, just like Vue version
+    }
+
+    // Start the glitch cycle
+    setupGlitchInterval()
+
+    // Clean up on unmount
+    return (): void => {
+      if (glitchIntervalRef.current !== null) {
+        clearInterval(glitchIntervalRef.current)
+      }
+    }
+  }, [createGlitch])
 
   // Basic glitch effect
   const createBasicGlitch = (duration: number): void => {
@@ -85,56 +82,129 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }) => {
 
   // Horizontal glitch effect
   const createHorizontalGlitch = (duration: number): void => {
-    const glitchElement = document.querySelector('.crt-horizontal-glitch') as HTMLElement
-    if (!glitchElement) return
+    const element = document.querySelector('.crt-horizontal-glitch') as HTMLElement
+    if (!element) return
 
-    // Make the element visible
-    glitchElement.style.display = 'block'
+    // Make element visible
+    element.style.display = 'block'
 
-    // Apply random height and position
-    const height = 2 + Math.random() * 10
-    const top = Math.random() * 90
-    glitchElement.style.height = `${height}px`
-    glitchElement.style.top = `${top}%`
+    // Create 2-5 horizontal glitch lines
+    const numLines = Math.floor(Math.random() * 4) + 2
+    let html = ''
 
-    // Apply random transform
-    const xOffset = Math.random() * 20 - 10
-    glitchElement.style.transform = `translateX(${xOffset}px)`
+    for (let i = 0; i < numLines; i++) {
+      const glitchY = Math.random() * 100
+      const glitchHeight = Math.random() * 8 + 2
+      const glitchAlpha = Math.random() * 0.5 + 0.3
+      const offsetX = Math.random() < 0.5 ? Math.random() * 30 : 0
+      const glitchWidth = 100 - offsetX
 
-    // Reset after a short time
+      html += `<div style="
+        position: absolute;
+        top: ${glitchY}%;
+        left: ${offsetX}%;
+        width: ${glitchWidth}%;
+        height: ${glitchHeight}px;
+        background-color: white;
+        opacity: ${glitchAlpha.toFixed(2)};
+        z-index: 10;
+      "></div>`
+
+      // Sometimes add a second line close to the first
+      if (Math.random() < 0.4) {
+        const secondLineOffset = Math.random() * 4 + 1
+        html += `<div style="
+          position: absolute;
+          top: calc(${glitchY}% + ${glitchHeight}px + ${secondLineOffset}px);
+          left: ${offsetX}%;
+          width: ${glitchWidth * 0.9}%;
+          height: ${glitchHeight * 0.8}px;
+          background-color: white;
+          opacity: ${(glitchAlpha * 0.7).toFixed(2)};
+          z-index: 10;
+        "></div>`
+      }
+    }
+
+    element.innerHTML = html
+
+    // Reset after duration
     setTimeout(() => {
-      glitchElement.style.display = 'none'
-      glitchElement.style.transform = 'translateX(0)'
+      element.style.display = 'none'
+      element.innerHTML = ''
     }, duration)
   }
 
-  // Color shift glitch effect
+  // Color shift artifacts
   const createColorShift = (duration: number): void => {
-    const glitchElement = document.querySelector('.crt-color-shift') as HTMLElement
-    if (!glitchElement) return
+    const element = document.querySelector('.crt-color-shift') as HTMLElement
+    if (!element) return
 
-    // Make the element visible
-    glitchElement.style.display = 'block'
+    // Make element visible
+    element.style.display = 'block'
 
-    // Apply random color shift
-    const redOffset = Math.random() * 10 - 5
-    const greenOffset = Math.random() * 10 - 5
-    const blueOffset = Math.random() * 10 - 5
-    glitchElement.style.textShadow = `
-      ${redOffset}px 0 rgba(255, 0, 0, 0.5),
-      ${greenOffset}px 0 rgba(0, 255, 0, 0.5),
-      ${blueOffset}px 0 rgba(0, 0, 255, 0.5)
-    `
+    const shiftX = Math.random() * 70
+    const shiftY = Math.random() * 100
+    const shiftWidth = Math.random() * 20 + 15
+    const shiftHeight = Math.random() * 40 + 15
 
-    // Reset after a short time
+    // Choose which color channel to shift
+    const colorIndex = Math.floor(Math.random() * 5)
+    const colors = [
+      'rgba(255, 0, 0, 0.25)', // Red
+      'rgba(0, 255, 0, 0.25)', // Green
+      'rgba(0, 0, 255, 0.25)', // Blue
+      'rgba(0, 255, 255, 0.25)', // Cyan
+      'rgba(255, 0, 255, 0.25)' // Magenta
+    ]
+    const shiftColor = colors[colorIndex]
+
+    // Create the color shift element
+    element.innerHTML = `<div style="
+      position: absolute;
+      top: ${shiftY}%;
+      left: ${shiftX}%;
+      width: ${shiftWidth}%;
+      height: ${shiftHeight}px;
+      background-color: ${shiftColor};
+      mix-blend-mode: screen;
+      z-index: 10;
+    "></div>`
+
+    // Add complementary color shift
+    if (Math.random() < 0.7) {
+      const complementaryColors = [
+        'rgba(0, 255, 255, 0.2)', // Cyan (complement to Red)
+        'rgba(255, 0, 255, 0.2)', // Magenta (complement to Green)
+        'rgba(255, 255, 0, 0.2)', // Yellow (complement to Blue)
+        'rgba(255, 0, 0, 0.2)', // Red (complement to Cyan)
+        'rgba(0, 255, 0, 0.2)' // Green (complement to Magenta)
+      ]
+      const compColor = complementaryColors[colorIndex]
+
+      const offsetX = Math.random() * 30 - 15
+
+      element.innerHTML += `<div style="
+        position: absolute;
+        top: calc(${shiftY}% + ${shiftHeight}px + ${Math.random() * 15}px);
+        left: calc(${shiftX}% + ${offsetX}px);
+        width: ${shiftWidth * 0.9}%;
+        height: ${shiftHeight * 0.8}px;
+        background-color: ${compColor};
+        mix-blend-mode: screen;
+        z-index: 10;
+      "></div>`
+    }
+
+    // Reset after duration
     setTimeout(() => {
-      glitchElement.style.display = 'none'
-      glitchElement.style.textShadow = 'none'
+      element.style.display = 'none'
+      element.innerHTML = ''
     }, duration)
   }
 
   return (
-    <div className={`crt-container ${settings.crtEffect ? 'crt-flicker' : ''}`}>
+    <div className="crt-container crt-flicker">
       <div className="crt-content">{children}</div>
       <div className="crt-glitch-overlay" data-text="GLITCH"></div>
       <div className="crt-scanlines"></div>

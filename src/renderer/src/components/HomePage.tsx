@@ -8,7 +8,7 @@ interface HomePageProps {
   onTransformationOpened: () => void
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }) => {
+const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }): React.ReactElement => {
   const { tabs, addTab } = useTabsStore()
   const { searchQuery, scrollPosition, setSearchQuery, setScrollPosition } = useHomePageStore()
 
@@ -69,7 +69,7 @@ const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }) => {
 
       homePageElement.addEventListener('scroll', handleScroll)
 
-      return () => {
+      return (): void => {
         homePageElement.removeEventListener('scroll', handleScroll)
       }
     }
@@ -116,7 +116,7 @@ const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }) => {
 
         {filteredCategories.length === 0 && (
           <div className="no-results">
-            <p>No transformations found matching "{searchQuery}"</p>
+            <p>No transformations found matching &quot;{searchQuery}&quot;</p>
           </div>
         )}
       </div>

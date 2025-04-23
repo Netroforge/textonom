@@ -7,7 +7,6 @@ export interface Settings {
   fontFamily: string
   autoUpdate: boolean
   checkForUpdatesOnStartup: boolean
-  textGlowEffect: boolean
   crtEffect: boolean
   bcryptRounds: number
 }
@@ -19,7 +18,6 @@ interface SettingsState {
   setFontFamily: (family: string) => void
   setAutoUpdate: (enabled: boolean) => void
   setCheckForUpdatesOnStartup: (enabled: boolean) => void
-  setTextGlowEffect: (enabled: boolean) => void
   setCrtEffect: (enabled: boolean) => void
   setBcryptRounds: (rounds: number) => void
 }
@@ -31,7 +29,6 @@ const defaultSettings: Settings = {
   fontFamily: "Consolas, 'Courier New', monospace",
   autoUpdate: true,
   checkForUpdatesOnStartup: true,
-  textGlowEffect: true,
   crtEffect: true, // This is 'turboMode' in the Vue version
   bcryptRounds: 12
 }
@@ -48,8 +45,6 @@ export const useSettingsStore = create<SettingsState>()(
         set((state) => ({ settings: { ...state.settings, autoUpdate } })),
       setCheckForUpdatesOnStartup: (checkForUpdatesOnStartup) =>
         set((state) => ({ settings: { ...state.settings, checkForUpdatesOnStartup } })),
-      setTextGlowEffect: (textGlowEffect) =>
-        set((state) => ({ settings: { ...state.settings, textGlowEffect } })),
       setCrtEffect: (crtEffect) => set((state) => ({ settings: { ...state.settings, crtEffect } })),
       setBcryptRounds: (bcryptRounds) =>
         set((state) => ({ settings: { ...state.settings, bcryptRounds } }))

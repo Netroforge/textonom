@@ -1,14 +1,8 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback
-} from 'react'
+import React, { useState, ReactNode, useCallback } from 'react'
 import { getTransformationById } from '../transformations/registry'
-import { useTabsContent } from './TabsContentContext'
+import { useTabsContent } from '../hooks/useTabsContent'
 import { loadTabsState, saveTabsState } from '../services/persistenceService'
+import { TabsContext } from './TabsContextDef'
 
 // Tab interface
 export interface Tab {
@@ -17,27 +11,10 @@ export interface Tab {
   transformationId: string
 }
 
-// Context interface
-interface TabsContextType {
-  tabs: Tab[]
-  activeTabId: string | null
-  showHomePage: boolean
-  setShowHomePage: (show: boolean) => void
-  addTab: (transformationId: string) => string
-  closeTab: (tabId: string) => void
-  setActiveTab: (tabId: string) => void
-  reorderTabs: (fromIndex: number, toIndex: number) => void
-  initializeFromDisk: () => Promise<void>
-  saveTabsToDisk: () => Promise<void>
-}
-
 // Provider props
 interface TabsProviderProps {
   children: ReactNode
 }
-
-// Create context
-const TabsContext = createContext<TabsContextType | undefined>(undefined)
 
 // Provider component
 export const TabsProvider: React.FC<TabsProviderProps> = ({ children }) => {
@@ -188,11 +165,4 @@ export const TabsProvider: React.FC<TabsProviderProps> = ({ children }) => {
   )
 }
 
-// Hook for using the tabs context
-export const useTabs = (): TabsContextType => {
-  const context = useContext(TabsContext)
-  if (context === undefined) {
-    throw new Error('useTabs must be used within a TabsProvider')
-  }
-  return context
-}
+// Hook moved to src/renderer/src/hooks/useTabs.ts

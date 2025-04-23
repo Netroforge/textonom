@@ -84,7 +84,7 @@
   color: var(--primary);
   font-size: 2rem;
   font-weight: bold;
-  text-shadow: 0 0 10px var(--primary);
+
   position: relative;
   animation: glitch 1s infinite;
 }

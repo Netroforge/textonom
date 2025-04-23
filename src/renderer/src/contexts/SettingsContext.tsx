@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 import { applyTheme } from '../styles/themes'
+import { SettingsContext } from './SettingsContextDef'
 
 // Define available themes
 export const THEMES = {
@@ -32,22 +33,6 @@ const defaultSettings: Settings = {
   checkForUpdatesOnStartup: true,
   bcryptRounds: 12
 }
-
-// Context interface
-interface SettingsContextType {
-  settings: Settings
-  setTheme: (theme: ThemeType) => void
-  setTurboMode: (enabled: boolean) => void
-  setFontSize: (fontSize: number | string) => void
-  setFontFamily: (fontFamily: string) => void
-  setAutoUpdate: (autoUpdate: boolean) => void
-  setCheckForUpdatesOnStartup: (checkForUpdatesOnStartup: boolean) => void
-  setBcryptRounds: (bcryptRounds: number | string) => void
-  resetSettings: () => void
-}
-
-// Create context
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
 
 // Provider props
 interface SettingsProviderProps {
@@ -136,7 +121,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     applyTheme(settings.theme)
     document.documentElement.style.setProperty('--fontSize', `${settings.fontSize}px`)
     document.documentElement.style.setProperty('--fontFamily', settings.fontFamily)
-  }, [])
+  }, [settings.theme, settings.fontSize, settings.fontFamily])
 
   return (
     <SettingsContext.Provider
@@ -157,11 +142,4 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
   )
 }
 
-// Hook for using the settings context
-export const useSettings = (): SettingsContextType => {
-  const context = useContext(SettingsContext)
-  if (context === undefined) {
-    throw new Error('useSettings must be used within a SettingsProvider')
-  }
-  return context
-}
+// Hook moved to src/renderer/src/hooks/useSettings.ts

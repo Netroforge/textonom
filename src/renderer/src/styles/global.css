@@ -144,20 +144,6 @@ textarea:focus {
   border-color: var(--primary);
 }
 
-/* Text Glow Effect for Cyberpunk Themes */
-[data-text-glow='true'] .glow-text,
-[data-text-glow='true'] .transformation-title,
-[data-text-glow='true'] h1,
-[data-text-glow='true'] h2,
-[data-text-glow='true'] h3,
-[data-text-glow='true'] .category-title,
-[data-text-glow='true'] .tab-item.active {
-  text-shadow:
-    0 0 5px var(--primary),
-    0 0 10px var(--primary),
-    0 0 15px var(--primary);
-}
-
 /* CRT Effect for Turbo Mode */
 [data-crt-effect='true'] .crt-container {
   position: relative;
@@ -216,6 +202,25 @@ textarea:focus {
 [data-crt-effect='false'] .crt-glitch-overlay {
   transform: none !important;
   clip-path: none !important;
+}
+
+/* Show CRT effects when turbo mode is enabled */
+[data-crt-effect='true'] .crt-scanlines,
+[data-crt-effect='true'] .crt-rgb-separation,
+[data-crt-effect='true'] .crt-vignette,
+[data-crt-effect='true'] .crt-glow,
+[data-crt-effect='true'] .crt-flicker-overlay,
+[data-crt-effect='true'] .crt-glitch-overlay,
+[data-crt-effect='true'] .crt-horizontal-glitch,
+[data-crt-effect='true'] .crt-color-shift,
+[data-crt-effect='true'] .crt-static-noise,
+[data-crt-effect='true'] .crt-vertical-sync,
+[data-crt-effect='true'] .crt-signal-jitter,
+[data-crt-effect='true'] .crt-digital-corruption,
+[data-crt-effect='true'] .crt-scan-distortion,
+[data-crt-effect='true'] .crt-text-corruption,
+[data-crt-effect='true'] .crt-pixel-displacement {
+  display: block;
 }
 
 /* CRT Flicker Animation */
@@ -324,6 +329,12 @@ textarea:focus {
   z-index: 1;
   opacity: 0.8;
   pointer-events: none;
+}
+
+[data-crt-effect='true'] .crt-glitch-overlay {
+  animation: glitch 10s infinite;
+  animation-delay: 0.5s;
+  opacity: 0.05;
 }
 
 /* Blinking cursor for text fields */

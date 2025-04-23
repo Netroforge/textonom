@@ -29,7 +29,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     setFontFamily,
     setAutoUpdate,
     setCheckForUpdatesOnStartup,
-    setTextGlowEffect,
     setCrtEffect,
     setBcryptRounds
   } = useSettingsStore()
@@ -39,7 +38,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     { id: 'theme', title: 'Theme' },
     { id: 'font', title: 'Font' },
     { id: 'updates', title: 'Updates' },
-    { id: 'effects', title: 'Effects' },
     { id: 'transformations', title: 'Transformations' }
   ]
 
@@ -62,7 +60,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     fontFamily: settings.fontFamily,
     autoUpdate: settings.autoUpdate,
     checkForUpdatesOnStartup: settings.checkForUpdatesOnStartup,
-    textGlowEffect: settings.textGlowEffect,
     turboMode: settings.crtEffect, // Renamed to match Vue version
     bcryptRounds: settings.bcryptRounds || 12
   })
@@ -103,9 +100,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       case 'checkForUpdatesOnStartup':
         setCheckForUpdatesOnStartup(value as boolean)
         break
-      case 'textGlowEffect':
-        setTextGlowEffect(value as boolean)
-        break
+
       case 'turboMode':
         setCrtEffect(value as boolean)
         break
@@ -129,7 +124,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         fontFamily: "Consolas, 'Courier New', monospace", // Match Vue default
         autoUpdate: true,
         checkForUpdatesOnStartup: true,
-        textGlowEffect: true, // Match Vue default
+
         turboMode: true, // Match Vue default
         bcryptRounds: 12
       }
@@ -143,7 +138,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       setFontFamily(defaultSettings.fontFamily)
       setAutoUpdate(defaultSettings.autoUpdate)
       setCheckForUpdatesOnStartup(defaultSettings.checkForUpdatesOnStartup)
-      setTextGlowEffect(defaultSettings.textGlowEffect)
+
       setCrtEffect(defaultSettings.turboMode)
       setBcryptRounds(defaultSettings.bcryptRounds)
     }
@@ -199,6 +194,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                         </select>
                       </div>
                     </div>
+
                     <div className="settings-row">
                       <label className="settings-label">Turbo Mode</label>
                       <div className="settings-control">
@@ -210,6 +206,10 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                         />
                         <span className="settings-description">Enable</span>
                       </div>
+                    </div>
+
+                    <div className="settings-info">
+                      <p>These effects may impact performance on older devices.</p>
                     </div>
                   </div>
                 </div>
@@ -285,30 +285,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 </div>
               )}
 
-              {/* Effects Settings */}
-              {activeSection === 'effects' && (
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Visual Effects</h3>
-                  <div className="settings-section-content">
-                    <div className="settings-row">
-                      <label className="settings-label">Text Glow Effect</label>
-                      <div className="settings-control">
-                        <input
-                          type="checkbox"
-                          name="textGlowEffect"
-                          checked={localSettings.textGlowEffect}
-                          onChange={handleChange}
-                        />
-                        <span className="settings-description">Enable text glow effects</span>
-                      </div>
-                    </div>
-                    <div className="settings-info">
-                      <p>These effects may impact performance on older devices.</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Transformations Settings */}
               {activeSection === 'transformations' && (
                 <div className="settings-section">
@@ -330,29 +306,9 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     </div>
                     <div className="settings-info">
                       <p>
-                        The cost factor controls how many iterations the hashing algorithm performs.
-                        Higher values are more secure but slower.
+                        Higher rounds provide stronger security but take longer to compute. The
+                        default value of 12 is a good balance between security and performance.
                       </p>
-                      <ul>
-                        <li>
-                          <strong>1-4:</strong> Very fast, but not secure
-                        </li>
-                        <li>
-                          <strong>5-7:</strong> Fast, minimal security
-                        </li>
-                        <li>
-                          <strong>8-10:</strong> Moderate, acceptable for non-critical applications
-                        </li>
-                        <li>
-                          <strong>11-12:</strong> Standard, good balance of security and performance
-                        </li>
-                        <li>
-                          <strong>13-15:</strong> Secure, slower performance
-                        </li>
-                        <li>
-                          <strong>16-20:</strong> Very secure, significantly slower
-                        </li>
-                      </ul>
                     </div>
                   </div>
                 </div>
@@ -362,12 +318,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         </div>
 
         <div className="settings-footer">
-          <button className="settings-button reset-button" onClick={handleReset}>
-            Reset to Defaults
-          </button>
-          <button className="settings-button close-button" onClick={closeSettings}>
-            Close
-          </button>
+          <button onClick={handleReset}>Reset to Defaults</button>
+          <button onClick={closeSettings}>Close</button>
         </div>
       </div>
     </div>

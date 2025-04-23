@@ -90,7 +90,8 @@ declare global {
     electron: {
       ipcRenderer: {
         on: (channel: string, listener: (...args: unknown[]) => void) => void
-        off: (channel: string, listener: (...args: unknown[]) => void) => void
+        // Note: off method is not available in the current implementation
+        // off: (channel: string, listener: (...args: unknown[]) => void) => void
         send: (channel: string, ...args: unknown[]) => void
       }
       process: {

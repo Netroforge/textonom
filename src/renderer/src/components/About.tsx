@@ -79,7 +79,10 @@ const About: React.FC<AboutProps> = ({ onClose }) => {
 
           <div className="about-section">
             <h3>License</h3>
-            <p>This software is open source and available under the MIT License.</p>
+            <p>
+              This software is open source and available under the Apache License Version 2.0
+              license.
+            </p>
           </div>
         </div>
       </div>

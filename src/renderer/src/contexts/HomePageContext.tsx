@@ -1,21 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
-
-// Context interface
-interface HomePageContextType {
-  scrollPosition: number
-  searchQuery: string
-  setScrollPosition: (position: number) => void
-  setSearchQuery: (query: string) => void
-  resetState: () => void
-}
+import React, { useState, ReactNode } from 'react'
+import { HomePageContext } from './HomePageContextDef'
 
 // Provider props
 interface HomePageProviderProps {
   children: ReactNode
 }
-
-// Create context
-const HomePageContext = createContext<HomePageContextType | undefined>(undefined)
 
 // Provider component
 export const HomePageProvider: React.FC<HomePageProviderProps> = ({ children }) => {
@@ -43,11 +32,4 @@ export const HomePageProvider: React.FC<HomePageProviderProps> = ({ children }) 
   )
 }
 
-// Hook for using the home page context
-export const useHomePage = (): HomePageContextType => {
-  const context = useContext(HomePageContext)
-  if (context === undefined) {
-    throw new Error('useHomePage must be used within a HomePageProvider')
-  }
-  return context
-}
+// Hook moved to src/renderer/src/hooks/useHomePage.ts

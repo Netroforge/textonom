@@ -47,7 +47,7 @@
 .search-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(var(--primaryRgb), 0.2);
+  /* box-shadow removed */
 }
 
 .categories-container {
@@ -92,13 +92,13 @@
 
 .transformation-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow removed */
   border-color: var(--primary);
 }
 
 .transformation-card-open {
   border: 2px solid var(--primary);
-  box-shadow: 0 0 12px rgba(var(--primaryRgb), 0.7);
+  /* box-shadow removed */
   position: relative;
   background-color: rgba(var(--primaryRgb), 0.15);
   transform: translateY(-2px);
@@ -116,7 +116,7 @@
   border-radius: 4px;
   font-size: 0.7rem;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  /* box-shadow removed */
   z-index: 1;
 }
 

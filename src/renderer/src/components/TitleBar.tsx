@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTabsStore } from '../stores/tabsStore'
 import './TitleBar.css'
 
-const TitleBar: React.FC = () => {
+const TitleBar: React.FC = (): React.ReactElement => {
   const [isMaximized, setIsMaximized] = useState(false)
 
   // Get state from Zustand stores
   const { activeTabId, tabs, showHomePage } = useTabsStore()
 
   // Compute the app title based on the active tab
-  const appTitle = (): string => {
+  const appTitle = useCallback((): string => {
     // If the home page is active, show "Home" in the title
     if (showHomePage) {
       return 'Textonom - Home'
@@ -22,7 +22,7 @@ const TitleBar: React.FC = () => {
 
     // Show the transformation name
     return `Textonom - ${activeTab.title}`
-  }
+  }, [activeTabId, showHomePage, tabs])
 
   // Check if window is maximized on mount and when it changes
   useEffect(() => {
@@ -44,15 +44,15 @@ const TitleBar: React.FC = () => {
     // Set the initial window title
     window.api.setWindowTitle(appTitle())
 
-    return () => {
+    return (): void => {
       window.removeEventListener('resize', checkMaximizedState)
     }
-  }, [])
+  }, [appTitle])
 
   // Update window title when active tab changes
   useEffect(() => {
     window.api.setWindowTitle(appTitle())
-  }, [activeTabId, showHomePage])
+  }, [activeTabId, showHomePage, appTitle])
 
   // Window control functions
   const minimizeWindow = (): void => {

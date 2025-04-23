@@ -16,7 +16,9 @@
   border-radius: 8px;
   width: 80%;
   max-width: 900px;
-  height: 90%;
+  height: auto;
+  min-height: 500px;
+  max-height: 80%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -46,7 +48,7 @@
   color: var(--text);
 }
 
-.close-button {
+.settings-header .close-button {
   background: none;
   border: none;
   color: var(--text);
@@ -56,7 +58,7 @@
   border-radius: 4px;
 }
 
-.close-button:hover {
+.settings-header .close-button:hover {
   background-color: var(--surfaceHover);
 }
 
@@ -65,12 +67,12 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 400px;
 }
 
 .settings-layout {
   display: flex;
-  height: calc(100% - 120px);
-  /* Adjust for header and footer */
+  flex: 1;
   overflow: hidden;
 }
 
@@ -114,11 +116,11 @@
 
 .settings-section {
   padding: 0;
-  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -147,7 +149,7 @@
 
 .settings-row {
   display: flex;
-  margin-bottom: 12px;
+  margin-bottom: 0.5rem;
   align-items: center;
 }
 
@@ -160,6 +162,12 @@
   flex: 2;
   display: flex;
   align-items: center;
+}
+
+.settings-control select,
+.settings-control input[type='number'] {
+  width: 100%;
+  max-width: 300px;
 }
 
 .settings-description {
@@ -192,50 +200,25 @@
   padding: 0.5rem 1rem 1rem;
   border-top: 1px solid var(--border);
   background-color: var(--surface);
+  margin-top: auto;
 }
 
-.settings-button {
+.settings-footer button {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-}
-
-.reset-button {
-  background-color: var(--secondary);
+  background-color: var(--primary);
   color: white;
 }
 
-.reset-button:hover {
+.settings-footer button:hover {
   opacity: 0.9;
 }
 
-.close-button {
-  background: none;
-  border: none;
-  color: var(--text);
-  font-size: 16px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.close-button:hover {
-  background-color: var(--surfaceHover);
-}
-
-/* For the footer close button */
-.settings-footer .close-button {
-  background-color: var(--primary);
-  color: white;
-  font-size: 14px;
-  padding: 8px 16px;
-  border: none;
-}
-
-.settings-footer .close-button:hover {
-  background-color: var(--primaryDark);
+.settings-footer button:first-child {
+  background-color: var(--secondary);
 }
 
 .settings-info {
@@ -243,6 +226,11 @@
   font-size: 0.9em;
   color: var(--textSecondary);
   max-width: 500px;
+}
+
+.settings-info p {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 /* Responsive adjustments */
@@ -279,9 +267,8 @@
     margin-bottom: 4px;
   }
 
-  .settings-row input[type='text'],
-  .settings-row input[type='number'],
-  .settings-row select {
+  .settings-control {
     width: 100%;
+    margin-top: 0.25rem;
   }
 }

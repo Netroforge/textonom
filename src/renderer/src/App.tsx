@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import TitleBar from './components/TitleBar'
 import TopNavBar from './components/TopNavBar'
 import TabBar from './components/TabBar'
@@ -7,21 +7,21 @@ import HomePage from './components/HomePage'
 import Settings from './components/Settings'
 import About from './components/About'
 import CRTEffect from './components/CRTEffect'
-import UpdateNotification from './components/UpdateNotification'
+import UpdateNotification, { UpdateNotificationRef } from './components/UpdateNotification'
 import { applyTheme } from './styles/themes'
 import { getTransformationPageComponent } from './components/transformations'
 import { useSettingsStore } from './stores/settingsStore'
 import { useTabsStore } from './stores/tabsStore'
 import './styles/global.css'
 
-const App: React.FC = () => {
+const App: React.FC = (): React.ReactElement => {
   // State
   const [showSettings, setShowSettings] = useState(false)
   const [showAbout, setShowAbout] = useState(false)
   const [showUpdateNotification, setShowUpdateNotification] = useState(false)
 
   // Refs
-  const updateNotificationRef = useRef<React.ElementRef<typeof UpdateNotification>>(null)
+  const updateNotificationRef = useRef<UpdateNotificationRef>(null)
 
   // Get state from Zustand stores
   const { settings } = useSettingsStore()
@@ -69,6 +69,9 @@ const App: React.FC = () => {
   // Check for updates
   const checkForUpdates = async (): Promise<void> => {
     try {
+      // Make sure the notification is visible
+      setShowUpdateNotification(true)
+
       if (updateNotificationRef.current) {
         updateNotificationRef.current.manualCheckUpdateStarted()
         window.api.checkForUpdates().then((result) => {
@@ -83,14 +86,14 @@ const App: React.FC = () => {
   }
 
   // Save state before window unloads
-  const saveStateBeforeUnload = (): void => {
+  const saveStateBeforeUnload = useCallback((): void => {
     try {
       // Save tabs state to disk
       saveTabsToDisk()
     } catch (error) {
       console.error('Failed to save tabs before unload:', error)
     }
-  }
+  }, [saveTabsToDisk])
 
   // Get the active transformation component
   const TransformationComponent = activeTransformationId
@@ -125,7 +128,7 @@ const App: React.FC = () => {
     window.addEventListener('beforeunload', saveStateBeforeUnload)
 
     // Clean up event listeners
-    return () => {
+    return (): void => {
       window.removeEventListener('beforeunload', saveStateBeforeUnload)
     }
   }, [
@@ -133,7 +136,9 @@ const App: React.FC = () => {
     settings.fontSize,
     settings.fontFamily,
     settings.autoUpdate,
-    settings.checkForUpdatesOnStartup
+    settings.checkForUpdatesOnStartup,
+    initializeFromDisk,
+    saveStateBeforeUnload
   ])
 
   // Watch for active tab changes to save the tab state
@@ -142,16 +147,12 @@ const App: React.FC = () => {
     saveTabsToDisk().catch((error) => {
       console.error('Failed to save tabs after active tab changed:', error)
     })
-  }, [activeTabId])
+  }, [activeTabId, saveTabsToDisk])
 
   // Apply CRT effect based on settings
   useEffect(() => {
     document.documentElement.setAttribute('data-crt-effect', settings.crtEffect ? 'true' : 'false')
-    document.documentElement.setAttribute(
-      'data-text-glow',
-      settings.textGlowEffect ? 'true' : 'false'
-    )
-  }, [settings.crtEffect, settings.textGlowEffect])
+  }, [settings.crtEffect])
 
   return (
     <div className="app-container">

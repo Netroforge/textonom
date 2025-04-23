@@ -40,7 +40,6 @@ interface Theme {
   menuBorder: string
   scrollbarThumb: string
   scrollbarTrack: string
-  textGlow?: boolean
 }
 
 // Light theme colors
@@ -117,39 +116,38 @@ export const darkTheme: Theme = {
 
 // Cyberpunk theme colors
 export const cyberpunkTheme: Theme = {
-  primary: '#00ffb3', // Neon teal
-  primaryDark: '#00cc8f', // Darker teal
-  secondary: '#ff00ff', // Magenta
-  background: '#0a0a1a', // Dark blue-black
-  surface: '#16162e', // Dark blue
-  surfaceHover: '#252550', // Lighter blue
-  text: '#e0f0ff', // Light blue-white
+  primary: '#ff00ff', // Magenta
+  primaryDark: '#cc00cc', // Darker magenta
+  secondary: '#00ffff', // Cyan
+  background: '#0a0a16', // Dark blue-black
+  surface: '#1a1a2e', // Dark blue
+  surfaceHover: '#2a2a4e', // Lighter blue
+  text: '#00ffff', // Cyan
   border: '#ff00ff', // Magenta
-  divider: '#16162e', // Dark blue
-  error: '#ff3366', // Neon red
+  divider: '#1a1a2e', // Dark blue
+  error: '#ff0055', // Neon red
   success: '#00ff9f', // Neon green
   warning: '#ffcc00', // Neon yellow
   info: '#00ffff', // Cyan
   infoDark: '#00cccc', // Darker cyan
   inputBackground: '#12122a', // Dark blue with slight purple tint
-  editorBackground: '#0a0a1a', // Dark blue-black
-  editorForeground: '#e0f0ff', // Light blue-white
+  editorBackground: '#0a0a16', // Dark blue-black
+  editorForeground: '#00ffff', // Cyan
   editorLineNumbers: '#ff00ff', // Magenta
   editorSelectionBackground: '#3d1a7a', // Purple
   editorCursor: '#00ffff', // Cyan
-  tabBackground: '#16162e', // Dark blue
-  tabActiveBackground: '#0a0a1a', // Dark blue-black
-  tabHoverBackground: '#252550', // Lighter blue
-  tabActiveBorder: '#00ffb3', // Neon teal
-  tabText: '#e0f0ff', // Light blue-white
+  tabBackground: '#1a1a2e', // Dark blue
+  tabActiveBackground: '#0a0a16', // Dark blue-black
+  tabHoverBackground: '#2a2a4e', // Lighter blue
+  tabActiveBorder: '#ff00ff', // Magenta
+  tabText: '#00ffff', // Cyan
   tabActiveText: '#00ffff', // Cyan
-  menuBackground: '#16162e', // Dark blue
-  menuHoverBackground: '#252550', // Lighter blue
-  menuText: '#e0f0ff', // Light blue-white
+  menuBackground: '#1a1a2e', // Dark blue
+  menuHoverBackground: '#2a2a4e', // Lighter blue
+  menuText: '#00ffff', // Cyan
   menuBorder: '#ff00ff', // Magenta
   scrollbarThumb: '#ff00ff', // Magenta
-  scrollbarTrack: '#16162e', // Dark blue
-  textGlow: true // Enable text glow effect
+  scrollbarTrack: '#1a1a2e' // Dark blue
 }
 
 // Get theme by name
@@ -212,17 +210,14 @@ export const applyTheme = (themeName: ThemeType): void => {
     if (settingsString) {
       const settings = JSON.parse(settingsString)
       // In the React version, crtEffect is equivalent to turboMode in Vue
-      const turboMode = settings.state?.settings?.crtEffect || false
-      const textGlowEffect = settings.state?.settings?.textGlowEffect || false
+      const turboMode = settings.state?.settings?.crtEffect || true
 
       root.setAttribute('data-crt-effect', turboMode ? 'true' : 'false')
-      root.setAttribute('data-text-glow', textGlowEffect || theme.textGlow ? 'true' : 'false')
     }
   } catch (error) {
     console.error('Failed to apply effects from settings:', error)
     // Set defaults based on theme
     root.setAttribute('data-crt-effect', 'true') // Default to true to match Vue version
-    root.setAttribute('data-text-glow', theme.textGlow ? 'true' : 'false')
   }
 
   // Set data attribute for theme
