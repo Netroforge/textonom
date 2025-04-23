@@ -73,6 +73,17 @@ textarea {
   padding: 0.5rem;
 }
 
+/* Word wrap utility classes */
+.word-wrap-enabled textarea {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.word-wrap-disabled textarea {
+  white-space: pre;
+  word-wrap: normal;
+}
+
 input:focus,
 textarea:focus {
   outline: none;

@@ -109,6 +109,16 @@ const App: React.FC = (): React.ReactElement => {
     document.documentElement.style.setProperty('--fontSize', `${settings.fontSize}px`)
     document.documentElement.style.setProperty('--fontFamily', settings.fontFamily)
 
+    // Apply initial word wrap setting
+    const appContainer = document.querySelector('.app-container')
+    if (appContainer) {
+      if (settings.wordWrap) {
+        appContainer.classList.add('word-wrap-enabled')
+      } else {
+        appContainer.classList.add('word-wrap-disabled')
+      }
+    }
+
     // Initialize tabs from disk
     initializeFromDisk().catch((error) => {
       console.error('Error initializing tabs from disk:', error)
@@ -137,6 +147,7 @@ const App: React.FC = (): React.ReactElement => {
     settings.fontFamily,
     settings.autoUpdate,
     settings.checkForUpdatesOnStartup,
+    settings.wordWrap,
     initializeFromDisk,
     saveStateBeforeUnload
   ])
@@ -149,10 +160,22 @@ const App: React.FC = (): React.ReactElement => {
     })
   }, [activeTabId, saveTabsToDisk])
 
-  // Apply CRT effect based on settings
+  // Apply CRT effect and word wrap based on settings
   useEffect(() => {
     document.documentElement.setAttribute('data-crt-effect', settings.crtEffect ? 'true' : 'false')
-  }, [settings.crtEffect])
+
+    // Apply word wrap class to the app container
+    const appContainer = document.querySelector('.app-container')
+    if (appContainer) {
+      if (settings.wordWrap) {
+        appContainer.classList.add('word-wrap-enabled')
+        appContainer.classList.remove('word-wrap-disabled')
+      } else {
+        appContainer.classList.add('word-wrap-disabled')
+        appContainer.classList.remove('word-wrap-enabled')
+      }
+    }
+  }, [settings.crtEffect, settings.wordWrap])
 
   return (
     <div className="app-container">

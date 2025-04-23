@@ -9,6 +9,7 @@ export interface Settings {
   checkForUpdatesOnStartup: boolean
   crtEffect: boolean
   bcryptRounds: number
+  wordWrap: boolean
 }
 
 interface SettingsState {
@@ -20,6 +21,7 @@ interface SettingsState {
   setCheckForUpdatesOnStartup: (enabled: boolean) => void
   setCrtEffect: (enabled: boolean) => void
   setBcryptRounds: (rounds: number) => void
+  setWordWrap: (enabled: boolean) => void
 }
 
 // Default settings - matching Vue version
@@ -30,7 +32,8 @@ const defaultSettings: Settings = {
   autoUpdate: true,
   checkForUpdatesOnStartup: true,
   crtEffect: true, // This is 'turboMode' in the Vue version
-  bcryptRounds: 12
+  bcryptRounds: 12,
+  wordWrap: true // Default to word wrap enabled
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -47,7 +50,8 @@ export const useSettingsStore = create<SettingsState>()(
         set((state) => ({ settings: { ...state.settings, checkForUpdatesOnStartup } })),
       setCrtEffect: (crtEffect) => set((state) => ({ settings: { ...state.settings, crtEffect } })),
       setBcryptRounds: (bcryptRounds) =>
-        set((state) => ({ settings: { ...state.settings, bcryptRounds } }))
+        set((state) => ({ settings: { ...state.settings, bcryptRounds } })),
+      setWordWrap: (wordWrap) => set((state) => ({ settings: { ...state.settings, wordWrap } }))
     }),
     {
       name: 'textonom-settings'

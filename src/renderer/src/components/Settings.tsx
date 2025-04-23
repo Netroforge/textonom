@@ -30,7 +30,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     setAutoUpdate,
     setCheckForUpdatesOnStartup,
     setCrtEffect,
-    setBcryptRounds
+    setBcryptRounds,
+    setWordWrap
   } = useSettingsStore()
 
   // Define sections for navigation
@@ -61,7 +62,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     autoUpdate: settings.autoUpdate,
     checkForUpdatesOnStartup: settings.checkForUpdatesOnStartup,
     turboMode: settings.crtEffect, // Renamed to match Vue version
-    bcryptRounds: settings.bcryptRounds || 12
+    bcryptRounds: settings.bcryptRounds || 12,
+    wordWrap: settings.wordWrap
   })
 
   // Handle input changes
@@ -107,6 +109,9 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       case 'bcryptRounds':
         setBcryptRounds(value as number)
         break
+      case 'wordWrap':
+        setWordWrap(value as boolean)
+        break
     }
   }
 
@@ -126,7 +131,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         checkForUpdatesOnStartup: true,
 
         turboMode: true, // Match Vue default
-        bcryptRounds: 12
+        bcryptRounds: 12,
+        wordWrap: true
       }
 
       // Update local state
@@ -141,6 +147,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
       setCrtEffect(defaultSettings.turboMode)
       setBcryptRounds(defaultSettings.bcryptRounds)
+      setWordWrap(defaultSettings.wordWrap)
     }
   }
 
@@ -247,6 +254,18 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                           value={localSettings.fontSize}
                           onChange={handleChange}
                         />
+                      </div>
+                    </div>
+                    <div className="settings-row">
+                      <label className="settings-label">Word Wrap</label>
+                      <div className="settings-control">
+                        <input
+                          type="checkbox"
+                          name="wordWrap"
+                          checked={localSettings.wordWrap}
+                          onChange={handleChange}
+                        />
+                        <span className="settings-description">Enable word wrap in text areas</span>
                       </div>
                     </div>
                   </div>
