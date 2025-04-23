@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { useTabsStore } from '../stores/tabsStore'
 import { useTabsContentStore } from '../stores/tabsContentStore'
-import './TabBar.css'
+import './styles/TabBar.css'
 
 interface TabBarProps {
   isHomeActive: boolean
@@ -52,7 +52,7 @@ const TabBar: React.FC<TabBarProps> = ({ isHomeActive, onShowHome, onHideHome })
     const shouldShowButtons = container.scrollWidth > container.clientWidth
 
     // Adjust tab widths based on number of tabs
-    const tabElements = container.querySelectorAll('.tab')
+    const tabElements = container.querySelectorAll('[data-tab]')
     if (tabElements.length > 0) {
       // Apply different max-width based on number of tabs
       let maxWidth = '200px'
@@ -63,7 +63,7 @@ const TabBar: React.FC<TabBarProps> = ({ isHomeActive, onShowHome, onHideHome })
       }
 
       tabElements.forEach((tab) => {
-        ;(tab as HTMLElement).style.maxWidth = maxWidth
+        ; (tab as HTMLElement).style.maxWidth = maxWidth
       })
     }
 
@@ -318,7 +318,8 @@ const TabBar: React.FC<TabBarProps> = ({ isHomeActive, onShowHome, onHideHome })
             <div
               key={tab.id}
               ref={(el) => (tabRefs.current[index] = el)}
-              className={`tab ${tab.id === activeTabId && !isHomeActive ? 'active' : ''} ${isHomeActive ? 'inactive' : ''} ${draggedTab === tab.id ? 'dragging' : ''}`}
+              className={`tab ${tab.id === activeTabId && !isHomeActive ? 'active' : ''} ${isHomeActive ? 'inactive' : ''
+                } ${draggedTab === tab.id ? 'dragging' : ''}`}
               draggable="true"
               onClick={() => handleTabClick(tab.id)}
               onContextMenu={(e) => handleContextMenu(e, tab.id)}

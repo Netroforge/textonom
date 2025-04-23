@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useSettingsStore } from '../stores/settingsStore'
-import './Settings.css'
+import { twMerge } from 'tailwind-merge'
+import Button from './ui/Button'
 
 // Define theme types
 export const THEMES = {
@@ -21,7 +22,7 @@ interface SettingsProps {
   onClose: () => void
 }
 
-const Settings: React.FC<SettingsProps> = ({ onClose }) => {
+const SettingsTailwind: React.FC<SettingsProps> = ({ onClose }) => {
   const {
     settings,
     setTheme,
@@ -102,7 +103,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       case 'checkForUpdatesOnStartup':
         setCheckForUpdatesOnStartup(value as boolean)
         break
-
       case 'turboMode':
         setCrtEffect(value as boolean)
         break
@@ -115,11 +115,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     }
   }
 
-  // Close settings
-  const closeSettings = (): void => {
-    onClose()
-  }
-
   // Reset settings to defaults
   const handleReset = (): void => {
     if (window.confirm('Are you sure you want to reset all settings to their default values?')) {
@@ -129,7 +124,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         fontFamily: "Consolas, 'Courier New', monospace", // Match Vue default
         autoUpdate: true,
         checkForUpdatesOnStartup: true,
-
         turboMode: true, // Match Vue default
         bcryptRounds: 12,
         wordWrap: true
@@ -144,7 +138,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       setFontFamily(defaultSettings.fontFamily)
       setAutoUpdate(defaultSettings.autoUpdate)
       setCheckForUpdatesOnStartup(defaultSettings.checkForUpdatesOnStartup)
-
       setCrtEffect(defaultSettings.turboMode)
       setBcryptRounds(defaultSettings.bcryptRounds)
       setWordWrap(defaultSettings.wordWrap)
@@ -153,30 +146,38 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
   return (
     <div
-      className="settings-overlay"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={(e) => {
         // Close settings when clicking outside the container
-        if ((e.target as HTMLElement).className === 'settings-overlay') {
+        if ((e.target as HTMLElement).classList.contains('bg-opacity-50')) {
           onClose()
         }
       }}
     >
-      <div className="settings-container">
-        <div className="settings-header">
-          <h2>Settings</h2>
-          <button className="close-button" onClick={onClose}>
+      <div className="bg-surface rounded-lg w-4/5 max-w-[900px] h-auto min-h-[500px] max-h-[80%] flex flex-col overflow-hidden shadow-lg border border-border">
+        <div className="flex justify-between items-center p-4 border-b border-border sticky top-0 bg-surface z-10 shadow-sm">
+          <h2 className="text-lg font-medium text-text">Settings</h2>
+          <button
+            className="bg-transparent border-none text-text p-1 rounded hover:bg-surface-hover cursor-pointer"
+            onClick={onClose}
+          >
             ✕
           </button>
         </div>
 
-        <div className="settings-content">
-          <div className="settings-layout">
+        <div className="flex-1 flex flex-col overflow-hidden min-h-[400px]">
+          <div className="flex flex-1 overflow-hidden md:flex-row flex-col">
             {/* Settings Navigation Sidebar */}
-            <div className="settings-sidebar">
+            <div className="w-full md:w-[200px] border-r border-border overflow-y-auto bg-surface md:max-h-full max-h-[200px]">
               {sections.map((section) => (
                 <div
                   key={section.id}
-                  className={`settings-nav-item ${activeSection === section.id ? 'active' : ''}`}
+                  className={twMerge(
+                    'p-3 cursor-pointer border-b border-border transition-colors whitespace-nowrap overflow-hidden text-ellipsis h-11 flex items-center',
+                    activeSection === section.id
+                      ? 'bg-primary text-button-text font-bold'
+                      : 'hover:bg-surface-hover'
+                  )}
                   onClick={() => setActiveSection(section.id)}
                 >
                   {section.title}
@@ -185,16 +186,23 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             </div>
 
             {/* Settings Content Area */}
-            <div className="settings-sections-container">
+            <div className="flex-1 overflow-y-hidden relative">
               {/* Theme Settings */}
               {activeSection === 'theme' && (
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Theme</h3>
-                  <div className="settings-section-content">
-                    <div className="settings-row">
-                      <label className="settings-label">Theme</label>
-                      <div className="settings-control">
-                        <select name="theme" value={localSettings.theme} onChange={handleChange}>
+                <div className="absolute inset-0 flex flex-col overflow-hidden">
+                  <h3 className="sticky top-0 bg-surface p-3 m-0 border-b border-border z-10 font-bold h-11 flex items-center">
+                    Theme
+                  </h3>
+                  <div className="p-4 overflow-y-auto flex-1">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">Theme</label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
+                        <select
+                          name="theme"
+                          value={localSettings.theme}
+                          onChange={handleChange}
+                          className="w-full max-w-[300px] p-2 border border-border rounded bg-input-background text-text"
+                        >
                           <option value={THEMES.LIGHT}>Light</option>
                           <option value={THEMES.DARK}>Dark</option>
                           <option value={THEMES.CYBERPUNK}>Cyberpunk</option>
@@ -202,20 +210,21 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                       </div>
                     </div>
 
-                    <div className="settings-row">
-                      <label className="settings-label">Turbo Mode</label>
-                      <div className="settings-control">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">Turbo Mode</label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
                         <input
                           type="checkbox"
                           name="turboMode"
                           checked={localSettings.turboMode}
                           onChange={handleChange}
+                          className="w-4 h-4"
                         />
-                        <span className="settings-description">Enable</span>
+                        <span className="ml-2 text-sm text-text opacity-80">Enable</span>
                       </div>
                     </div>
 
-                    <div className="settings-info">
+                    <div className="mt-2 text-sm text-text opacity-80 max-w-[500px]">
                       <p>
                         Turbo Mode adds visual effects that may impact performance on older devices.
                       </p>
@@ -226,16 +235,19 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
               {/* Font Settings */}
               {activeSection === 'font' && (
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Font</h3>
-                  <div className="settings-section-content">
-                    <div className="settings-row">
-                      <label className="settings-label">Font Family</label>
-                      <div className="settings-control">
+                <div className="absolute inset-0 flex flex-col overflow-hidden">
+                  <h3 className="sticky top-0 bg-surface p-3 m-0 border-b border-border z-10 font-bold h-11 flex items-center">
+                    Font
+                  </h3>
+                  <div className="p-4 overflow-y-auto flex-1">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">Font Family</label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
                         <select
                           name="fontFamily"
                           value={localSettings.fontFamily}
                           onChange={handleChange}
+                          className="w-full max-w-[300px] p-2 border border-border rounded bg-input-background text-text"
                         >
                           {fontOptions.map((font, index) => (
                             <option key={index} value={font}>
@@ -245,9 +257,9 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                         </select>
                       </div>
                     </div>
-                    <div className="settings-row">
-                      <label className="settings-label">Font Size</label>
-                      <div className="settings-control">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">Font Size</label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
                         <input
                           type="number"
                           name="fontSize"
@@ -255,19 +267,23 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                           max="32"
                           value={localSettings.fontSize}
                           onChange={handleChange}
+                          className="w-full max-w-[300px] p-2 border border-border rounded bg-input-background text-text"
                         />
                       </div>
                     </div>
-                    <div className="settings-row">
-                      <label className="settings-label">Word Wrap</label>
-                      <div className="settings-control">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">Word Wrap</label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
                         <input
                           type="checkbox"
                           name="wordWrap"
                           checked={localSettings.wordWrap}
                           onChange={handleChange}
+                          className="w-4 h-4"
                         />
-                        <span className="settings-description">Enable word wrap in text areas</span>
+                        <span className="ml-2 text-sm text-text opacity-80">
+                          Enable word wrap in text areas
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -276,29 +292,35 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
               {/* Auto Update Settings */}
               {activeSection === 'updates' && (
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Updates</h3>
-                  <div className="settings-section-content">
-                    <div className="settings-row">
-                      <label className="settings-label">Enable Auto Update</label>
-                      <div className="settings-control">
+                <div className="absolute inset-0 flex flex-col overflow-hidden">
+                  <h3 className="sticky top-0 bg-surface p-3 m-0 border-b border-border z-10 font-bold h-11 flex items-center">
+                    Updates
+                  </h3>
+                  <div className="p-4 overflow-y-auto flex-1">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">Enable Auto Update</label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
                         <input
                           type="checkbox"
                           name="autoUpdate"
                           checked={localSettings.autoUpdate}
                           onChange={handleChange}
+                          className="w-4 h-4"
                         />
                       </div>
                     </div>
-                    <div className="settings-row">
-                      <label className="settings-label">Check for Updates on Startup</label>
-                      <div className="settings-control">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">
+                        Check for Updates on Startup
+                      </label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
                         <input
                           type="checkbox"
                           name="checkForUpdatesOnStartup"
                           checked={localSettings.checkForUpdatesOnStartup}
                           onChange={handleChange}
                           disabled={!localSettings.autoUpdate}
+                          className="w-4 h-4"
                         />
                       </div>
                     </div>
@@ -308,12 +330,16 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
               {/* Transformations Settings */}
               {activeSection === 'transformations' && (
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Transformations</h3>
-                  <div className="settings-section-content">
-                    <div className="settings-row">
-                      <label className="settings-label">Bcrypt Rounds (Cost Factor)</label>
-                      <div className="settings-control">
+                <div className="absolute inset-0 flex flex-col overflow-hidden">
+                  <h3 className="sticky top-0 bg-surface p-3 m-0 border-b border-border z-10 font-bold h-11 flex items-center">
+                    Transformations
+                  </h3>
+                  <div className="p-4 overflow-y-auto flex-1">
+                    <div className="flex mb-2 items-center md:flex-row flex-col md:items-center items-start">
+                      <label className="flex-1 mr-4 md:mb-0 mb-1">
+                        Bcrypt Rounds (Cost Factor)
+                      </label>
+                      <div className="flex-2 flex items-center md:w-auto w-full">
                         <input
                           type="number"
                           name="bcryptRounds"
@@ -321,11 +347,14 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                           max="20"
                           value={localSettings.bcryptRounds}
                           onChange={handleChange}
+                          className="w-full max-w-[300px] p-2 border border-border rounded bg-input-background text-text"
                         />
-                        <span className="settings-description">Default: 12 (recommended)</span>
+                        <span className="ml-2 text-sm text-text opacity-80">
+                          Default: 12 (recommended)
+                        </span>
                       </div>
                     </div>
-                    <div className="settings-info">
+                    <div className="mt-2 text-sm text-text opacity-80 max-w-[500px]">
                       <p>
                         Higher rounds provide stronger security but take longer to compute. The
                         default value of 12 is a good balance between security and performance.
@@ -338,13 +367,17 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           </div>
         </div>
 
-        <div className="settings-footer">
-          <button onClick={handleReset}>Reset to Defaults</button>
-          <button onClick={closeSettings}>Close</button>
+        <div className="flex justify-end gap-2 p-4 border-t border-border bg-surface mt-auto">
+          <Button variant="secondary" onClick={handleReset}>
+            Reset to Defaults
+          </Button>
+          <Button variant="primary" onClick={onClose}>
+            Close
+          </Button>
         </div>
       </div>
     </div>
   )
 }
 
-export default Settings
+export default SettingsTailwind

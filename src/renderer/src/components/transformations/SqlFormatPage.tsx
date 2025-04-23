@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { sqlFormat } from '../../transformations/formatting'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
-import './TransformationPage.css'
+import TextAreaWithLabel from '../ui/TextAreaWithLabel'
+import ParameterInput from '../ui/ParameterInput'
+import ParameterSelect from '../ui/ParameterSelect'
+import ParameterCheckbox from '../ui/ParameterCheckbox'
+import Button from '../ui/Button'
 
 interface SqlFormatPageProps {
   tabId: string
@@ -83,116 +87,85 @@ const SqlFormatPage: React.FC<SqlFormatPageProps> = ({ tabId }): React.ReactElem
   }, [tabId, inputText, outputText, dialect, indentSize, uppercase])
 
   return (
-    <div className="transformation-page">
-      <div className="transformation-header">
-        <h1>SQL Formatter</h1>
-        <p className="transformation-description">
-          Format SQL queries with proper indentation and syntax
-        </p>
+    <div className="flex flex-col h-full p-4 bg-background text-text overflow-y-auto">
+      <div className="mb-6 pb-4 border-b border-border">
+        <h1 className="mb-2 text-[1.8rem]">SQL Formatter</h1>
+        <p className="text-text text-base">Format SQL queries with proper indentation and syntax</p>
       </div>
 
-      <div className="transformation-content">
-        <div className="textarea-container">
-          <label htmlFor="input-textarea">Input</label>
-          <div className="textarea-wrapper">
-            <textarea
-              id="input-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className="transformation-textarea"
-              placeholder="Enter SQL query to format..."
-              spellCheck="false"
-            ></textarea>
-          </div>
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
+        <TextAreaWithLabel
+          label="Input"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Enter SQL query to format..."
+          spellCheck="false"
+        />
 
-        <div className="actions-container">
-          <div className="parameters-container">
-            <div className="parameter">
-              <label htmlFor="dialect-select">SQL Dialect</label>
-              <select
-                id="dialect-select"
-                className="parameter-input"
-                value={dialect}
-                onChange={(e) => setDialect(e.target.value)}
-                disabled={isTransforming}
-              >
-                <option value="sql">Standard SQL</option>
-                <option value="mysql">MySQL</option>
-                <option value="postgresql">PostgreSQL</option>
-                <option value="tsql">T-SQL (SQL Server)</option>
-                <option value="plsql">PL/SQL (Oracle)</option>
-                <option value="sqlite">SQLite</option>
-                <option value="bigquery">BigQuery</option>
-                <option value="redshift">Redshift</option>
-                <option value="spark">Spark SQL</option>
-              </select>
-            </div>
-            <div className="parameter">
-              <label htmlFor="indent-size-input">Indent Size</label>
-              <input
-                id="indent-size-input"
-                type="number"
-                min="1"
-                max="8"
-                className="parameter-input"
-                value={indentSize}
-                onChange={(e) => setIndentSize(Number(e.target.value))}
-                disabled={isTransforming}
-                style={{ width: '50px' }}
-              />
-            </div>
-            <div className="parameter">
-              <label htmlFor="uppercase-checkbox" className="checkbox-label">
-                <input
-                  id="uppercase-checkbox"
-                  type="checkbox"
-                  checked={uppercase}
-                  onChange={(e) => setUppercase(e.target.checked)}
-                  disabled={isTransforming}
-                />
-                Uppercase Keywords
-              </label>
-            </div>
+        <div className="flex md:flex-col justify-center items-center gap-2 py-4 md:py-0 md:px-4">
+          <div className="flex flex-col gap-2 mb-4 p-3 border border-border rounded bg-surface w-full">
+            <ParameterSelect
+              id="dialect-select"
+              label="SQL Dialect"
+              value={dialect}
+              onChange={(e) => setDialect(e.target.value)}
+              disabled={isTransforming}
+              options={[
+                { value: 'sql', label: 'Standard SQL' },
+                { value: 'mysql', label: 'MySQL' },
+                { value: 'postgresql', label: 'PostgreSQL' },
+                { value: 'tsql', label: 'T-SQL (SQL Server)' },
+                { value: 'plsql', label: 'PL/SQL (Oracle)' },
+                { value: 'sqlite', label: 'SQLite' },
+                { value: 'bigquery', label: 'BigQuery' },
+                { value: 'redshift', label: 'Redshift' },
+                { value: 'spark', label: 'Spark SQL' }
+              ]}
+            />
+            <ParameterInput
+              id="indent-size-input"
+              label="Indent Size"
+              type="number"
+              min="1"
+              max="8"
+              value={indentSize}
+              onChange={(e) => setIndentSize(Number(e.target.value))}
+              disabled={isTransforming}
+            />
+            <ParameterCheckbox
+              id="uppercase-checkbox"
+              label="Uppercase Keywords"
+              checked={uppercase}
+              onChange={(e) => setUppercase(e.target.checked)}
+              disabled={isTransforming}
+            />
           </div>
 
-          <button
-            className="action-button transform-button"
-            disabled={isTransforming}
-            onClick={applyTransformation}
-          >
+          <Button variant="primary" disabled={isTransforming} onClick={applyTransformation}>
             Format SQL
-          </button>
-          <button
-            className="action-button clear-button"
-            disabled={isTransforming || !inputText}
-            onClick={clearInput}
-          >
+          </Button>
+          <Button variant="secondary" disabled={isTransforming || !inputText} onClick={clearInput}>
             Clear Input
-          </button>
-          <button
-            className="action-button copy-button"
+          </Button>
+          <Button
+            variant="primary"
+            className="bg-info hover:bg-info-dark"
             disabled={isTransforming || !outputText}
             onClick={copyOutput}
           >
             Copy Output
-          </button>
+          </Button>
         </div>
 
-        <div className="textarea-container">
-          <label htmlFor="output-textarea">Output</label>
-          <div className="textarea-wrapper">
-            {/* Transformation Animation */}
-            {isTransforming && <TransformationAnimation transformationName="SQL Format" />}
-            <textarea
-              id="output-textarea"
-              value={outputText}
-              readOnly
-              className="transformation-textarea"
-              placeholder="Formatted SQL will appear here..."
-              spellCheck="false"
-            ></textarea>
-          </div>
+        <div className="relative flex-1 flex flex-col">
+          <TextAreaWithLabel
+            label="Output"
+            value={outputText}
+            readOnly
+            placeholder="Formatted SQL will appear here..."
+            spellCheck="false"
+          />
+          {isTransforming && <TransformationAnimation transformationName="SQL Format" />}
         </div>
       </div>
     </div>

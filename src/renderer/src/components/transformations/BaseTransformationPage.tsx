@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import { TransformationParamValues } from '../../types/transformation'
 import TransformationAnimation from '../TransformationAnimation'
-import './TransformationPage.css'
+import TextAreaWithLabel from '../ui/TextAreaWithLabel'
+import Button from '../ui/Button'
 
 interface BaseTransformationPageProps {
   tabId: string
@@ -110,67 +111,71 @@ const BaseTransformationPage: React.FC<BaseTransformationPageProps> = ({
   }, [tabId, inputText, outputText, paramValues])
 
   return (
-    <div className="transformation-page">
-      <div className="transformation-header">
-        <h1>{transformationName}</h1>
-        <p className="transformation-description">{transformationDescription}</p>
+    <div className="flex flex-col h-full p-4 bg-[#0a0a16] text-[#00ffff] overflow-y-auto">
+      <div className="mb-6 pb-4 border-b border-[#ff00ff]">
+        <h1 className="mb-2 text-[1.8rem] text-[#00ffff] font-normal">{transformationName}</h1>
+        <p className="text-[#00ffff] text-base font-normal">{transformationDescription}</p>
       </div>
 
-      {parameters && <div className="parameters-container">{parameters}</div>}
+      {parameters && (
+        <div className="flex flex-col gap-2 mb-4 p-3 border border-[#ff00ff] rounded bg-[#1a1a2e]">
+          {parameters}
+        </div>
+      )}
 
-      <div className="transformation-content">
-        <div className="textarea-container">
-          <label htmlFor="input-textarea">Input</label>
-          <div className="textarea-wrapper">
-            <textarea
-              id="input-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className="transformation-textarea"
-              placeholder={inputPlaceholder}
-              spellCheck="false"
-            ></textarea>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 flex-1 min-h-0">
+        {/* Input column - takes 5/12 of the space on medium screens and up */}
+        <div className="md:col-span-5 flex flex-col min-h-0">
+          <TextAreaWithLabel
+            label="Input"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder={inputPlaceholder}
+            spellCheck="false"
+            className="h-full"
+          />
         </div>
 
-        <div className="actions-container">
-          <button
-            className="action-button transform-button"
+        {/* Middle column with buttons - takes 2/12 of the space on medium screens and up */}
+        <div className="md:col-span-2 flex flex-row md:flex-col justify-center items-center gap-4 py-2">
+          <Button
+            variant="primary"
+            className="bg-[#ff00ff] hover:bg-[#cc00cc] text-black border-[#ff00ff] w-full"
             disabled={isTransforming}
             onClick={applyTransformation}
           >
             {transformButtonText}
-          </button>
-          <button
-            className="action-button clear-button"
+          </Button>
+          <Button
+            variant="secondary"
+            className="bg-[#1a1a2e] text-[#00ffff] border-[#ff00ff] hover:bg-[#2a2a4e] w-full"
             disabled={isTransforming || !inputText}
             onClick={clearInput}
           >
             Clear Input
-          </button>
-          <button
-            className="action-button copy-button"
+          </Button>
+          <Button
+            variant="primary"
+            className="bg-[#00ffff] hover:bg-[#00cccc] text-black border-[#00ffff] w-full"
             disabled={isTransforming || !outputText}
             onClick={copyOutput}
           >
             Copy Output
-          </button>
+          </Button>
         </div>
 
-        <div className="textarea-container">
-          <label htmlFor="output-textarea">Output</label>
-          <div className="textarea-wrapper">
-            {/* Transformation Animation */}
+        {/* Output column - takes 5/12 of the space on medium screens and up */}
+        <div className="md:col-span-5 flex flex-col min-h-0">
+          <TextAreaWithLabel
+            label="Output"
+            value={outputText}
+            readOnly
+            placeholder={outputPlaceholder}
+            spellCheck="false"
+            className="h-full"
+          >
             {isTransforming && <TransformationAnimation transformationName={transformationName} />}
-            <textarea
-              id="output-textarea"
-              value={outputText}
-              readOnly
-              className="transformation-textarea"
-              placeholder={outputPlaceholder}
-              spellCheck="false"
-            ></textarea>
-          </div>
+          </TextAreaWithLabel>
         </div>
       </div>
     </div>

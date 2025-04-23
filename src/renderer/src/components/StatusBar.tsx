@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useTabsStore } from '../stores/tabsStore'
-import './StatusBar.css'
 
-const StatusBar: React.FC = () => {
+const StatusBarTailwind: React.FC = () => {
   const [appVersion, setAppVersion] = useState<string>('')
 
   // Get state from Zustand stores
@@ -38,11 +37,11 @@ const StatusBar: React.FC = () => {
   }, [activeTabId, showHomePage, tabs])
 
   return (
-    <div className="status-bar">
-      <div className="status-item">{getCurrentTabName()}</div>
-      <div className="status-item">v{appVersion}</div>
+    <div className="flex justify-between items-center h-6 py-1 bg-[#1a1a2e] border-t border-[#ff00ff] px-2 text-xs text-[#00ffff]">
+      <div className="px-2 truncate">{getCurrentTabName()}</div>
+      <div className="px-2 flex-shrink-0">v{appVersion}</div>
     </div>
   )
 }
 
-export default StatusBar
+export default StatusBarTailwind

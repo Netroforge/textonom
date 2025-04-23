@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useTabsStore } from '../stores/tabsStore'
-import './TitleBar.css'
 
-const TitleBar: React.FC = (): React.ReactElement => {
+const TitleBarTailwind: React.FC = (): React.ReactElement => {
   const [isMaximized, setIsMaximized] = useState(false)
 
   // Get state from Zustand stores
@@ -24,9 +23,9 @@ const TitleBar: React.FC = (): React.ReactElement => {
     return `Textonom - ${activeTab.title}`
   }, [activeTabId, showHomePage, tabs])
 
-  // Check if window is maximized on mount and when it changes
+  // Check if window is maximized on mount and when window state changes
   useEffect(() => {
-    const checkMaximizedState = async (): Promise<void> => {
+    const checkMaximized = async (): Promise<void> => {
       try {
         const maximized = await window.api.isWindowMaximized()
         setIsMaximized(maximized)
@@ -36,50 +35,56 @@ const TitleBar: React.FC = (): React.ReactElement => {
     }
 
     // Check initially
-    checkMaximizedState()
+    checkMaximized()
 
-    // Listen for window resize to update the maximized state
-    window.addEventListener('resize', checkMaximizedState)
+    // Listen for maximize and unmaximize events
+    if (window.electron?.ipcRenderer) {
+      window.electron.ipcRenderer.on('window-maximized', () => {
+        setIsMaximized(true)
+      })
 
-    // Set the initial window title
-    window.api.setWindowTitle(appTitle())
-
-    return (): void => {
-      window.removeEventListener('resize', checkMaximizedState)
+      window.electron.ipcRenderer.on('window-unmaximized', () => {
+        setIsMaximized(false)
+      })
     }
-  }, [appTitle])
 
-  // Update window title when active tab changes
-  useEffect(() => {
-    window.api.setWindowTitle(appTitle())
-  }, [activeTabId, showHomePage, appTitle])
+    // No need to clean up event listeners as the off method is not available
+    // in the current implementation
+  }, [])
 
-  // Window control functions
+  // Window control handlers
   const minimizeWindow = (): void => {
     window.api.minimizeWindow()
   }
 
-  const toggleMaximize = async (): Promise<void> => {
-    const maximized = await window.api.maximizeWindow()
-    setIsMaximized(maximized)
+  const toggleMaximize = (): void => {
+    // The maximizeWindow function in the main process actually toggles between
+    // maximized and unmaximized states, so we can just call it directly
+    window.api.maximizeWindow()
   }
 
   const closeWindow = (): void => {
-    window.api.closeWindow()
+    window.close()
   }
 
   return (
-    <div className="title-bar">
-      <div className="title-bar-drag-area">
-        <div className="app-title">{appTitle()}</div>
+    <div className="h-title-bar-height bg-[#0a0a16] flex justify-between items-center [-webkit-app-region:drag] select-none">
+      <div className="flex-1 flex items-center pl-2.5">
+        <div className="text-xs text-[#00ffff]">{appTitle()}</div>
       </div>
-      <div className="window-controls">
-        <button className="window-control minimize" onClick={minimizeWindow}>
+      <div className="flex [-webkit-app-region:no-drag]">
+        <button
+          className="w-[46px] h-title-bar-height flex justify-center items-center bg-transparent border-none outline-none text-[#00ffff] cursor-pointer hover:bg-[#1a1a2e]"
+          onClick={minimizeWindow}
+        >
           <svg width="10" height="1" viewBox="0 0 10 1">
             <path d="M0 0h10v1H0z" fill="currentColor" />
           </svg>
         </button>
-        <button className="window-control maximize" onClick={toggleMaximize}>
+        <button
+          className="w-[46px] h-title-bar-height flex justify-center items-center bg-transparent border-none outline-none text-[#00ffff] cursor-pointer hover:bg-[#1a1a2e]"
+          onClick={toggleMaximize}
+        >
           {isMaximized ? (
             <svg width="10" height="10" viewBox="0 0 10 10">
               <path d="M0 0v10h10V0H0zm1 1h8v8H1V1z" fill="currentColor" />
@@ -90,9 +95,15 @@ const TitleBar: React.FC = (): React.ReactElement => {
             </svg>
           )}
         </button>
-        <button className="window-control close" onClick={closeWindow}>
+        <button
+          className="w-[46px] h-title-bar-height flex justify-center items-center bg-transparent border-none outline-none text-[#00ffff] cursor-pointer hover:bg-[#ff0055]"
+          onClick={closeWindow}
+        >
           <svg width="10" height="10" viewBox="0 0 10 10">
-            <path d="M1 0L0 1l4 4-4 4 1 1 4-4 4 4 1-1-4-4 4-4-1-1-4 4-4-4z" fill="currentColor" />
+            <path
+              d="M6.01 5l3.78 3.78a.71.71 0 1 1-1.01 1.01L5 6.01 1.22 9.79A.71.71 0 1 1 .21 8.78L3.99 5 .21 1.22A.71.71 0 0 1 1.22.21L5 3.99 8.78.21a.71.71 0 0 1 1.01 1.01L6.01 5z"
+              fill="currentColor"
+            />
           </svg>
         </button>
       </div>
@@ -100,4 +111,4 @@ const TitleBar: React.FC = (): React.ReactElement => {
   )
 }
 
-export default TitleBar
+export default TitleBarTailwind

@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react'
-import './UpdateNotification.css'
+import Button from './ui/Button'
+import './styles/UpdateNotification.css'
 
 interface UpdateNotificationProps {
   show: boolean
@@ -219,13 +220,20 @@ const UpdateNotification = forwardRef<UpdateNotificationRef, UpdateNotificationP
 
               <div className="update-notification-actions">
                 {!updateReadyToInstall ? (
-                  <button disabled={isDownloading} onClick={downloadUpdate}>
+                  <button
+                    disabled={isDownloading}
+                    onClick={downloadUpdate}
+                  >
                     {downloadButtonText}
                   </button>
                 ) : (
-                  <button onClick={installUpdate}>Install</button>
+                  <button onClick={installUpdate}>
+                    Install
+                  </button>
                 )}
-                <button onClick={closeNotification}>Remind Me Later</button>
+                <button onClick={closeNotification}>
+                  Remind Me Later
+                </button>
               </div>
             </div>
           </div>

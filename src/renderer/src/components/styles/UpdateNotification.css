@@ -3,8 +3,8 @@
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
+  background-color: #1a1a2e;
+  border: 1px solid #ff00ff;
   border-radius: 4px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 1);
   width: 350px;
@@ -26,26 +26,30 @@
 .update-notification-header h3 {
   margin: 0;
   font-size: 16px;
-  color: var(--text);
+  color: #00ffff;
 }
 
 .update-notification-header h2 {
   margin: 0;
   font-size: 16px;
-  color: var(--text);
+  color: #00ffff;
 }
 
 .close-button {
   background: none;
   border: none;
-  color: var(--text);
+  color: #00ffff;
   cursor: pointer;
   font-size: 16px;
   padding: 0;
 }
 
+.close-button:hover {
+  color: #ff00ff;
+}
+
 .update-notification-body {
-  color: var(--text);
+  color: #00ffff;
 }
 
 .release-notes {
@@ -53,7 +57,7 @@
   overflow-y: auto;
   margin: 10px 0;
   padding: 10px;
-  background-color: var(--background);
+  background-color: #0a0a16;
   border-radius: 4px;
   font-size: 12px;
   white-space: pre-line;
@@ -71,14 +75,14 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  background-color: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background-color: #1a1a2e;
+  color: #00ffff;
+  border: 1px solid #ff00ff;
 }
 
 .update-notification-actions button:first-child {
-  background-color: var(--primary);
-  color: var(--buttonText);
+  background-color: #ff00ff;
+  color: #000000;
 }
 
 .update-notification-actions button:disabled {
@@ -95,8 +99,8 @@
 
 .action-button {
   padding: 8px 16px;
-  background-color: var(--primary);
-  color: var(--buttonText);
+  background-color: #ff00ff;
+  color: #000000;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -104,7 +108,7 @@
 }
 
 .action-button:hover:not(:disabled) {
-  background-color: var(--primaryDark);
+  background-color: #cc00cc;
 }
 
 .action-button:disabled {
@@ -113,11 +117,12 @@
 }
 
 .install-button {
-  background-color: var(--success);
+  background-color: #00ff9f;
+  color: #000000;
 }
 
 .install-button:hover:not(:disabled) {
-  background-color: var(--success);
+  background-color: #00ff9f;
   opacity: 0.9;
 }
 

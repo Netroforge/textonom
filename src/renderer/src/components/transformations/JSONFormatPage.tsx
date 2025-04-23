@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { jsonToCsv } from '../../transformations/conversion'
+import { jsonPrettify } from '../../transformations/json'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
 import TextAreaWithLabel from '../ui/TextAreaWithLabel'
@@ -7,11 +7,35 @@ import ParameterInput from '../ui/ParameterInput'
 import ParameterCheckbox from '../ui/ParameterCheckbox'
 import Button from '../ui/Button'
 
-interface JsonToCsvPageProps {
+// Helper function to sort object keys recursively
+const sortObjectKeys = (obj: any): any => {
+  // If it's not an object or it's null, return it as is
+  if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
+    // If it's an array, sort its elements if they are objects
+    if (Array.isArray(obj)) {
+      return obj.map((item) => sortObjectKeys(item))
+    }
+    return obj
+  }
+
+  // Create a new object with sorted keys
+  return Object.keys(obj)
+    .sort()
+    .reduce(
+      (result, key) => {
+        // Sort nested objects recursively
+        result[key] = sortObjectKeys(obj[key])
+        return result
+      },
+      {} as Record<string, any>
+    )
+}
+
+interface JSONFormatPageProps {
   tabId: string
 }
 
-const JsonToCsvPage: React.FC<JsonToCsvPageProps> = ({ tabId }): React.ReactElement => {
+const JSONFormatPage: React.FC<JSONFormatPageProps> = ({ tabId }): React.ReactElement => {
   const { getTabContent, saveTabContent } = useTabsContentStore()
 
   // Get initial state from tab content store
@@ -20,9 +44,13 @@ const JsonToCsvPage: React.FC<JsonToCsvPageProps> = ({ tabId }): React.ReactElem
   // Reactive state
   const [inputText, setInputText] = useState(initialContent.inputText)
   const [outputText, setOutputText] = useState(initialContent.outputText)
-  const [delimiter, setDelimiter] = useState(initialContent.paramValues?.delimiter || ',')
-  const [includeHeader, setIncludeHeader] = useState(
-    initialContent.paramValues?.includeHeader !== false // Default to true
+  const [indentSize, setIndentSize] = useState(
+    initialContent.paramValues?.indentSize ? Number(initialContent.paramValues.indentSize) : 2
+  )
+  const [sortKeys, setSortKeys] = useState(
+    initialContent.paramValues?.sortKeys !== undefined
+      ? Boolean(initialContent.paramValues.sortKeys)
+      : false
   )
   const [isTransforming, setIsTransforming] = useState(false)
 
@@ -35,7 +63,14 @@ const JsonToCsvPage: React.FC<JsonToCsvPageProps> = ({ tabId }): React.ReactElem
 
     try {
       // Apply the transformation
-      const result = await jsonToCsv(inputText, { delimiter, includeHeader })
+      // Parse the JSON
+      const parsed = JSON.parse(inputText)
+
+      // Sort keys if requested
+      const processedObj = sortKeys ? sortObjectKeys(parsed) : parsed
+
+      // Stringify with the specified indent size
+      const result = JSON.stringify(processedObj, null, indentSize)
       setOutputText(result)
 
       // End transformation after a short delay to show the animation
@@ -81,16 +116,16 @@ const JsonToCsvPage: React.FC<JsonToCsvPageProps> = ({ tabId }): React.ReactElem
     saveTabContent(tabId, {
       inputText,
       outputText,
-      paramValues: { delimiter, includeHeader }
+      paramValues: { indentSize, sortKeys }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabId, inputText, outputText, delimiter, includeHeader])
+  }, [tabId, inputText, outputText, indentSize, sortKeys])
 
   return (
     <div className="flex flex-col h-full p-4 bg-background text-text overflow-y-auto">
       <div className="mb-6 pb-4 border-b border-border">
-        <h1 className="mb-2 text-[1.8rem]">JSON to CSV</h1>
-        <p className="text-text text-base">Convert JSON data to CSV format</p>
+        <h1 className="mb-2 text-2xl">JSON Format</h1>
+        <p className="text-text">Format JSON with proper indentation and structure</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
@@ -98,33 +133,33 @@ const JsonToCsvPage: React.FC<JsonToCsvPageProps> = ({ tabId }): React.ReactElem
           label="Input"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="Enter JSON array to convert to CSV..."
+          placeholder="Enter JSON to format..."
           spellCheck="false"
         />
 
         <div className="flex md:flex-col justify-center items-center gap-2 py-4 md:py-0 md:px-4">
           <div className="flex flex-col gap-2 mb-4 p-3 border border-border rounded bg-surface w-full">
             <ParameterInput
-              id="delimiter-input"
-              label="Delimiter"
-              type="text"
-              value={delimiter}
-              onChange={(e) => setDelimiter(e.target.value)}
+              id="indent-size-input"
+              label="Indent Size"
+              type="number"
+              min="0"
+              max="8"
+              value={indentSize}
+              onChange={(e) => setIndentSize(Number(e.target.value))}
               disabled={isTransforming}
-              maxLength={1}
-              className="w-16 text-center"
             />
             <ParameterCheckbox
-              id="include-header-checkbox"
-              label="Include Header Row"
-              checked={includeHeader}
-              onChange={(e) => setIncludeHeader(e.target.checked)}
+              id="sort-keys-checkbox"
+              label="Sort Keys"
+              checked={sortKeys}
+              onChange={(e) => setSortKeys(e.target.checked)}
               disabled={isTransforming}
             />
           </div>
 
           <Button variant="primary" disabled={isTransforming} onClick={applyTransformation}>
-            Convert
+            Format
           </Button>
           <Button variant="secondary" disabled={isTransforming || !inputText} onClick={clearInput}>
             Clear Input
@@ -144,14 +179,14 @@ const JsonToCsvPage: React.FC<JsonToCsvPageProps> = ({ tabId }): React.ReactElem
             label="Output"
             value={outputText}
             readOnly
-            placeholder="CSV will appear here..."
+            placeholder="Formatted JSON will appear here..."
             spellCheck="false"
           />
-          {isTransforming && <TransformationAnimation transformationName="JSON to CSV" />}
+          {isTransforming && <TransformationAnimation transformationName="JSON Format" />}
         </div>
       </div>
     </div>
   )
 }
 
-export default JsonToCsvPage
+export default JSONFormatPage

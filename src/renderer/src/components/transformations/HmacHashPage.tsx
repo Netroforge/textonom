@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { hmacHash } from '../../transformations/hash'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
-import './TransformationPage.css'
+import TextAreaWithLabel from '../ui/TextAreaWithLabel'
+import ParameterInput from '../ui/ParameterInput'
+import ParameterSelect from '../ui/ParameterSelect'
+import Button from '../ui/Button'
 
 interface HmacHashPageProps {
   tabId: string
@@ -86,95 +89,72 @@ const HmacHashPage: React.FC<HmacHashPageProps> = ({ tabId }): React.ReactElemen
   }, [tabId, inputText, outputText, secretKey, algorithm])
 
   return (
-    <div className="transformation-page">
-      <div className="transformation-header">
-        <h1>HMAC Hash</h1>
-        <p className="transformation-description">
+    <div className="flex flex-col h-full p-4 bg-background text-text overflow-y-auto">
+      <div className="mb-6 pb-4 border-b border-border">
+        <h1 className="mb-2 text-2xl">HMAC Hash</h1>
+        <p className="text-text">
           Generate HMAC (Hash-based Message Authentication Code) using various algorithms
         </p>
       </div>
 
-      <div className="transformation-content">
-        <div className="textarea-container">
-          <label htmlFor="input-textarea">Input</label>
-          <div className="textarea-wrapper">
-            <textarea
-              id="input-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className="transformation-textarea"
-              placeholder="Enter text to hash..."
-              spellCheck="false"
-            ></textarea>
-          </div>
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
+        <TextAreaWithLabel
+          label="Input"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Enter text to hash..."
+          spellCheck="false"
+        />
 
-        <div className="actions-container">
-          <div className="parameters-container">
-            <div className="parameter">
-              <label htmlFor="secret-key-input">Secret Key</label>
-              <input
-                id="secret-key-input"
-                type="text"
-                className="parameter-input"
-                value={secretKey}
-                onChange={(e) => setSecretKey(e.target.value)}
-                disabled={isTransforming}
-                placeholder="Enter secret key"
-              />
-            </div>
-            <div className="parameter">
-              <label htmlFor="algorithm-select">Algorithm</label>
-              <select
-                id="algorithm-select"
-                className="parameter-input"
-                value={algorithm}
-                onChange={(e) => setAlgorithm(e.target.value)}
-                disabled={isTransforming}
-              >
-                <option value="SHA256">SHA-256</option>
-                <option value="SHA512">SHA-512</option>
-              </select>
-            </div>
+        <div className="flex md:flex-col justify-center items-center gap-2 py-4 md:py-0 md:px-4">
+          <div className="flex flex-col gap-2 mb-4 p-3 border border-border rounded bg-surface w-full">
+            <ParameterInput
+              id="secret-key-input"
+              label="Secret Key"
+              type="text"
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
+              disabled={isTransforming}
+              placeholder="Enter secret key"
+            />
+            <ParameterSelect
+              id="algorithm-select"
+              label="Algorithm"
+              value={algorithm}
+              onChange={(e) => setAlgorithm(e.target.value)}
+              disabled={isTransforming}
+              options={[
+                { value: 'SHA256', label: 'SHA-256' },
+                { value: 'SHA512', label: 'SHA-512' }
+              ]}
+            />
           </div>
 
-          <button
-            className="action-button transform-button"
-            disabled={isTransforming}
-            onClick={applyTransformation}
-          >
+          <Button variant="primary" disabled={isTransforming} onClick={applyTransformation}>
             Generate HMAC
-          </button>
-          <button
-            className="action-button clear-button"
-            disabled={isTransforming || !inputText}
-            onClick={clearInput}
-          >
+          </Button>
+          <Button variant="secondary" disabled={isTransforming || !inputText} onClick={clearInput}>
             Clear Input
-          </button>
-          <button
-            className="action-button copy-button"
+          </Button>
+          <Button
+            variant="primary"
+            className="bg-info hover:bg-info-dark"
             disabled={isTransforming || !outputText}
             onClick={copyOutput}
           >
             Copy Output
-          </button>
+          </Button>
         </div>
 
-        <div className="textarea-container">
-          <label htmlFor="output-textarea">Output</label>
-          <div className="textarea-wrapper">
-            {/* Transformation Animation */}
-            {isTransforming && <TransformationAnimation transformationName="HMAC Hash" />}
-            <textarea
-              id="output-textarea"
-              value={outputText}
-              readOnly
-              className="transformation-textarea"
-              placeholder="HMAC hash will appear here..."
-              spellCheck="false"
-            ></textarea>
-          </div>
+        <div className="relative flex-1 flex flex-col">
+          <TextAreaWithLabel
+            label="Output"
+            value={outputText}
+            readOnly
+            placeholder="HMAC hash will appear here..."
+            spellCheck="false"
+          />
+          {isTransforming && <TransformationAnimation transformationName="HMAC Hash" />}
         </div>
       </div>
     </div>

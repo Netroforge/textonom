@@ -2,97 +2,99 @@
 import { ComponentType } from 'react'
 import Base64EncodePage from './Base64EncodePage'
 import Base64DecodePage from './Base64DecodePage'
-import JsonPrettifyPage from './JsonPrettifyPage'
-import JsonCompactPage from './JsonCompactPage'
-import UrlEncodePage from './UrlEncodePage'
-import UrlDecodePage from './UrlDecodePage'
-import ToUpperCasePage from './ToUpperCasePage'
-import ToLowerCasePage from './ToLowerCasePage'
-import ToTitleCasePage from './ToTitleCasePage'
-import XmlPrettifyPage from './XmlPrettifyPage'
-import XmlCompactPage from './XmlCompactPage'
-import SortLinesPage from './SortLinesPage'
-import DeduplicateLinesPage from './DeduplicateLinesPage'
-import ReverseLinesPage from './ReverseLinesPage'
-import HtmlEncodePage from './HtmlEncodePage'
-import HtmlDecodePage from './HtmlDecodePage'
 import BcryptHashPage from './BcryptHashPage'
+import JSONFormatPage from './JSONFormatPage'
+import HmacHashPage from './HmacHashPage'
 import Md5HashPage from './Md5HashPage'
 import Sha1HashPage from './Sha1HashPage'
 import Sha256HashPage from './Sha256HashPage'
 import Sha512HashPage from './Sha512HashPage'
-import HmacHashPage from './HmacHashPage'
-import Argon2HashPage from './Argon2HashPage'
-import UnicodeEscapePage from './UnicodeEscapePage'
-import UnicodeUnescapePage from './UnicodeUnescapePage'
+import UrlEncodePage from './UrlEncodePage'
+import UrlDecodePage from './UrlDecodePage'
+import HtmlEncodePage from './HtmlEncodePage'
+import HtmlDecodePage from './HtmlDecodePage'
+import JsonCompactPage from './JsonCompactPage'
+import XmlFormatPage from './XmlFormatPage'
+import XmlCompactPage from './XmlCompactPage'
+import XmlPrettifyPage from './XmlPrettifyPage'
 import JsonToYamlPage from './JsonToYamlPage'
 import YamlToJsonPage from './YamlToJsonPage'
-import PropertiesFileToYamlPage from './PropertiesFileToYamlPage'
-import YamlToPropertiesFilePage from './YamlToPropertiesFilePage'
-import JwtDecodePage from './JwtDecodePage'
-import HexEncodePage from './HexEncodePage'
-import HexDecodePage from './HexDecodePage'
-import MarkdownToHtmlPage from './MarkdownToHtmlPage'
-import CsvToJsonPage from './CsvToJsonPage'
-import JsonToCsvPage from './JsonToCsvPage'
-import RemoveEmptyLinesPage from './RemoveEmptyLinesPage'
-import RemoveDuplicateWordsPage from './RemoveDuplicateWordsPage'
+import ToUpperCasePage from './ToUpperCasePage'
+import ToLowerCasePage from './ToLowerCasePage'
+import ToTitleCasePage from './ToTitleCasePage'
 import ToSnakeCasePage from './ToSnakeCasePage'
 import ToCamelCasePage from './ToCamelCasePage'
 import ToKebabCasePage from './ToKebabCasePage'
+import UnicodeEscapePage from './UnicodeEscapePage'
+import UnicodeUnescapePage from './UnicodeUnescapePage'
 import SqlFormatPage from './SqlFormatPage'
 import HtmlFormatPage from './HtmlFormatPage'
 import CssFormatPage from './CssFormatPage'
 import JsFormatPage from './JsFormatPage'
-import XmlFormatPage from './XmlFormatPage'
+import SortLinesPage from './SortLinesPage'
+import DeduplicateLinesPage from './DeduplicateLinesPage'
+import ReverseLinesPage from './ReverseLinesPage'
+import RemoveEmptyLinesPage from './RemoveEmptyLinesPage'
+import RemoveDuplicateWordsPage from './RemoveDuplicateWordsPage'
+import JsonPrettifyPage from './JsonPrettifyPage'
+import HexEncodePage from './HexEncodePage'
+import HexDecodePage from './HexDecodePage'
+import JwtDecodePage from './JwtDecodePage'
+import MarkdownToHtmlPage from './MarkdownToHtmlPage'
+import JsonToCsvPage from './JsonToCsvPage'
+import CsvToJsonPage from './CsvToJsonPage'
+import PropertiesFileToYamlPage from './PropertiesFileToYamlPage'
+import YamlToPropertiesFilePage from './YamlToPropertiesFilePage'
+import Argon2HashPage from './Argon2HashPage'
 
 // Export all transformation pages
 export {
   Base64EncodePage,
   Base64DecodePage,
-  JsonPrettifyPage,
-  JsonCompactPage,
-  UrlEncodePage,
-  UrlDecodePage,
-  ToUpperCasePage,
-  ToLowerCasePage,
-  ToTitleCasePage,
-  XmlPrettifyPage,
-  XmlCompactPage,
-  SortLinesPage,
-  DeduplicateLinesPage,
-  ReverseLinesPage,
-  HtmlEncodePage,
-  HtmlDecodePage,
   BcryptHashPage,
+  JSONFormatPage,
+  HmacHashPage,
   Md5HashPage,
   Sha1HashPage,
   Sha256HashPage,
   Sha512HashPage,
-  HmacHashPage,
-  Argon2HashPage,
-  UnicodeEscapePage,
-  UnicodeUnescapePage,
+  UrlEncodePage,
+  UrlDecodePage,
+  HtmlEncodePage,
+  HtmlDecodePage,
+  JsonCompactPage,
+  XmlFormatPage,
+  XmlCompactPage,
+  XmlPrettifyPage,
   JsonToYamlPage,
   YamlToJsonPage,
-  PropertiesFileToYamlPage,
-  YamlToPropertiesFilePage,
-  JwtDecodePage,
-  HexEncodePage,
-  HexDecodePage,
-  MarkdownToHtmlPage,
-  CsvToJsonPage,
-  JsonToCsvPage,
-  RemoveEmptyLinesPage,
-  RemoveDuplicateWordsPage,
+  ToUpperCasePage,
+  ToLowerCasePage,
+  ToTitleCasePage,
   ToSnakeCasePage,
   ToCamelCasePage,
   ToKebabCasePage,
+  UnicodeEscapePage,
+  UnicodeUnescapePage,
   SqlFormatPage,
   HtmlFormatPage,
   CssFormatPage,
   JsFormatPage,
-  XmlFormatPage
+  SortLinesPage,
+  DeduplicateLinesPage,
+  ReverseLinesPage,
+  RemoveEmptyLinesPage,
+  RemoveDuplicateWordsPage,
+  JsonPrettifyPage,
+  HexEncodePage,
+  HexDecodePage,
+  JwtDecodePage,
+  MarkdownToHtmlPage,
+  JsonToCsvPage,
+  CsvToJsonPage,
+  PropertiesFileToYamlPage,
+  YamlToPropertiesFilePage,
+  Argon2HashPage
 }
 
 // Define type for transformation page components

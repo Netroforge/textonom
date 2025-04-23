@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { csvToJson } from '../../transformations/conversion'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
-import './TransformationPage.css'
+import TextAreaWithLabel from '../ui/TextAreaWithLabel'
+import ParameterInput from '../ui/ParameterInput'
+import ParameterCheckbox from '../ui/ParameterCheckbox'
+import Button from '../ui/Button'
 
 interface CsvToJsonPageProps {
   tabId: string
@@ -84,93 +87,67 @@ const CsvToJsonPage: React.FC<CsvToJsonPageProps> = ({ tabId }): React.ReactElem
   }, [tabId, inputText, outputText, delimiter, hasHeader])
 
   return (
-    <div className="transformation-page">
-      <div className="transformation-header">
-        <h1>CSV to JSON</h1>
-        <p className="transformation-description">Convert CSV data to JSON format</p>
+    <div className="flex flex-col h-full p-4 bg-background text-text overflow-y-auto">
+      <div className="mb-6 pb-4 border-b border-border">
+        <h1 className="mb-2 text-[1.8rem]">CSV to JSON</h1>
+        <p className="text-text text-base">Convert CSV data to JSON format</p>
       </div>
 
-      <div className="transformation-content">
-        <div className="textarea-container">
-          <label htmlFor="input-textarea">Input</label>
-          <div className="textarea-wrapper">
-            <textarea
-              id="input-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className="transformation-textarea"
-              placeholder="Enter CSV data to convert to JSON..."
-              spellCheck="false"
-            ></textarea>
-          </div>
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
+        <TextAreaWithLabel
+          label="Input"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Enter CSV data to convert to JSON..."
+          spellCheck="false"
+        />
 
-        <div className="actions-container">
-          <div className="parameters-container">
-            <div className="parameter">
-              <label htmlFor="delimiter-input">Delimiter</label>
-              <input
-                id="delimiter-input"
-                type="text"
-                className="parameter-input"
-                value={delimiter}
-                onChange={(e) => setDelimiter(e.target.value)}
-                disabled={isTransforming}
-                maxLength={1}
-                style={{ width: '40px', textAlign: 'center' }}
-              />
-            </div>
-            <div className="parameter">
-              <label htmlFor="has-header-checkbox" className="checkbox-label">
-                <input
-                  id="has-header-checkbox"
-                  type="checkbox"
-                  checked={hasHeader}
-                  onChange={(e) => setHasHeader(e.target.checked)}
-                  disabled={isTransforming}
-                />
-                Has Header Row
-              </label>
-            </div>
+        <div className="flex md:flex-col justify-center items-center gap-2 py-4 md:py-0 md:px-4">
+          <div className="flex flex-col gap-2 mb-4 p-3 border border-border rounded bg-surface w-full">
+            <ParameterInput
+              id="delimiter-input"
+              label="Delimiter"
+              type="text"
+              value={delimiter}
+              onChange={(e) => setDelimiter(e.target.value)}
+              disabled={isTransforming}
+              maxLength={1}
+              className="w-16 text-center"
+            />
+            <ParameterCheckbox
+              id="has-header-checkbox"
+              label="Has Header Row"
+              checked={hasHeader}
+              onChange={(e) => setHasHeader(e.target.checked)}
+              disabled={isTransforming}
+            />
           </div>
 
-          <button
-            className="action-button transform-button"
-            disabled={isTransforming}
-            onClick={applyTransformation}
-          >
+          <Button variant="primary" disabled={isTransforming} onClick={applyTransformation}>
             Convert
-          </button>
-          <button
-            className="action-button clear-button"
-            disabled={isTransforming || !inputText}
-            onClick={clearInput}
-          >
+          </Button>
+          <Button variant="secondary" disabled={isTransforming || !inputText} onClick={clearInput}>
             Clear Input
-          </button>
-          <button
-            className="action-button copy-button"
+          </Button>
+          <Button
+            variant="primary"
+            className="bg-info hover:bg-info-dark"
             disabled={isTransforming || !outputText}
             onClick={copyOutput}
           >
             Copy Output
-          </button>
+          </Button>
         </div>
 
-        <div className="textarea-container">
-          <label htmlFor="output-textarea">Output</label>
-          <div className="textarea-wrapper">
-            {/* Transformation Animation */}
-            {isTransforming && <TransformationAnimation transformationName="CSV to JSON" />}
-            <textarea
-              id="output-textarea"
-              value={outputText}
-              readOnly
-              className="transformation-textarea"
-              placeholder="JSON output will appear here..."
-              spellCheck="false"
-            ></textarea>
-          </div>
+        <div className="relative flex-1 flex flex-col">
+          <TextAreaWithLabel
+            label="Output"
+            value={outputText}
+            readOnly
+            placeholder="JSON will appear here..."
+            spellCheck="false"
+          />
+          {isTransforming && <TransformationAnimation transformationName="CSV to JSON" />}
         </div>
       </div>
     </div>

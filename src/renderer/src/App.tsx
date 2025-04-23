@@ -12,13 +12,13 @@ import { applyTheme } from './styles/themes'
 import { getTransformationPageComponent } from './components/transformations'
 import { useSettingsStore } from './stores/settingsStore'
 import { useTabsStore } from './stores/tabsStore'
-import './styles/global.css'
 
 const App: React.FC = (): React.ReactElement => {
   // State
   const [showSettings, setShowSettings] = useState(false)
   const [showAbout, setShowAbout] = useState(false)
   const [showUpdateNotification, setShowUpdateNotification] = useState(false)
+  // TailwindDemo state removed
 
   // Refs
   const updateNotificationRef = useRef<UpdateNotificationRef>(null)
@@ -65,6 +65,8 @@ const App: React.FC = (): React.ReactElement => {
   const closeAbout = (): void => {
     setShowAbout(false)
   }
+
+  // TailwindDemo toggle function removed
 
   // Check for updates
   const checkForUpdates = async (): Promise<void> => {
@@ -179,27 +181,31 @@ const App: React.FC = (): React.ReactElement => {
   }, [settings.crtEffect, settings.wordWrap])
 
   return (
-    <div className="app-container">
+    <div className="app-container flex flex-col h-screen w-screen overflow-hidden bg-[#0a0a16]">
       <CRTEffect>
-        <TitleBar />
-        <TopNavBar onMenuAction={handleMenuAction} onOpenSettings={() => setShowSettings(true)} />
-        <TabBar
-          isHomeActive={showHomePage}
-          onShowHome={() => setShowHomePage(true)}
-          onHideHome={() => setShowHomePage(false)}
-        />
+        <div className="flex flex-col h-full w-full">
+          <TitleBar />
+          <TopNavBar onMenuAction={handleMenuAction} onOpenSettings={() => setShowSettings(true)} />
+          <TabBar
+            isHomeActive={showHomePage}
+            onShowHome={() => setShowHomePage(true)}
+            onHideHome={() => setShowHomePage(false)}
+          />
 
-        {/* Show HomePage when no tabs are open or when home is requested */}
-        {!activeTabId || showHomePage ? (
-          <HomePage onTransformationOpened={() => setShowHomePage(false)} />
-        ) : (
-          /* Show dedicated transformation page for tabs */
-          activeTabId &&
-          activeTransformationId &&
-          TransformationComponent && <TransformationComponent tabId={activeTabId} />
-        )}
+          <div className="flex-1 overflow-hidden relative">
+            {/* Show HomePage when no tabs are open or when home is requested */}
+            {!activeTabId || showHomePage ? (
+              <HomePage onTransformationOpened={() => setShowHomePage(false)} />
+            ) : (
+              /* Show dedicated transformation page for tabs */
+              activeTabId &&
+              activeTransformationId &&
+              TransformationComponent && <TransformationComponent tabId={activeTabId} />
+            )}
+          </div>
 
-        <StatusBar />
+          <StatusBar />
+        </div>
 
         {showSettings && <Settings onClose={closeSettings} />}
         {showAbout && <About onClose={closeAbout} />}

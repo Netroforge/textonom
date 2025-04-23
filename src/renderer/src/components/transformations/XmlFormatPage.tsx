@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { xmlFormat } from '../../transformations/formatting'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
-import './TransformationPage.css'
+import TextAreaWithLabel from '../ui/TextAreaWithLabel'
+import ParameterInput from '../ui/ParameterInput'
+import Button from '../ui/Button'
 
 interface XmlFormatPageProps {
   tabId: string
@@ -81,82 +83,60 @@ const XmlFormatPage: React.FC<XmlFormatPageProps> = ({ tabId }): React.ReactElem
   }, [tabId, inputText, outputText, indentSize])
 
   return (
-    <div className="transformation-page">
-      <div className="transformation-header">
-        <h1>XML Formatter</h1>
-        <p className="transformation-description">Format XML code with proper indentation</p>
+    <div className="flex flex-col h-full p-4 bg-background text-text overflow-y-auto">
+      <div className="mb-6 pb-4 border-b border-border">
+        <h1 className="mb-2 text-[1.8rem]">XML Formatter</h1>
+        <p className="text-text text-base">Format XML code with proper indentation</p>
       </div>
 
-      <div className="transformation-content">
-        <div className="textarea-container">
-          <label htmlFor="input-textarea">Input</label>
-          <div className="textarea-wrapper">
-            <textarea
-              id="input-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className="transformation-textarea"
-              placeholder="Enter XML code to format..."
-              spellCheck="false"
-            ></textarea>
-          </div>
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
+        <TextAreaWithLabel
+          label="Input"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Enter XML code to format..."
+          spellCheck="false"
+        />
 
-        <div className="actions-container">
-          <div className="parameters-container">
-            <div className="parameter">
-              <label htmlFor="indent-size-input">Indent Size</label>
-              <input
-                id="indent-size-input"
-                type="number"
-                min="1"
-                max="8"
-                className="parameter-input"
-                value={indentSize}
-                onChange={(e) => setIndentSize(Number(e.target.value))}
-                disabled={isTransforming}
-                style={{ width: '50px' }}
-              />
-            </div>
+        <div className="flex md:flex-col justify-center items-center gap-2 py-4 md:py-0 md:px-4">
+          <div className="flex flex-col gap-2 mb-4 p-3 border border-border rounded bg-surface w-full">
+            <ParameterInput
+              id="indent-size-input"
+              label="Indent Size"
+              type="number"
+              min="1"
+              max="8"
+              value={indentSize}
+              onChange={(e) => setIndentSize(Number(e.target.value))}
+              disabled={isTransforming}
+            />
           </div>
 
-          <button
-            className="action-button transform-button"
-            disabled={isTransforming}
-            onClick={applyTransformation}
-          >
+          <Button variant="primary" disabled={isTransforming} onClick={applyTransformation}>
             Format XML
-          </button>
-          <button
-            className="action-button clear-button"
-            disabled={isTransforming || !inputText}
-            onClick={clearInput}
-          >
+          </Button>
+          <Button variant="secondary" disabled={isTransforming || !inputText} onClick={clearInput}>
             Clear Input
-          </button>
-          <button
-            className="action-button copy-button"
+          </Button>
+          <Button
+            variant="primary"
+            className="bg-info hover:bg-info-dark"
             disabled={isTransforming || !outputText}
             onClick={copyOutput}
           >
             Copy Output
-          </button>
+          </Button>
         </div>
 
-        <div className="textarea-container">
-          <label htmlFor="output-textarea">Output</label>
-          <div className="textarea-wrapper">
-            {/* Transformation Animation */}
-            {isTransforming && <TransformationAnimation transformationName="XML Format" />}
-            <textarea
-              id="output-textarea"
-              value={outputText}
-              readOnly
-              className="transformation-textarea"
-              placeholder="Formatted XML will appear here..."
-              spellCheck="false"
-            ></textarea>
-          </div>
+        <div className="relative flex-1 flex flex-col">
+          <TextAreaWithLabel
+            label="Output"
+            value={outputText}
+            readOnly
+            placeholder="Formatted XML will appear here..."
+            spellCheck="false"
+          />
+          {isTransforming && <TransformationAnimation transformationName="XML Format" />}
         </div>
       </div>
     </div>

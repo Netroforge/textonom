@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useCallback, useState, memo } from 'react'
-import './CRTEffect.css'
 
 interface CRTEffectProps {
   children: React.ReactNode
 }
 
-const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement => {
+const CRTEffectTailwind: React.FC<CRTEffectProps> = ({ children }): React.ReactElement => {
   const glitchIntervalRef = useRef<number | null>(null)
   const animationFrameRef = useRef<number | null>(null)
   const [isVisible, setIsVisible] = useState(true)
@@ -48,7 +47,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
     )
 
     // Observe the container element
-    const container = document.querySelector('.crt-container')
+    const container = document.querySelector('[data-crt-container]')
     if (container) {
       observer.observe(container)
     }
@@ -94,7 +93,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
 
   // Basic glitch effect
   const createBasicGlitch = (duration: number): void => {
-    const glitchElement = document.querySelector('.crt-glitch-overlay') as HTMLElement
+    const glitchElement = document.querySelector('[data-crt-glitch-overlay]') as HTMLElement
     if (!glitchElement) return
 
     // Apply random transform
@@ -123,7 +122,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
 
   // Horizontal glitch effect
   const createHorizontalGlitch = (duration: number): void => {
-    const element = document.querySelector('.crt-horizontal-glitch') as HTMLElement
+    const element = document.querySelector('[data-crt-horizontal-glitch]') as HTMLElement
     if (!element) return
 
     // Make element visible
@@ -188,7 +187,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
 
   // Color shift artifacts
   const createColorShift = (duration: number): void => {
-    const element = document.querySelector('.crt-color-shift') as HTMLElement
+    const element = document.querySelector('[data-crt-color-shift]') as HTMLElement
     if (!element) return
 
     // Make element visible
@@ -265,26 +264,39 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
   }
 
   return (
-    <div className="crt-container crt-flicker">
-      <div className="crt-content">{children}</div>
-      <div className="crt-glitch-overlay" data-text="GLITCH"></div>
-      <div className="crt-scanlines"></div>
-      <div className="crt-rgb-separation"></div>
-      <div className="crt-vignette"></div>
-      <div className="crt-glow"></div>
-      <div className="crt-flicker-overlay"></div>
-      <div className="crt-horizontal-glitch"></div>
-      <div className="crt-color-shift"></div>
-      <div className="crt-static-noise"></div>
-      <div className="crt-vertical-sync"></div>
-      <div className="crt-signal-jitter"></div>
-      <div className="crt-digital-corruption"></div>
-      <div className="crt-scan-distortion"></div>
-      <div className="crt-text-corruption"></div>
-      <div className="crt-pixel-displacement"></div>
+    <div
+      className="relative w-full h-full flex flex-col flex-1 overflow-hidden will-change-opacity animate-[flicker_5s_infinite]"
+      data-crt-container
+    >
+      <div className="relative w-full h-full z-10 flex flex-col flex-1">{children}</div>
+      <div
+        className="absolute inset-0 transition-transform duration-100 pointer-events-none z-20 will-change-transform"
+        data-crt-glitch-overlay
+        data-text="GLITCH"
+      ></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/3 to-transparent bg-[length:100%_4px] z-20 pointer-events-none opacity-40"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,0,0,0.03)_0%,transparent_70%),radial-gradient(circle_at_50.5%_50%,rgba(0,255,0,0.03)_0%,transparent_70%),radial-gradient(circle_at_49.5%_50%,rgba(0,0,255,0.03)_0%,transparent_70%)] z-20 pointer-events-none mix-blend-screen"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_65%,rgba(0,0,0,0.2)_100%)] z-30 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,255,255,0.03)_0%,rgba(0,255,255,0.01)_40%,transparent_100%)] z-30 pointer-events-none mix-blend-screen"></div>
+      <div className="absolute inset-0 bg-black/2 z-40 pointer-events-none animate-[flicker_5s_infinite] will-change-opacity"></div>
+      <div
+        className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"
+        data-crt-horizontal-glitch
+      ></div>
+      <div
+        className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"
+        data-crt-color-shift
+      ></div>
+      <div className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"></div>
+      <div className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"></div>
+      <div className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"></div>
+      <div className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"></div>
+      <div className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"></div>
+      <div className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"></div>
+      <div className="absolute inset-0 z-50 pointer-events-none hidden will-change-[opacity,transform]"></div>
     </div>
   )
 }
 
 // Use React.memo to prevent unnecessary re-renders
-export default memo(CRTEffect)
+export default memo(CRTEffectTailwind)

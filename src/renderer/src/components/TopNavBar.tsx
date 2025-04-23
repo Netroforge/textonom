@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useTabsStore } from '../stores/tabsStore'
 import { useTabsContentStore } from '../stores/tabsContentStore'
-import './TopNavBar.css'
+import './styles/TopNavBar.css'
 
 interface TopNavBarProps {
   onMenuAction: (menuAction: string) => void
@@ -40,8 +40,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
   // Handle click outside to close menus
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent): void => {
-      const isMenuClick = (event.target as Element).closest('.menu-container')
-      const isTopNavClick = (event.target as Element).closest('.top-nav')
+      const isMenuClick = (event.target as Element).closest('[data-menu-container]')
+      const isTopNavClick = (event.target as Element).closest('[data-top-nav]')
 
       // Close menus when clicking outside menu containers
       if (!isMenuClick) {
@@ -104,10 +104,6 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
     onMenuAction(menuAction)
   }
 
-  // File operations have been removed
-
-  // No edit operations - removed
-
   return (
     <div className="top-nav" ref={fileMenuRef}>
       {/* File Menu */}
@@ -121,18 +117,21 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
         </div>
         {activeMenu === 'file' && (
           <div className="menu">
-            {/* File operations have been removed */}
-            <div className="menu-item" onClick={() => handleMenuAction('settings')}>
+            <div
+              className="menu-item"
+              onClick={() => handleMenuAction('settings')}
+            >
               <span>Settings</span>
             </div>
-            <div className="menu-item" onClick={() => window.api.closeWindow()}>
+            <div
+              className="menu-item"
+              onClick={() => window.api.closeWindow()}
+            >
               <span>Exit</span>
             </div>
           </div>
         )}
       </div>
-
-      {/* Edit Menu has been removed */}
 
       {/* Help Menu */}
       <div className="menu-container" ref={helpMenuRef}>
@@ -145,7 +144,10 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
         </div>
         {activeMenu === 'help' && (
           <div className="menu">
-            <div className="menu-item" onClick={() => handleMenuAction('about')}>
+            <div
+              className="menu-item"
+              onClick={() => handleMenuAction('about')}
+            >
               <span>About Textonom</span>
             </div>
             <div
@@ -157,7 +159,10 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
             >
               <span>GitHub Repository</span>
             </div>
-            <div className="menu-item" onClick={() => handleMenuAction('checkForUpdates')}>
+            <div
+              className="menu-item"
+              onClick={() => handleMenuAction('checkForUpdates')}
+            >
               <span>Check for Updates</span>
             </div>
           </div>

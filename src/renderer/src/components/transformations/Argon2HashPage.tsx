@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { argon2Hash } from '../../transformations/hash'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
-import './TransformationPage.css'
+import TextAreaWithLabel from '../ui/TextAreaWithLabel'
+import ParameterInput from '../ui/ParameterInput'
+import ParameterSelect from '../ui/ParameterSelect'
+import Button from '../ui/Button'
 
 interface Argon2HashPageProps {
   tabId: string
@@ -93,124 +96,95 @@ const Argon2HashPage: React.FC<Argon2HashPageProps> = ({ tabId }): React.ReactEl
   }, [tabId, inputText, outputText, type, memoryCost, timeCost, parallelism])
 
   return (
-    <div className="transformation-page">
-      <div className="transformation-header">
-        <h1>Argon2 Hash</h1>
-        <p className="transformation-description">
+    <div className="flex flex-col h-full p-4 bg-background text-text overflow-y-auto">
+      <div className="mb-6 pb-4 border-b border-border">
+        <h1 className="mb-2 text-[1.8rem]">Argon2 Hash</h1>
+        <p className="text-text text-base">
           Generate Argon2-like hash of text (simulated using PBKDF2 for browser compatibility)
         </p>
       </div>
 
-      <div className="transformation-content">
-        <div className="textarea-container">
-          <label htmlFor="input-textarea">Input</label>
-          <div className="textarea-wrapper">
-            <textarea
-              id="input-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className="transformation-textarea"
-              placeholder="Enter text to hash..."
-              spellCheck="false"
-            ></textarea>
-          </div>
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
+        <TextAreaWithLabel
+          label="Input"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Enter text to hash..."
+          spellCheck="false"
+        />
 
-        <div className="actions-container">
-          <div className="parameters-container">
-            <div className="parameter">
-              <label htmlFor="type-select">Argon2 Variant</label>
-              <select
-                id="type-select"
-                className="parameter-input"
-                value={type}
-                onChange={(e) => setType(Number(e.target.value))}
-                disabled={isTransforming}
-              >
-                <option value={0}>argon2d</option>
-                <option value={1}>argon2i</option>
-                <option value={2}>argon2id (recommended)</option>
-              </select>
-            </div>
-            <div className="parameter">
-              <label htmlFor="memory-cost-input">Memory Cost (KiB)</label>
-              <input
-                id="memory-cost-input"
-                type="number"
-                min="256"
-                max="4096"
-                step="256"
-                className="parameter-input"
-                value={memoryCost}
-                onChange={(e) => setMemoryCost(Number(e.target.value))}
-                disabled={isTransforming}
-              />
-            </div>
-            <div className="parameter">
-              <label htmlFor="time-cost-input">Time Cost (Iterations)</label>
-              <input
-                id="time-cost-input"
-                type="number"
-                min="1"
-                max="10"
-                className="parameter-input"
-                value={timeCost}
-                onChange={(e) => setTimeCost(Number(e.target.value))}
-                disabled={isTransforming}
-              />
-            </div>
-            <div className="parameter">
-              <label htmlFor="parallelism-input">Parallelism</label>
-              <input
-                id="parallelism-input"
-                type="number"
-                min="1"
-                max="16"
-                className="parameter-input"
-                value={parallelism}
-                onChange={(e) => setParallelism(Number(e.target.value))}
-                disabled={isTransforming}
-              />
-            </div>
+        <div className="flex md:flex-col justify-center items-center gap-2 py-4 md:py-0 md:px-4">
+          <div className="flex flex-col gap-2 mb-4 p-3 border border-border rounded bg-surface w-full">
+            <ParameterSelect
+              id="type-select"
+              label="Argon2 Variant"
+              value={type}
+              onChange={(e) => setType(Number(e.target.value))}
+              disabled={isTransforming}
+              options={[
+                { value: 0, label: 'argon2d' },
+                { value: 1, label: 'argon2i' },
+                { value: 2, label: 'argon2id (recommended)' }
+              ]}
+            />
+            <ParameterInput
+              id="memory-cost-input"
+              label="Memory Cost (KiB)"
+              type="number"
+              min="256"
+              max="4096"
+              step="256"
+              value={memoryCost}
+              onChange={(e) => setMemoryCost(Number(e.target.value))}
+              disabled={isTransforming}
+            />
+            <ParameterInput
+              id="time-cost-input"
+              label="Time Cost (Iterations)"
+              type="number"
+              min="1"
+              max="10"
+              value={timeCost}
+              onChange={(e) => setTimeCost(Number(e.target.value))}
+              disabled={isTransforming}
+            />
+            <ParameterInput
+              id="parallelism-input"
+              label="Parallelism"
+              type="number"
+              min="1"
+              max="16"
+              value={parallelism}
+              onChange={(e) => setParallelism(Number(e.target.value))}
+              disabled={isTransforming}
+            />
           </div>
 
-          <button
-            className="action-button transform-button"
-            disabled={isTransforming}
-            onClick={applyTransformation}
-          >
+          <Button variant="primary" disabled={isTransforming} onClick={applyTransformation}>
             Hash
-          </button>
-          <button
-            className="action-button clear-button"
-            disabled={isTransforming || !inputText}
-            onClick={clearInput}
-          >
+          </Button>
+          <Button variant="secondary" disabled={isTransforming || !inputText} onClick={clearInput}>
             Clear Input
-          </button>
-          <button
-            className="action-button copy-button"
+          </Button>
+          <Button
+            variant="primary"
+            className="bg-info hover:bg-info-dark"
             disabled={isTransforming || !outputText}
             onClick={copyOutput}
           >
             Copy Output
-          </button>
+          </Button>
         </div>
 
-        <div className="textarea-container">
-          <label htmlFor="output-textarea">Output</label>
-          <div className="textarea-wrapper">
-            {/* Transformation Animation */}
-            {isTransforming && <TransformationAnimation transformationName="Argon2 Hash" />}
-            <textarea
-              id="output-textarea"
-              value={outputText}
-              readOnly
-              className="transformation-textarea"
-              placeholder="Argon2 hash will appear here..."
-              spellCheck="false"
-            ></textarea>
-          </div>
+        <div className="relative flex-1 flex flex-col">
+          <TextAreaWithLabel
+            label="Output"
+            value={outputText}
+            readOnly
+            placeholder="Argon2 hash will appear here..."
+            spellCheck="false"
+          />
+          {isTransforming && <TransformationAnimation transformationName="Argon2 Hash" />}
         </div>
       </div>
     </div>
