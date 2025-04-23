@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { TransformationParamValues } from '../types/transformation'
 
 export interface TabContent {
@@ -23,39 +22,34 @@ const defaultTabContent: TabContent = {
   paramValues: {}
 }
 
-export const useTabsContentStore = create<TabsContentState>()(
-  persist(
-    (set, get) => ({
-      tabsContent: {},
+// Tab content is intentionally not persisted between application restarts
+// Only tab structure (IDs, titles, etc.) is saved via tabsStore
+export const useTabsContentStore = create<TabsContentState>()((set, get) => ({
+  tabsContent: {},
 
-      getTabContent: (tabId) => {
-        const { tabsContent } = get()
-        return tabsContent[tabId] || { ...defaultTabContent }
-      },
+  getTabContent: (tabId) => {
+    const { tabsContent } = get()
+    return tabsContent[tabId] || { ...defaultTabContent }
+  },
 
-      saveTabContent: (tabId, content) => {
-        set((state) => ({
-          tabsContent: {
-            ...state.tabsContent,
-            [tabId]: content
-          }
-        }))
-      },
-
-      removeTabContent: (tabId) => {
-        set((state) => {
-          const newTabsContent = { ...state.tabsContent }
-          delete newTabsContent[tabId]
-          return { tabsContent: newTabsContent }
-        })
-      },
-
-      clearAllTabsContent: () => {
-        set({ tabsContent: {} })
+  saveTabContent: (tabId, content) => {
+    set((state) => ({
+      tabsContent: {
+        ...state.tabsContent,
+        [tabId]: content
       }
-    }),
-    {
-      name: 'textonom-tabs-content'
-    }
-  )
-)
+    }))
+  },
+
+  removeTabContent: (tabId) => {
+    set((state) => {
+      const newTabsContent = { ...state.tabsContent }
+      delete newTabsContent[tabId]
+      return { tabsContent: newTabsContent }
+    })
+  },
+
+  clearAllTabsContent: () => {
+    set({ tabsContent: {} })
+  }
+}))
