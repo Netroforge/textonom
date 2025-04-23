@@ -74,7 +74,7 @@
 .parameter-button {
   padding: 0.5rem 0.75rem;
   background-color: var(--primary);
-  color: white;
+  color: var(--buttonText);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -151,7 +151,7 @@
 
 .transform-button {
   background-color: var(--primary);
-  color: white;
+  color: var(--buttonText);
 }
 
 .transform-button:hover:not(:disabled) {
@@ -170,7 +170,7 @@
 
 .copy-button {
   background-color: var(--info);
-  color: white;
+  color: var(--buttonText);
 }
 
 .copy-button:hover:not(:disabled) {

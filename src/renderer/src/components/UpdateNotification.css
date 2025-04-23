@@ -78,7 +78,7 @@
 
 .update-notification-actions button:first-child {
   background-color: var(--primary);
-  color: white;
+  color: var(--buttonText);
 }
 
 .update-notification-actions button:disabled {
@@ -96,7 +96,7 @@
 .action-button {
   padding: 8px 16px;
   background-color: var(--primary);
-  color: white;
+  color: var(--buttonText);
   border: none;
   border-radius: 4px;
   cursor: pointer;

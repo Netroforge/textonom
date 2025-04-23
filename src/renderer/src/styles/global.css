@@ -45,6 +45,8 @@
   --menuBorder: #495057;
   --scrollbarThumb: #6c757d;
   --scrollbarTrack: #343a40;
+  --buttonText: #ffffff;
+  /* Default text color for buttons with primary background */
 
   /* Title bar variables */
   --titleBarBackground: #343a40;
@@ -115,6 +117,12 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+button.primary-button {
+  background-color: var(--primary);
+  color: var(--buttonText);
+  border-color: var(--primary);
 }
 
 button:hover {

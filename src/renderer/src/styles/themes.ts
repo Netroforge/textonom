@@ -40,6 +40,7 @@ interface Theme {
   menuBorder: string
   scrollbarThumb: string
   scrollbarTrack: string
+  buttonText: string // Text color for buttons with primary background
 }
 
 // Light theme colors
@@ -75,7 +76,8 @@ export const lightTheme: Theme = {
   menuText: '#212529',
   menuBorder: '#dee2e6',
   scrollbarThumb: '#adb5bd',
-  scrollbarTrack: '#e9ecef'
+  scrollbarTrack: '#e9ecef',
+  buttonText: '#ffffff' // White text on blue buttons
 }
 
 // Dark theme colors
@@ -111,7 +113,8 @@ export const darkTheme: Theme = {
   menuText: '#f8f9fa',
   menuBorder: '#495057',
   scrollbarThumb: '#6c757d',
-  scrollbarTrack: '#343a40'
+  scrollbarTrack: '#343a40',
+  buttonText: '#ffffff' // White text on blue buttons
 }
 
 // Cyberpunk theme colors
@@ -147,7 +150,8 @@ export const cyberpunkTheme: Theme = {
   menuText: '#00ffff', // Cyan
   menuBorder: '#ff00ff', // Magenta
   scrollbarThumb: '#ff00ff', // Magenta
-  scrollbarTrack: '#1a1a2e' // Dark blue
+  scrollbarTrack: '#1a1a2e', // Dark blue
+  buttonText: '#000000' // Black text on magenta buttons for better contrast
 }
 
 // Get theme by name
