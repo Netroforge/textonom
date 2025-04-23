@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { useTabsStore } from '../stores/tabsStore'
 import './StatusBar.css'
 
 const StatusBar: React.FC = () => {
   const [appVersion, setAppVersion] = useState<string>('')
+
+  // Get state from Zustand stores
+  const { activeTabId, tabs, showHomePage } = useTabsStore()
 
   // Get app version on mount
   useEffect(() => {
@@ -19,10 +23,24 @@ const StatusBar: React.FC = () => {
     getVersion()
   }, [])
 
+  // Get the current tab name or show Home if home page is active
+  const getCurrentTabName = useCallback((): string => {
+    if (showHomePage) {
+      return 'Home'
+    }
+
+    const activeTab = tabs.find((tab) => tab.id === activeTabId)
+    if (!activeTab) {
+      return 'Ready'
+    }
+
+    return activeTab.title
+  }, [activeTabId, showHomePage, tabs])
+
   return (
     <div className="status-bar">
-      <div className="status-item">Ready</div>
-      <div className="status-item version">v{appVersion}</div>
+      <div className="status-item">{getCurrentTabName()}</div>
+      <div className="status-item">v{appVersion}</div>
     </div>
   )
 }
