@@ -161,6 +161,8 @@ textarea:focus {
   background-size: 100% 4px;
   z-index: 2;
   pointer-events: none;
+  will-change: opacity;
+  /* Hardware acceleration hint */
 }
 
 [data-crt-effect='true'] .crt-container::after {
@@ -178,6 +180,8 @@ textarea:focus {
   );
   z-index: 3;
   pointer-events: none;
+  will-change: opacity;
+  /* Hardware acceleration hint */
 }
 
 /* Hide CRT effect elements when turbo mode is disabled */
@@ -223,46 +227,22 @@ textarea:focus {
   display: block;
 }
 
-/* CRT Flicker Animation */
+/* CRT Flicker Animation - Simplified for better performance */
 @keyframes flicker {
   0% {
     opacity: 0.97;
   }
 
-  5% {
-    opacity: 0.9;
-  }
-
-  10% {
-    opacity: 0.97;
-  }
-
-  15% {
-    opacity: 0.92;
-  }
-
-  20% {
-    opacity: 0.97;
+  25% {
+    opacity: 0.93;
   }
 
   50% {
     opacity: 0.95;
   }
 
-  80% {
-    opacity: 0.97;
-  }
-
-  85% {
-    opacity: 0.9;
-  }
-
-  90% {
-    opacity: 0.97;
-  }
-
-  95% {
-    opacity: 0.93;
+  75% {
+    opacity: 0.92;
   }
 
   100% {
@@ -274,7 +254,7 @@ textarea:focus {
   animation: flicker 5s infinite;
 }
 
-/* CRT Glitch Animation */
+/* CRT Glitch Animation - Optimized */
 @keyframes glitch {
   0% {
     transform: translateX(0);

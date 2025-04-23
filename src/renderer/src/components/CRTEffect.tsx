@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback, useState, memo } from 'react'
 import './CRTEffect.css'
 
 interface CRTEffectProps {
@@ -7,11 +7,13 @@ interface CRTEffectProps {
 
 const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement => {
   const glitchIntervalRef = useRef<number | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
+  const [isVisible, setIsVisible] = useState(true)
 
-  // Create a random glitch effect
+  // Create a random glitch effect using requestAnimationFrame for better performance
   const createGlitch = useCallback((): void => {
-    // Check if CRT effect is active using the data attribute
-    if (document.documentElement.getAttribute('data-crt-effect') !== 'true') return
+    // Check if CRT effect is active and element is visible
+    if (document.documentElement.getAttribute('data-crt-effect') !== 'true' || !isVisible) return
 
     // Determine which type of glitch to create
     const glitchType = Math.floor(Math.random() * 3)
@@ -30,22 +32,49 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
         createColorShift(duration)
         break
     }
-  }, []) // No dependencies as all functions are defined within the component
+  }, [isVisible]) // Dependencies include visibility state
 
-  // Set up glitch effects
+  // Set up glitch effects with requestAnimationFrame and throttling
   useEffect(() => {
-    // Create random glitches
+    // Only set up effects if CRT effect is enabled
+    if (document.documentElement.getAttribute('data-crt-effect') !== 'true') return
+
+    // Check if element is visible using Intersection Observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setIsVisible(entries[0].isIntersecting)
+      },
+      { threshold: 0.1 }
+    )
+
+    // Observe the container element
+    const container = document.querySelector('.crt-container')
+    if (container) {
+      observer.observe(container)
+    }
+
+    // Create random glitches with throttling
     const setupGlitchInterval = (): void => {
       if (glitchIntervalRef.current) {
         clearInterval(glitchIntervalRef.current)
       }
 
+      // Set interval for glitch effects
+      const interval = 1000 // Check every 1 second
+
       glitchIntervalRef.current = window.setInterval(() => {
+        // Only create glitches if visible
+        if (!isVisible) return
+
         // Only create glitches 50% of the time
         if (Math.random() < 0.5) {
-          createGlitch()
+          // Use requestAnimationFrame for smoother animation
+          if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current)
+          }
+          animationFrameRef.current = requestAnimationFrame(createGlitch)
         }
-      }, 1000) // Check every 1 second, just like Vue version
+      }, interval)
     }
 
     // Start the glitch cycle
@@ -56,8 +85,12 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
       if (glitchIntervalRef.current !== null) {
         clearInterval(glitchIntervalRef.current)
       }
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+      observer.disconnect()
     }
-  }, [createGlitch])
+  }, [createGlitch, isVisible])
 
   // Basic glitch effect
   const createBasicGlitch = (duration: number): void => {
@@ -73,11 +106,19 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
     const bottom = 100 - Math.random() * 10
     glitchElement.style.clipPath = `polygon(0 ${top}%, 100% ${top}%, 100% ${bottom}%, 0 ${bottom}%)`
 
-    // Reset after a short time
-    setTimeout(() => {
-      glitchElement.style.transform = 'translateX(0)'
-      glitchElement.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)'
-    }, duration)
+    // Reset after a short time using requestAnimationFrame for better performance
+    const resetTime = performance.now() + duration
+
+    const resetGlitch = (timestamp: number): void => {
+      if (timestamp >= resetTime) {
+        glitchElement.style.transform = 'translateX(0)'
+        glitchElement.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)'
+      } else {
+        requestAnimationFrame(resetGlitch)
+      }
+    }
+
+    requestAnimationFrame(resetGlitch)
   }
 
   // Horizontal glitch effect
@@ -108,6 +149,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
         background-color: white;
         opacity: ${glitchAlpha.toFixed(2)};
         z-index: 10;
+        will-change: transform; /* Hint for browser optimization */
       "></div>`
 
       // Sometimes add a second line close to the first
@@ -122,17 +164,26 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
           background-color: white;
           opacity: ${(glitchAlpha * 0.7).toFixed(2)};
           z-index: 10;
+          will-change: transform; /* Hint for browser optimization */
         "></div>`
       }
     }
 
     element.innerHTML = html
 
-    // Reset after duration
-    setTimeout(() => {
-      element.style.display = 'none'
-      element.innerHTML = ''
-    }, duration)
+    // Reset after duration using requestAnimationFrame
+    const resetTime = performance.now() + duration
+
+    const resetGlitch = (timestamp: number): void => {
+      if (timestamp >= resetTime) {
+        element.style.display = 'none'
+        element.innerHTML = ''
+      } else {
+        requestAnimationFrame(resetGlitch)
+      }
+    }
+
+    requestAnimationFrame(resetGlitch)
   }
 
   // Color shift artifacts
@@ -159,7 +210,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
     ]
     const shiftColor = colors[colorIndex]
 
-    // Create the color shift element
+    // Create the color shift element with will-change for better performance
     element.innerHTML = `<div style="
       position: absolute;
       top: ${shiftY}%;
@@ -169,6 +220,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
       background-color: ${shiftColor};
       mix-blend-mode: screen;
       z-index: 10;
+      will-change: transform; /* Hint for browser optimization */
     "></div>`
 
     // Add complementary color shift
@@ -193,14 +245,23 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
         background-color: ${compColor};
         mix-blend-mode: screen;
         z-index: 10;
+        will-change: transform; /* Hint for browser optimization */
       "></div>`
     }
 
-    // Reset after duration
-    setTimeout(() => {
-      element.style.display = 'none'
-      element.innerHTML = ''
-    }, duration)
+    // Reset after duration using requestAnimationFrame
+    const resetTime = performance.now() + duration
+
+    const resetGlitch = (timestamp: number): void => {
+      if (timestamp >= resetTime) {
+        element.style.display = 'none'
+        element.innerHTML = ''
+      } else {
+        requestAnimationFrame(resetGlitch)
+      }
+    }
+
+    requestAnimationFrame(resetGlitch)
   }
 
   return (
@@ -225,4 +286,5 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
   )
 }
 
-export default CRTEffect
+// Use React.memo to prevent unnecessary re-renders
+export default memo(CRTEffect)

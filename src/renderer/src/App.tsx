@@ -162,6 +162,7 @@ const App: React.FC = (): React.ReactElement => {
 
   // Apply CRT effect and word wrap based on settings
   useEffect(() => {
+    // Apply CRT effect
     document.documentElement.setAttribute('data-crt-effect', settings.crtEffect ? 'true' : 'false')
 
     // Apply word wrap class to the app container

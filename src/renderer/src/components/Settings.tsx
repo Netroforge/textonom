@@ -216,7 +216,9 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     </div>
 
                     <div className="settings-info">
-                      <p>These effects may impact performance on older devices.</p>
+                      <p>
+                        Turbo Mode adds visual effects that may impact performance on older devices.
+                      </p>
                     </div>
                   </div>
                 </div>

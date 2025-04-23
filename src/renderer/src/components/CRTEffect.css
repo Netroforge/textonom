@@ -1,3 +1,4 @@
+/* Base container styles */
 .crt-container {
   position: relative;
   width: 100%;
@@ -6,6 +7,8 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  /* Add will-change for hardware acceleration */
+  will-change: opacity;
 }
 
 .crt-content {
@@ -18,20 +21,21 @@
   flex: 1;
 }
 
+/* Optimized glitch overlay with hardware acceleration */
 .crt-glitch-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  transition:
-    transform 0.1s,
-    clip-path 0.1s;
+  transition: transform 0.1s;
   pointer-events: none;
   z-index: 2;
+  /* Use will-change for hardware acceleration */
+  will-change: transform;
 }
 
-/* Glitch effect containers */
+/* Consolidated glitch effect containers */
 .crt-horizontal-glitch,
 .crt-color-shift,
 .crt-static-noise,
@@ -49,9 +53,11 @@
   z-index: 10;
   pointer-events: none;
   display: none;
+  /* Use will-change for hardware acceleration */
+  will-change: opacity, transform;
 }
 
-/* Only apply effects when data-crt-effect is true */
+/* Performance optimized scanlines */
 .crt-scanlines {
   position: absolute;
   top: 0;
@@ -70,6 +76,7 @@
   opacity: 0.4;
 }
 
+/* Performance optimized RGB separation */
 .crt-rgb-separation {
   position: absolute;
   top: 0;
@@ -77,14 +84,15 @@
   width: 100%;
   height: 100%;
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.05) 0%, transparent 70%),
-    radial-gradient(circle at 50.5% 50%, rgba(0, 255, 0, 0.05) 0%, transparent 70%),
-    radial-gradient(circle at 49.5% 50%, rgba(0, 0, 255, 0.05) 0%, transparent 70%);
+    radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.03) 0%, transparent 70%),
+    radial-gradient(circle at 50.5% 50%, rgba(0, 255, 0, 0.03) 0%, transparent 70%),
+    radial-gradient(circle at 49.5% 50%, rgba(0, 0, 255, 0.03) 0%, transparent 70%);
   z-index: 2;
   pointer-events: none;
   mix-blend-mode: screen;
 }
 
+/* Simplified vignette effect */
 .crt-vignette {
   position: absolute;
   top: 0;
@@ -96,17 +104,17 @@
   pointer-events: none;
 }
 
+/* Simplified glow effect */
 .crt-glow {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* box-shadow removed */
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 255, 255, 0.05) 0%,
-    rgba(0, 255, 255, 0.02) 40%,
+    rgba(0, 255, 255, 0.03) 0%,
+    rgba(0, 255, 255, 0.01) 40%,
     transparent 100%
   );
   z-index: 3;
@@ -114,57 +122,37 @@
   mix-blend-mode: screen;
 }
 
+/* Optimized flicker overlay */
 .crt-flicker-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(0, 0, 0, 0.02);
   z-index: 4;
   pointer-events: none;
   animation: flicker 5s infinite;
+  /* Use will-change for hardware acceleration */
+  will-change: opacity;
 }
 
+/* Simplified flicker animation with fewer keyframes */
 @keyframes flicker {
   0% {
     opacity: 0.97;
   }
 
-  5% {
-    opacity: 0.9;
-  }
-
-  10% {
-    opacity: 0.97;
-  }
-
-  15% {
-    opacity: 0.92;
-  }
-
-  20% {
-    opacity: 0.97;
+  25% {
+    opacity: 0.93;
   }
 
   50% {
     opacity: 0.95;
   }
 
-  80% {
-    opacity: 0.97;
-  }
-
-  85% {
-    opacity: 0.9;
-  }
-
-  90% {
-    opacity: 0.97;
-  }
-
-  95% {
-    opacity: 0.93;
+  75% {
+    opacity: 0.92;
   }
 
   100% {
