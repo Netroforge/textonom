@@ -4,14 +4,15 @@ This directory contains the GitHub Pages website for the Textonom project.
 
 ## About
 
-Textonom is a text editor that lets you perform common text transformations locally. It helps make your sensitive data safe by processing everything on your local machine.
+Textonom is a text editor with over 40 transformations that lets you process text locally. It helps make your sensitive data safe by keeping everything on your machine.
 
 ## Features
 
 - Cyberpunk theme with optional Turbo Mode (CRT effects)
 - Responsive design that works on mobile and desktop
 - Interactive elements with hover effects
-- Showcases all the transformations available in Textonom
+- Showcases all the transformations available in Textonom v1.1.0
+- Optimized for SEO with proper meta tags
 
 ## Development
 
