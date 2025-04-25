@@ -212,9 +212,11 @@ export const applyTheme = (themeName: ThemeType): void => {
   try {
     const settingsString = localStorage.getItem('textonom-settings')
     if (settingsString) {
-      const settings = JSON.parse(settingsString)
-      // In the React version, crtEffect is equivalent to turboMode in Vue
-      const turboMode = settings.state?.settings?.crtEffect || true
+      const parsedData = JSON.parse(settingsString)
+      // The Zustand store structure is different in production vs development
+      // Handle both possible structures
+      const settings = parsedData.state?.settings || parsedData
+      const turboMode = settings.crtEffect !== undefined ? settings.crtEffect : true
 
       root.setAttribute('data-crt-effect', turboMode ? 'true' : 'false')
     }

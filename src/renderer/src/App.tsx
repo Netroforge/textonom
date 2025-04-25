@@ -163,7 +163,29 @@ const App: React.FC = (): React.ReactElement => {
   // Apply CRT effect and word wrap based on settings
   useEffect(() => {
     // Apply CRT effect
-    document.documentElement.setAttribute('data-crt-effect', settings.crtEffect ? 'true' : 'false')
+    const crtEffectValue = settings.crtEffect ? 'true' : 'false'
+    document.documentElement.setAttribute('data-crt-effect', crtEffectValue)
+
+    // Double-check that it was applied
+    setTimeout(() => {
+      // Force a direct glitch for testing
+      try {
+        const glitchElement = document.querySelector('.crt-glitch-overlay') as HTMLElement
+        if (glitchElement) {
+          glitchElement.style.display = 'block'
+          glitchElement.style.transform = 'translateX(20px)'
+
+          // Reset after 1 second
+          setTimeout(() => {
+            glitchElement.style.transform = 'translateX(0)'
+          }, 1000)
+        } else {
+          console.error('APP.TSX - DIRECT GLITCH CREATION FAILED - ELEMENT NOT FOUND')
+        }
+      } catch (directError) {
+        console.error('APP.TSX - ERROR IN DIRECT GLITCH CREATION:', directError)
+      }
+    }, 2000)
 
     // Apply word wrap class to the app container
     const appContainer = document.querySelector('.app-container')

@@ -13,9 +13,17 @@ if (!rootElement) {
 // Create the React root
 const root = ReactDOM.createRoot(rootElement)
 
+// Determine if we should use StrictMode
+// For consistent behavior between dev and prod, we're disabling StrictMode
+const useStrictMode = true // Set to true if you want StrictMode in development
+
 // Render the app
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+if (useStrictMode) {
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  )
+} else {
+  root.render(<App />)
+}

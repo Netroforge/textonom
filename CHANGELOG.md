@@ -30,7 +30,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changes
 
-- **Removed Features**: 
+- **Removed Features**:
   - Removed localization support to simplify the codebase
   - Removed saving of content tabs between application restarts
 

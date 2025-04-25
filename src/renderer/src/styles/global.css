@@ -232,7 +232,8 @@ textarea:focus {
 [data-crt-effect='true'] .crt-scan-distortion,
 [data-crt-effect='true'] .crt-text-corruption,
 [data-crt-effect='true'] .crt-pixel-displacement {
-  display: block;
+  display: block !important;
+  /* Force display with !important */
 }
 
 /* CRT Flicker Animation - Simplified for better performance */
