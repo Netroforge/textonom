@@ -236,8 +236,8 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
       return
     }
 
-    // Determine which type of glitch to create - sometimes create multiple glitches
-    const createMultiple = Math.random() < 0.3
+    // Determine which type of glitch to create - rarely create multiple glitches
+    const createMultiple = Math.random() < 0.15 // 15% chance
 
     if (createMultiple) {
       // Create 2 different glitch effects simultaneously for more dramatic effect
@@ -248,9 +248,9 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
         secondType = Math.floor(Math.random() * 3)
       }
 
-      // Different durations for each glitch
-      const duration1 = 150 + Math.random() * 350
-      const duration2 = 100 + Math.random() * 250
+      // Longer durations for each glitch
+      const duration1 = 200 + Math.random() * 400 // Increased from 150-500ms to 200-600ms
+      const duration2 = 150 + Math.random() * 300 // Increased from 100-350ms to 150-450ms
 
       // Create both glitches with slight delay between them
       switch (firstType) {
@@ -282,7 +282,7 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
     } else {
       // Create a single glitch effect (original behavior)
       const glitchType = Math.floor(Math.random() * 3)
-      const duration = 150 + Math.random() * 350 // Slightly longer duration
+      const duration = 200 + Math.random() * 450 // Increased from 150-500ms to 200-650ms
 
       switch (glitchType) {
         case 0:
@@ -306,22 +306,22 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
         clearInterval(glitchIntervalRef.current)
       }
 
-      // Set interval for glitch effects - more frequent
-      const interval = 1000
+      // Set interval for glitch effects - less frequent
+      const interval = 1000 // 1 second
 
       glitchIntervalRef.current = window.setInterval(() => {
         // Only create glitches if visible
         if (!visible) return
 
-        // Increased probability of glitches (was 0.5)
-        if (Math.random() < 0.6) {
+        // Reduced probability of glitches
+        if (Math.random() < 0.3) {
           // Use requestAnimationFrame for smoother animation
           if (animationFrameRef.current) {
             cancelAnimationFrame(animationFrameRef.current)
           }
 
           // Force a glitch immediately every few intervals to ensure they appear
-          const forceGlitch = Math.random() < 0.2
+          const forceGlitch = Math.random() < 0.1 // Reduced from 0.2 to 0.1 (10% chance)
           if (forceGlitch) {
             // Create a glitch immediately
             createGlitch()
@@ -350,10 +350,13 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
             }
           })
 
-        // Create an initial glitch immediately
+        // Create an initial glitch after a slightly longer delay
         setTimeout(() => {
-          createGlitch()
-        }, 500)
+          // Only create initial glitch with 50% probability
+          if (Math.random() < 0.5) {
+            createGlitch()
+          }
+        }, 1000) // 1000ms
 
         // Set up glitch interval
         setupGlitchIntervalFn(true)
@@ -399,31 +402,37 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
 
   // Set up a separate useEffect for initial glitch creation
   useEffect(() => {
-    // Create an initial glitch immediately to verify it works
+    // Create an initial glitch with reduced probability
     const initialGlitchTimeout = setTimeout(() => {
-      try {
-        createGlitch()
-      } catch (error) {
-        console.error('ERROR CREATING INITIAL GLITCH:', error)
+      // Only create initial glitch with 50% probability
+      if (Math.random() < 0.5) {
+        try {
+          createGlitch()
+        } catch (error) {
+          console.error('ERROR CREATING INITIAL GLITCH:', error)
+        }
       }
 
-      // Force a direct glitch creation without using the callback
-      try {
-        // Try to create a basic glitch directly
-        const glitchElement = document.querySelector('.crt-glitch-overlay') as HTMLElement
-        if (glitchElement) {
-          glitchElement.style.display = 'block'
-          glitchElement.style.transform = 'translateX(10px)'
+      // Force a direct glitch creation without using the callback, but with reduced probability
+      if (Math.random() < 0.3) {
+        // Only 30% chance to create direct glitch
+        try {
+          // Try to create a basic glitch directly
+          const glitchElement = document.querySelector('.crt-glitch-overlay') as HTMLElement
+          if (glitchElement) {
+            glitchElement.style.display = 'block'
+            glitchElement.style.transform = 'translateX(10px)'
 
-          // Reset after 500ms
-          setTimeout(() => {
-            glitchElement.style.transform = 'translateX(0)'
-          }, 500)
-        } else {
-          console.error('DIRECT GLITCH CREATION FAILED - ELEMENT NOT FOUND')
+            // Reset after 600ms
+            setTimeout(() => {
+              glitchElement.style.transform = 'translateX(0)'
+            }, 600)
+          } else {
+            console.error('DIRECT GLITCH CREATION FAILED - ELEMENT NOT FOUND')
+          }
+        } catch (directError) {
+          console.error('ERROR IN DIRECT GLITCH CREATION:', directError)
         }
-      } catch (directError) {
-        console.error('ERROR IN DIRECT GLITCH CREATION:', directError)
       }
     }, 1000)
 
@@ -448,10 +457,13 @@ const CRTEffect: React.FC<CRTEffectProps> = ({ children }): React.ReactElement =
         }
       })
 
-      // Create an initial glitch immediately
+      // Create an initial glitch with reduced probability
       setTimeout(() => {
-        createGlitch()
-      }, 1000)
+        // Only create initial glitch with 50% probability
+        if (Math.random() < 0.5) {
+          createGlitch()
+        }
+      }, 1500) // Increased from 1000ms to 1500ms
     }
   }, [createGlitch])
 
