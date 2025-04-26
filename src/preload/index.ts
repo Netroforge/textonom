@@ -1,5 +1,16 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+
+// Window state interface
+interface WindowState {
+  x?: number
+  y?: number
+  width: number
+  height: number
+  isMaximized: boolean
+  isFullScreen: boolean
+  displayId?: string // Identifier for the display/monitor
+}
 
 // Custom APIs for renderer
 const api = {
@@ -10,6 +21,13 @@ const api = {
   isWindowMaximized: (): Promise<boolean> => ipcRenderer.invoke('window-is-maximized'),
   setWindowTitle: (title: string): Promise<boolean> =>
     ipcRenderer.invoke('set-window-title', title),
+  onWindowStateUpdated: (callback: (windowState: WindowState) => void): (() => void) => {
+    const listener = (_: IpcRendererEvent, windowState: WindowState): void => callback(windowState)
+    ipcRenderer.on('window-state-updated', listener)
+    return () => {
+      ipcRenderer.removeListener('window-state-updated', listener)
+    }
+  },
 
   // File operations have been removed
 

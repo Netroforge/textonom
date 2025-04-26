@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import TitleBar from './components/TitleBar'
 import TopNavBar from './components/TopNavBar'
 import TabBar from './components/TabBar'
@@ -10,23 +10,34 @@ import CRTEffect from './components/CRTEffect'
 import UpdateNotification, { UpdateNotificationRef } from './components/UpdateNotification'
 import { applyTheme } from './styles/themes'
 import { getTransformationPageComponent } from './components/transformations'
-import { useSettingsStore } from './stores/settingsStore'
-import { useTabsStore } from './stores/tabsStore'
+import { useAppStore } from './stores/appStore'
 import './styles/global.css'
 
 const App: React.FC = (): React.ReactElement => {
-  // State
-  const [showSettings, setShowSettings] = useState(false)
-  const [showAbout, setShowAbout] = useState(false)
-  const [showUpdateNotification, setShowUpdateNotification] = useState(false)
-
   // Refs
   const updateNotificationRef = useRef<UpdateNotificationRef>(null)
 
-  // Get state from Zustand stores
-  const { settings } = useSettingsStore()
-  const { tabs, activeTabId, showHomePage, setShowHomePage, saveTabsToDisk, initializeFromDisk } =
-    useTabsStore()
+  // Get state from the consolidated app store
+  const {
+    // Settings
+    settings,
+
+    // Tabs
+    tabs,
+    activeTabId,
+    showHomePage,
+    setShowHomePage,
+
+    // UI state
+    ui,
+    setShowSettings,
+    setShowAbout,
+    setShowUpdateNotification,
+
+    // Persistence methods
+    saveAppStateToDisk,
+    initializeFromDisk
+  } = useAppStore()
 
   // Get the active transformation ID from the active tab
   const activeTransformationId = activeTabId
@@ -88,12 +99,12 @@ const App: React.FC = (): React.ReactElement => {
   // Save state before window unloads
   const saveStateBeforeUnload = useCallback((): void => {
     try {
-      // Save tabs state to disk
-      saveTabsToDisk()
+      // Save app state to disk
+      saveAppStateToDisk()
     } catch (error) {
-      console.error('Failed to save tabs before unload:', error)
+      console.error('Failed to save app state before unload:', error)
     }
-  }, [saveTabsToDisk])
+  }, [saveAppStateToDisk])
 
   // Get the active transformation component
   const TransformationComponent = activeTransformationId
@@ -119,9 +130,9 @@ const App: React.FC = (): React.ReactElement => {
       }
     }
 
-    // Initialize tabs from disk
+    // Initialize app state from disk
     initializeFromDisk().catch((error) => {
-      console.error('Error initializing tabs from disk:', error)
+      console.error('Error initializing app state from disk:', error)
     })
 
     // Check for updates on startup if enabled
@@ -137,9 +148,22 @@ const App: React.FC = (): React.ReactElement => {
     // Add event listener for beforeunload to save state
     window.addEventListener('beforeunload', saveStateBeforeUnload)
 
+    // Listen for window state updates from the main process
+    const unsubscribe = window.api.onWindowStateUpdated((windowState) => {
+      // Update the app store with the new window state
+      useAppStore.setState({ windowState })
+
+      // Save the app state to disk when window state changes
+      console.log('Window state updated, saving app state to disk:', windowState)
+      saveAppStateToDisk().catch((error) => {
+        console.error('Failed to save app state after window state changed:', error)
+      })
+    })
+
     // Clean up event listeners
     return (): void => {
       window.removeEventListener('beforeunload', saveStateBeforeUnload)
+      unsubscribe()
     }
   }, [
     settings.theme,
@@ -149,16 +173,17 @@ const App: React.FC = (): React.ReactElement => {
     settings.checkForUpdatesOnStartup,
     settings.wordWrap,
     initializeFromDisk,
-    saveStateBeforeUnload
+    saveStateBeforeUnload,
+    saveAppStateToDisk
   ])
 
-  // Watch for active tab changes to save the tab state
+  // Watch for active tab changes to save the app state
   useEffect(() => {
-    // Ensure tab state is saved to disk when active tab changes
-    saveTabsToDisk().catch((error) => {
-      console.error('Failed to save tabs after active tab changed:', error)
+    // Ensure app state is saved to disk when active tab changes
+    saveAppStateToDisk().catch((error) => {
+      console.error('Failed to save app state after active tab changed:', error)
     })
-  }, [activeTabId, saveTabsToDisk])
+  }, [activeTabId, saveAppStateToDisk])
 
   // Apply CRT effect and word wrap based on settings
   useEffect(() => {
@@ -223,13 +248,13 @@ const App: React.FC = (): React.ReactElement => {
 
         <StatusBar />
 
-        {showSettings && <Settings onClose={closeSettings} />}
-        {showAbout && <About onClose={closeAbout} />}
+        {ui.showSettings && <Settings onClose={closeSettings} />}
+        {ui.showAbout && <About onClose={closeAbout} />}
       </CRTEffect>
 
       <UpdateNotification
         ref={updateNotificationRef}
-        show={showUpdateNotification}
+        show={ui.showUpdateNotification}
         onClose={() => setShowUpdateNotification(false)}
       />
     </div>

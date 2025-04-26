@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { sqlFormat } from '../../transformations/formatting'
-import { useTabsContentStore } from '../../stores/tabsContentStore'
+import { useAppStore } from '../../stores/appStore'
 import TransformationAnimation from '../TransformationAnimation'
 import './TransformationPage.css'
 
@@ -9,7 +9,7 @@ interface SqlFormatPageProps {
 }
 
 const SqlFormatPage: React.FC<SqlFormatPageProps> = ({ tabId }): React.ReactElement => {
-  const { getTabContent, saveTabContent } = useTabsContentStore()
+  const { getTabContent, saveTabContent } = useAppStore()
 
   // Get initial state from tab content store
   const initialContent = getTabContent(tabId)

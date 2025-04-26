@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { jsonToCsv } from '../../transformations/conversion'
-import { useTabsContentStore } from '../../stores/tabsContentStore'
+import { useAppStore } from '../../stores/appStore'
 import TransformationAnimation from '../TransformationAnimation'
 import './TransformationPage.css'
 
@@ -9,7 +9,7 @@ interface JsonToCsvPageProps {
 }
 
 const JsonToCsvPage: React.FC<JsonToCsvPageProps> = ({ tabId }): React.ReactElement => {
-  const { getTabContent, saveTabContent } = useTabsContentStore()
+  const { getTabContent, saveTabContent } = useAppStore()
 
   // Get initial state from tab content store
   const initialContent = getTabContent(tabId)

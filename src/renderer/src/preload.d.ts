@@ -20,6 +20,17 @@ interface UpdateInstallResult {
   isDev?: boolean
 }
 
+// Window state interface
+interface WindowState {
+  x?: number
+  y?: number
+  width: number
+  height: number
+  isMaximized: boolean
+  isFullScreen: boolean
+  displayId?: string // Identifier for the display/monitor
+}
+
 interface API {
   // Window control
   minimizeWindow: () => Promise<boolean>
@@ -27,6 +38,7 @@ interface API {
   closeWindow: () => Promise<boolean>
   isWindowMaximized: () => Promise<boolean>
   setWindowTitle: (title: string) => Promise<boolean>
+  onWindowStateUpdated: (callback: (windowState: WindowState) => void) => () => void
 
   // File operations have been removed
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { useTabsStore } from '../stores/tabsStore'
-import { useTabsContentStore } from '../stores/tabsContentStore'
+import { useAppStore } from '../stores/appStore'
 import './TopNavBar.css'
 
 interface TopNavBarProps {
@@ -12,10 +11,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
   onMenuAction,
   onOpenSettings
 }): React.ReactElement => {
-  // Get state from Zustand stores
-  const { activeTabId } = useTabsStore()
-  // We're not using these stores directly in this component
-  useTabsContentStore()
+  // Get state from the app store
+  const { activeTabId } = useAppStore()
 
   // Menu state
   const [activeMenu, setActiveMenu] = useState('')

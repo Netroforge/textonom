@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
-import { useTabsStore } from '../stores/tabsStore'
-import { useTabsContentStore } from '../stores/tabsContentStore'
+import { useAppStore } from '../stores/appStore'
 import './TabBar.css'
 
 interface TabBarProps {
@@ -19,9 +18,7 @@ const TabBar: React.FC<TabBarProps> = ({ isHomeActive, onShowHome, onHideHome })
     closeAllTabs,
     closeTabsToRight,
     reorderTabs
-  } = useTabsStore()
-  // We don't use removeTabContent directly, but the store handles tab content removal when tabs are closed
-  useTabsContentStore()
+  } = useAppStore()
 
   // Refs for DOM elements
   const tabsContainerRef = useRef<HTMLDivElement>(null)

@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react'
-import { useTabsStore } from '../stores/tabsStore'
-import { useHomePageStore } from '../stores/homePageStore'
+import { useAppStore } from '../stores/appStore'
 import { getAllCategories, searchTransformations } from '../transformations/registry'
 import './HomePage.css'
 
@@ -9,8 +8,13 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }): React.ReactElement => {
-  const { tabs, addTab } = useTabsStore()
-  const { searchQuery, scrollPosition, setSearchQuery, setScrollPosition } = useHomePageStore()
+  const {
+    tabs,
+    addTab,
+    homePage: { searchQuery, scrollPosition },
+    setHomePageSearchQuery,
+    setHomePageScrollPosition
+  } = useAppStore()
 
   // Refs
   const homePageRef = useRef<HTMLDivElement>(null)
@@ -45,7 +49,7 @@ const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }): React.Re
 
   // Handle search input
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setSearchQuery(e.target.value)
+    setHomePageSearchQuery(e.target.value)
   }
 
   // Handle transformation click
@@ -64,7 +68,7 @@ const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }): React.Re
 
       // Save scroll position when scrolling
       const handleScroll = (): void => {
-        setScrollPosition(homePageElement.scrollTop)
+        setHomePageScrollPosition(homePageElement.scrollTop)
       }
 
       homePageElement.addEventListener('scroll', handleScroll)
@@ -73,7 +77,7 @@ const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }): React.Re
         homePageElement.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [scrollPosition, setScrollPosition])
+  }, [scrollPosition, setHomePageScrollPosition])
 
   return (
     <div ref={homePageRef} className="home-page">

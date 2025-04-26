@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { bcryptHash } from '../../transformations/hash'
-import { useSettingsStore } from '../../stores/settingsStore'
-import { useTabsContentStore } from '../../stores/tabsContentStore'
-// TransformationParamValues is not used directly in this component
-// import { TransformationParamValues } from '../../types/transformation'
+import { useAppStore } from '../../stores/appStore'
 import TransformationAnimation from '../TransformationAnimation'
 import './TransformationPage.css'
 
@@ -12,8 +9,7 @@ interface BcryptHashPageProps {
 }
 
 const BcryptHashPage: React.FC<BcryptHashPageProps> = ({ tabId }): React.ReactElement => {
-  const { settings } = useSettingsStore()
-  const { getTabContent, saveTabContent } = useTabsContentStore()
+  const { settings, getTabContent, saveTabContent } = useAppStore()
 
   // Get initial state from tab content store
   const initialContent = getTabContent(tabId)

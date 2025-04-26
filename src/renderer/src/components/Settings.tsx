@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSettingsStore } from '../stores/settingsStore'
+import { useAppStore } from '../stores/appStore'
 import './Settings.css'
 
 // Define theme types
@@ -32,7 +32,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     setCrtEffect,
     setBcryptRounds,
     setWordWrap
-  } = useSettingsStore()
+  } = useAppStore()
 
   // Define sections for navigation
   const sections: Section[] = [
