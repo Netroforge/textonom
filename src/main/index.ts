@@ -8,7 +8,6 @@ import electronLog from 'electron-log'
 
 // Path for app state files
 const appStateDir = path.join(app.getPath('userData'), 'state')
-const appStateFilePath = path.join(app.getPath('userData'), 'app-state.json') // Legacy path
 const windowStateFilePath = path.join(appStateDir, 'window.json') // New path for window state
 
 // Interface for window state
@@ -121,7 +120,6 @@ function getSavedWindowState(): WindowState {
 
     // First try to read from the new window state file
     if (fs.existsSync(windowStateFilePath)) {
-      log.info('Found window state file at:', windowStateFilePath)
       const data = fs.readFileSync(windowStateFilePath, 'utf8')
 
       // Check if the file has content
@@ -148,7 +146,6 @@ function getSavedWindowState(): WindowState {
 
               if (state && state.windowState) {
                 windowState = state.windowState
-                log.info('Found window state in nested JSON format')
               }
             } catch (nestedError) {
               log.error('Failed to parse nested state JSON:', nestedError)
@@ -158,7 +155,6 @@ function getSavedWindowState(): WindowState {
           // Try format 2: Direct windowState property
           if (!windowState && parsedData.windowState) {
             windowState = parsedData.windowState
-            log.info('Found direct windowState property')
           }
 
           // Try format 3: Direct window state object (check for required properties)
@@ -169,7 +165,6 @@ function getSavedWindowState(): WindowState {
             parsedData.isMaximized !== undefined
           ) {
             windowState = parsedData
-            log.info('Found direct window state object')
           }
 
           // If we still don't have a window state, log an error
@@ -190,56 +185,14 @@ function getSavedWindowState(): WindowState {
               )
             ) {
               // If not visible, remove position information to use default positioning
-              log.info('Window position not visible on any display, resetting position')
               delete windowState.x
               delete windowState.y
             }
 
-            log.info('Loaded window state from new file:', windowState)
             return windowState
           }
         } catch (parseError) {
           log.error('Failed to parse window state file:', parseError)
-        }
-      }
-    }
-
-    // Fall back to legacy app state file
-    if (fs.existsSync(appStateFilePath)) {
-      log.info('Falling back to legacy app state file')
-      const data = fs.readFileSync(appStateFilePath, 'utf8')
-
-      // Check if the file has content
-      if (data && data.trim()) {
-        try {
-          const state = JSON.parse(data) as AppState
-
-          // If window state exists in the saved state, return it
-          if (state.windowState) {
-            const windowState = state.windowState
-
-            // Check if the window position is on a visible display
-            if (
-              windowState.x !== undefined &&
-              windowState.y !== undefined &&
-              !isVisibleOnAnyDisplay(
-                windowState.x,
-                windowState.y,
-                windowState.width,
-                windowState.height
-              )
-            ) {
-              // If not visible, remove position information to use default positioning
-              log.info('Window position not visible on any display, resetting position')
-              delete windowState.x
-              delete windowState.y
-            }
-
-            log.info('Loaded window state from legacy file:', windowState)
-            return windowState
-          }
-        } catch (parseError) {
-          log.error('Failed to parse legacy app state file:', parseError)
         }
       }
     }
@@ -248,7 +201,6 @@ function getSavedWindowState(): WindowState {
   }
 
   // Return default window state if no saved state exists
-  log.info('Using default window state')
   return defaultWindowState
 }
 
@@ -270,7 +222,6 @@ function updateWindowState(): void {
 
     // Get the display where the window is currently located
     let displayId: string | undefined
-    let displayBounds: Rectangle | undefined
 
     try {
       const windowBounds = mainWindow.getBounds()
@@ -283,9 +234,6 @@ function updateWindowState(): void {
       // We use a combination of the display's bounds and id to create a unique identifier
       // This ensures that even if the display id changes between sessions, we can still identify the same physical display
       displayId = `${display.id}-${display.bounds.x}-${display.bounds.y}-${display.bounds.width}-${display.bounds.height}`
-      displayBounds = display.bounds
-
-      log.info('Window is on display:', displayId, 'with bounds:', displayBounds)
     } catch (displayError) {
       log.error('Failed to get display information:', displayError)
     }
@@ -304,7 +252,6 @@ function updateWindowState(): void {
     // The renderer will handle saving it to the app state
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('window-state-updated', windowState)
-      log.info('Window state updated and sent to renderer:', windowState)
     }
   } catch (error) {
     log.error('Failed to update window state:', error)
@@ -327,10 +274,7 @@ function createWindow(): void {
       })
 
       if (matchingDisplay) {
-        log.info('Found matching display:', windowState.displayId)
         targetDisplay = matchingDisplay
-      } else {
-        log.info('No matching display found for:', windowState.displayId)
       }
     } catch (displayError) {
       log.error('Error finding display:', displayError)
@@ -356,13 +300,11 @@ function createWindow(): void {
     if (!isVisible) {
       adjustedX = targetDisplay.bounds.x + (targetDisplay.bounds.width - windowState.width) / 2
       adjustedY = targetDisplay.bounds.y + (targetDisplay.bounds.height - windowState.height) / 2
-      log.info('Adjusted window position to be on target display:', { adjustedX, adjustedY })
     }
   } else {
     // If no position is saved, center on the target display
     adjustedX = targetDisplay.bounds.x + (targetDisplay.bounds.width - windowState.width) / 2
     adjustedY = targetDisplay.bounds.y + (targetDisplay.bounds.height - windowState.height) / 2
-    log.info('Centered window on target display:', { adjustedX, adjustedY })
   }
 
   // Create the browser window with saved dimensions
@@ -532,7 +474,6 @@ app.whenReady().then(() => {
     try {
       // Validate that the state is valid JSON and conforms to our AppState interface
       try {
-        log.info('Saving app state (legacy)')
         JSON.parse(state) as AppState
       } catch (parseError) {
         log.error('Invalid app state JSON:', parseError)
@@ -554,7 +495,6 @@ app.whenReady().then(() => {
         const stateData = fs.readFileSync(appStateFilePath, 'utf8')
         // Validate that the state is valid JSON
         try {
-          log.info('Loading app state (legacy)')
           JSON.parse(stateData) as AppState
         } catch (parseError) {
           log.error('Invalid app state JSON:', parseError)
@@ -575,7 +515,6 @@ app.whenReady().then(() => {
     try {
       // Validate that the state is valid JSON
       try {
-        log.info(`Saving state for key: ${key}`)
         JSON.parse(state)
       } catch (parseError) {
         log.error(`Invalid state JSON for key ${key}:`, parseError)
@@ -608,7 +547,6 @@ app.whenReady().then(() => {
   ipcMain.handle('load-state', (_, { key }: { key: string }) => {
     try {
       const filePath = path.join(appStateDir, `${key}.json`)
-      log.info(`Loading state for key: ${key}`)
 
       if (fs.existsSync(filePath)) {
         const stateData = fs.readFileSync(filePath, 'utf8')
@@ -680,7 +618,6 @@ app.whenReady().then(() => {
 app.on('before-quit', () => {
   // Only save window state if mainWindow exists and is not destroyed
   if (mainWindow && !mainWindow.isDestroyed()) {
-    log.info('Saving window state before quitting')
     updateWindowState()
   }
 })
@@ -689,7 +626,6 @@ app.on('before-quit', () => {
 app.on('will-quit', () => {
   // Only save window state if mainWindow exists and is not destroyed
   if (mainWindow && !mainWindow.isDestroyed()) {
-    log.info('Saving window state before will-quit')
     updateWindowState()
   }
 })
