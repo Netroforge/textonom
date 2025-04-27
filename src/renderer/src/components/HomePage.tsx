@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react'
-import { useAppStore } from '../stores/appStore'
+import { useTabsStore } from '../stores/tabsStore'
+import { useHomePageStore } from '../stores/homePageStore'
 import { getAllCategories, searchTransformations } from '../transformations/registry'
 import './HomePage.css'
 
@@ -8,13 +9,15 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onTransformationOpened }): React.ReactElement => {
+  // Get tabs state from tabs store
+  const { tabs, addTab } = useTabsStore()
+
+  // Get home page state from home page store
   const {
-    tabs,
-    addTab,
     homePage: { searchQuery, scrollPosition },
     setHomePageSearchQuery,
     setHomePageScrollPosition
-  } = useAppStore()
+  } = useHomePageStore()
 
   // Refs
   const homePageRef = useRef<HTMLDivElement>(null)

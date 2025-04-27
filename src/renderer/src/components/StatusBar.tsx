@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useAppStore } from '../stores/appStore'
+import { useTabsStore } from '../stores/tabsStore'
 import './StatusBar.css'
 
 const StatusBar: React.FC = () => {
   const [appVersion, setAppVersion] = useState<string>('')
 
-  // Get state from the app store
-  const { activeTabId, tabs, showHomePage } = useAppStore()
+  // Get state from the tabs store
+  const { activeTabId, tabs, showHomePage } = useTabsStore()
 
   // Get app version on mount
   useEffect(() => {

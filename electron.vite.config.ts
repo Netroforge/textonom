@@ -19,6 +19,9 @@ export default defineConfig({
     worker: {
       format: 'es'
     },
+    optimizeDeps: {
+      include: ['uuid']
+    },
     build: {
       rollupOptions: {
         output: {

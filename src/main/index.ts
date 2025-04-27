@@ -6,8 +6,10 @@ import fs from 'fs'
 import { autoUpdater, UpdateCheckResult } from 'electron-updater'
 import electronLog from 'electron-log'
 
-// Path for app state file
-const appStateFilePath = path.join(app.getPath('userData'), 'app-state.json')
+// Path for app state files
+const appStateDir = path.join(app.getPath('userData'), 'state')
+const appStateFilePath = path.join(app.getPath('userData'), 'app-state.json') // Legacy path
+const windowStateFilePath = path.join(appStateDir, 'window.json') // New path for window state
 
 // Interface for window state
 interface WindowState {
@@ -65,6 +67,18 @@ const defaultWindowState: WindowState = {
   isFullScreen: false
 }
 
+// Ensure state directory exists
+function ensureStateDirExists(): void {
+  try {
+    if (!fs.existsSync(appStateDir)) {
+      fs.mkdirSync(appStateDir, { recursive: true })
+      log.info('Created state directory:', appStateDir)
+    }
+  } catch (error) {
+    log.error('Failed to create state directory:', error)
+  }
+}
+
 // Check if the window is on a visible display
 function isVisibleOnAnyDisplay(x: number, y: number, width: number, height: number): boolean {
   const displays = screen.getAllDisplays()
@@ -102,7 +116,97 @@ function isVisibleOnDisplay(
 // 3. This maintains a clean separation of concerns between the main and renderer processes
 function getSavedWindowState(): WindowState {
   try {
+    // Ensure the state directory exists before trying to read from it
+    ensureStateDirExists()
+
+    // First try to read from the new window state file
+    if (fs.existsSync(windowStateFilePath)) {
+      log.info('Found window state file at:', windowStateFilePath)
+      const data = fs.readFileSync(windowStateFilePath, 'utf8')
+
+      // Check if the file has content
+      if (data && data.trim()) {
+        try {
+          // Try to parse the data as JSON
+          const parsedData = JSON.parse(data)
+
+          // The window state could be stored in different formats
+          // Format 1: { state: "JSON string" }
+          // Format 2: { windowState: {...} }
+          // Format 3: Direct window state object
+
+          let windowState: WindowState | null = null
+
+          // Try format 1: Nested JSON string in 'state' property
+          if (parsedData.state) {
+            try {
+              // The state could be a string or an object
+              const state =
+                typeof parsedData.state === 'string'
+                  ? JSON.parse(parsedData.state)
+                  : parsedData.state
+
+              if (state && state.windowState) {
+                windowState = state.windowState
+                log.info('Found window state in nested JSON format')
+              }
+            } catch (nestedError) {
+              log.error('Failed to parse nested state JSON:', nestedError)
+            }
+          }
+
+          // Try format 2: Direct windowState property
+          if (!windowState && parsedData.windowState) {
+            windowState = parsedData.windowState
+            log.info('Found direct windowState property')
+          }
+
+          // Try format 3: Direct window state object (check for required properties)
+          if (
+            !windowState &&
+            parsedData.width !== undefined &&
+            parsedData.height !== undefined &&
+            parsedData.isMaximized !== undefined
+          ) {
+            windowState = parsedData
+            log.info('Found direct window state object')
+          }
+
+          // If we still don't have a window state, log an error
+          if (!windowState) {
+            log.error('Could not extract window state from file')
+          }
+
+          if (windowState) {
+            // Check if the window position is on a visible display
+            if (
+              windowState.x !== undefined &&
+              windowState.y !== undefined &&
+              !isVisibleOnAnyDisplay(
+                windowState.x,
+                windowState.y,
+                windowState.width,
+                windowState.height
+              )
+            ) {
+              // If not visible, remove position information to use default positioning
+              log.info('Window position not visible on any display, resetting position')
+              delete windowState.x
+              delete windowState.y
+            }
+
+            log.info('Loaded window state from new file:', windowState)
+            return windowState
+          }
+        } catch (parseError) {
+          log.error('Failed to parse window state file:', parseError)
+        }
+      }
+    }
+
+    // Fall back to legacy app state file
     if (fs.existsSync(appStateFilePath)) {
+      log.info('Falling back to legacy app state file')
       const data = fs.readFileSync(appStateFilePath, 'utf8')
 
       // Check if the file has content
@@ -126,15 +230,16 @@ function getSavedWindowState(): WindowState {
               )
             ) {
               // If not visible, remove position information to use default positioning
+              log.info('Window position not visible on any display, resetting position')
               delete windowState.x
               delete windowState.y
             }
 
-            log.info('Loaded window state:', windowState)
+            log.info('Loaded window state from legacy file:', windowState)
             return windowState
           }
         } catch (parseError) {
-          log.error('Failed to parse app state file:', parseError)
+          log.error('Failed to parse legacy app state file:', parseError)
         }
       }
     }
@@ -165,6 +270,8 @@ function updateWindowState(): void {
 
     // Get the display where the window is currently located
     let displayId: string | undefined
+    let displayBounds: Rectangle | undefined
+
     try {
       const windowBounds = mainWindow.getBounds()
       const display = screen.getDisplayNearestPoint({
@@ -176,7 +283,9 @@ function updateWindowState(): void {
       // We use a combination of the display's bounds and id to create a unique identifier
       // This ensures that even if the display id changes between sessions, we can still identify the same physical display
       displayId = `${display.id}-${display.bounds.x}-${display.bounds.y}-${display.bounds.width}-${display.bounds.height}`
-      log.info('Window is on display:', displayId)
+      displayBounds = display.bounds
+
+      log.info('Window is on display:', displayId, 'with bounds:', displayBounds)
     } catch (displayError) {
       log.error('Failed to get display information:', displayError)
     }
@@ -195,7 +304,7 @@ function updateWindowState(): void {
     // The renderer will handle saving it to the app state
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('window-state-updated', windowState)
-      log.info('Window state updated and sent to renderer')
+      log.info('Window state updated and sent to renderer:', windowState)
     }
   } catch (error) {
     log.error('Failed to update window state:', error)
@@ -415,12 +524,15 @@ app.whenReady().then(() => {
     return false
   })
 
-  // App state persistence handlers
+  // Ensure state directory exists
+  ensureStateDirExists()
+
+  // Legacy app state persistence handlers (for backward compatibility)
   ipcMain.handle('save-app-state', (_, { state }: { state: string }) => {
     try {
       // Validate that the state is valid JSON and conforms to our AppState interface
       try {
-        log.info('Saving app state')
+        log.info('Saving app state (legacy)')
         JSON.parse(state) as AppState
       } catch (parseError) {
         log.error('Invalid app state JSON:', parseError)
@@ -442,7 +554,7 @@ app.whenReady().then(() => {
         const stateData = fs.readFileSync(appStateFilePath, 'utf8')
         // Validate that the state is valid JSON
         try {
-          log.info('Loading app state')
+          log.info('Loading app state (legacy)')
           JSON.parse(stateData) as AppState
         } catch (parseError) {
           log.error('Invalid app state JSON:', parseError)
@@ -454,6 +566,67 @@ app.whenReady().then(() => {
     } catch (error) {
       const err = error as Error
       log.error('Error loading app state:', error)
+      return { success: false, error: err.message }
+    }
+  })
+
+  // New app state persistence handlers (for separate files)
+  ipcMain.handle('save-state', (_, { key, state }: { key: string; state: string }) => {
+    try {
+      // Validate that the state is valid JSON
+      try {
+        log.info(`Saving state for key: ${key}`)
+        JSON.parse(state)
+      } catch (parseError) {
+        log.error(`Invalid state JSON for key ${key}:`, parseError)
+        return { success: false, error: 'Invalid state format' }
+      }
+
+      // Ensure the state directory exists
+      ensureStateDirExists()
+
+      // Create the file path for this state key
+      const filePath = path.join(appStateDir, `${key}.json`)
+
+      // Write the state to the file
+      fs.writeFileSync(filePath, state, 'utf8')
+
+      // Verify the file was written correctly
+      if (!fs.existsSync(filePath)) {
+        log.error(`Failed to create state file for key ${key}`)
+        return { success: false, error: 'Failed to create state file' }
+      }
+
+      return { success: true }
+    } catch (error) {
+      const err = error as Error
+      log.error(`Error saving state for key ${key}:`, error)
+      return { success: false, error: err.message }
+    }
+  })
+
+  ipcMain.handle('load-state', (_, { key }: { key: string }) => {
+    try {
+      const filePath = path.join(appStateDir, `${key}.json`)
+      log.info(`Loading state for key: ${key}`)
+
+      if (fs.existsSync(filePath)) {
+        const stateData = fs.readFileSync(filePath, 'utf8')
+
+        // Validate that the state is valid JSON
+        try {
+          JSON.parse(stateData)
+        } catch (parseError) {
+          log.error(`Invalid state JSON for key ${key}:`, parseError)
+          return { success: false, error: 'Invalid state format' }
+        }
+        return { success: true, state: stateData }
+      }
+      log.warn(`State file for key ${key} does not exist`)
+      return { success: false, error: `State file for key ${key} does not exist` }
+    } catch (error) {
+      const err = error as Error
+      log.error(`Error loading state for key ${key}:`, error)
       return { success: false, error: err.message }
     }
   })
@@ -507,6 +680,16 @@ app.whenReady().then(() => {
 app.on('before-quit', () => {
   // Only save window state if mainWindow exists and is not destroyed
   if (mainWindow && !mainWindow.isDestroyed()) {
+    log.info('Saving window state before quitting')
+    updateWindowState()
+  }
+})
+
+// Save window state when app is about to quit (additional safeguard)
+app.on('will-quit', () => {
+  // Only save window state if mainWindow exists and is not destroyed
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    log.info('Saving window state before will-quit')
     updateWindowState()
   }
 })

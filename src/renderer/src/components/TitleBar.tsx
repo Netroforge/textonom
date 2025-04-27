@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useAppStore } from '../stores/appStore'
+import { useTabsStore } from '../stores/tabsStore'
 import './TitleBar.css'
 
 const TitleBar: React.FC = (): React.ReactElement => {
   const [isMaximized, setIsMaximized] = useState(false)
 
-  // Get state from the app store
-  const { activeTabId, tabs, showHomePage } = useAppStore()
+  // Get state from the tabs store
+  const { activeTabId, tabs, showHomePage } = useTabsStore()
 
   // Compute the app title based on the active tab
   const appTitle = useCallback((): string => {

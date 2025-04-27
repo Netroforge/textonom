@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { xmlFormat } from '../../transformations/formatting'
-import { useAppStore } from '../../stores/appStore'
+import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
 import './TransformationPage.css'
 
@@ -9,7 +9,7 @@ interface XmlFormatPageProps {
 }
 
 const XmlFormatPage: React.FC<XmlFormatPageProps> = ({ tabId }): React.ReactElement => {
-  const { getTabContent, saveTabContent } = useAppStore()
+  const { getTabContent, saveTabContent } = useTabsContentStore()
 
   // Get initial state from tab content store
   const initialContent = getTabContent(tabId)

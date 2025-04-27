@@ -42,12 +42,19 @@ interface API {
 
   // File operations have been removed
 
-  // App state persistence
+  // Legacy app state persistence (for backward compatibility)
   saveAppState: (data: { state: string }) => Promise<{
     success: boolean
     error?: string
   }>
   loadAppState: () => Promise<AppStateResult>
+
+  // New app state persistence (for separate files)
+  saveState: (data: { key: string; state: string }) => Promise<{
+    success: boolean
+    error?: string
+  }>
+  loadState: (data: { key: string }) => Promise<AppStateResult>
 
   // Auto-update operations
   checkForUpdates: () => Promise<UpdateCheckResult>

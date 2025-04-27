@@ -31,7 +31,7 @@ const api = {
 
   // File operations have been removed
 
-  // App state persistence
+  // Legacy app state persistence (for backward compatibility)
   saveAppState: (data: {
     state: string
   }): Promise<{
@@ -44,6 +44,23 @@ const api = {
     state?: string
     error?: string
   }> => ipcRenderer.invoke('load-app-state'),
+
+  // New app state persistence (for separate files)
+  saveState: (data: {
+    key: string
+    state: string
+  }): Promise<{
+    success: boolean
+    error?: string
+  }> => ipcRenderer.invoke('save-state', data),
+
+  loadState: (data: {
+    key: string
+  }): Promise<{
+    success: boolean
+    state?: string
+    error?: string
+  }> => ipcRenderer.invoke('load-state', data),
 
   // Auto-update operations
   checkForUpdates: (): Promise<{

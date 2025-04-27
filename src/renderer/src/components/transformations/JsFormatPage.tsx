@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { jsFormat } from '../../transformations/formatting'
-import { useAppStore } from '../../stores/appStore'
+import { useTabsContentStore } from '../../stores/tabsContentStore'
 import TransformationAnimation from '../TransformationAnimation'
 import './TransformationPage.css'
 
@@ -9,7 +9,7 @@ interface JsFormatPageProps {
 }
 
 const JsFormatPage: React.FC<JsFormatPageProps> = ({ tabId }): React.ReactElement => {
-  const { getTabContent, saveTabContent } = useAppStore()
+  const { getTabContent, saveTabContent } = useTabsContentStore()
 
   // Get initial state from tab content store
   const initialContent = getTabContent(tabId)

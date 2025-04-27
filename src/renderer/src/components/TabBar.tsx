@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
-import { useAppStore } from '../stores/appStore'
+import { useTabsStore } from '../stores/tabsStore'
 import './TabBar.css'
 
 interface TabBarProps {
@@ -18,7 +18,7 @@ const TabBar: React.FC<TabBarProps> = ({ isHomeActive, onShowHome, onHideHome })
     closeAllTabs,
     closeTabsToRight,
     reorderTabs
-  } = useAppStore()
+  } = useTabsStore()
 
   // Refs for DOM elements
   const tabsContainerRef = useRef<HTMLDivElement>(null)

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useAppStore } from '../../stores/appStore'
+import { useTabsContentStore } from '../../stores/tabsContentStore'
 import { TransformationParamValues } from '../../types/transformation'
 import TransformationAnimation from '../TransformationAnimation'
 import './TransformationPage.css'
@@ -26,7 +26,7 @@ const BaseTransformationPage: React.FC<BaseTransformationPageProps> = ({
   transformFunction,
   parameters
 }): React.ReactElement => {
-  const { getTabContent, saveTabContent } = useAppStore()
+  const { getTabContent, saveTabContent } = useTabsContentStore()
 
   // Get initial state from tab content store
   const initialContent = getTabContent(tabId)

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAppStore } from '../stores/appStore'
+import { useSettingsStore } from '../stores/settingsStore'
 import './Settings.css'
 
 // Define theme types
@@ -31,8 +31,9 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     setCheckForUpdatesOnStartup,
     setCrtEffect,
     setBcryptRounds,
-    setWordWrap
-  } = useAppStore()
+    setWordWrap,
+    resetSettings
+  } = useSettingsStore()
 
   // Define sections for navigation
   const sections: Section[] = [
@@ -123,31 +124,20 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   // Reset settings to defaults
   const handleReset = (): void => {
     if (window.confirm('Are you sure you want to reset all settings to their default values?')) {
-      const defaultSettings = {
-        theme: 'cyberpunk', // Match Vue default
+      // Reset settings using the store method
+      resetSettings()
+
+      // Update local state to match the reset settings
+      setLocalSettings({
+        theme: 'cyberpunk',
         fontSize: 14,
-        fontFamily: "Consolas, 'Courier New', monospace", // Match Vue default
+        fontFamily: "Consolas, 'Courier New', monospace",
         autoUpdate: true,
         checkForUpdatesOnStartup: true,
-
-        turboMode: true, // Match Vue default
+        turboMode: true,
         bcryptRounds: 12,
         wordWrap: true
-      }
-
-      // Update local state
-      setLocalSettings(defaultSettings)
-
-      // Apply all settings
-      setTheme(defaultSettings.theme as ThemeType)
-      setFontSize(defaultSettings.fontSize)
-      setFontFamily(defaultSettings.fontFamily)
-      setAutoUpdate(defaultSettings.autoUpdate)
-      setCheckForUpdatesOnStartup(defaultSettings.checkForUpdatesOnStartup)
-
-      setCrtEffect(defaultSettings.turboMode)
-      setBcryptRounds(defaultSettings.bcryptRounds)
-      setWordWrap(defaultSettings.wordWrap)
+      })
     }
   }
 

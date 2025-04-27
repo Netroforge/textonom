@@ -10,34 +10,28 @@ import CRTEffect from './components/CRTEffect'
 import UpdateNotification, { UpdateNotificationRef } from './components/UpdateNotification'
 import { applyTheme } from './styles/themes'
 import { getTransformationPageComponent } from './components/transformations'
-import { useAppStore } from './stores/appStore'
+import { useSettingsStore } from './stores/settingsStore'
+import { useTabsStore } from './stores/tabsStore'
+import { useUIStore } from './stores/uiStore'
+import { useWindowStore } from './stores/windowStore'
 import './styles/global.css'
 
 const App: React.FC = (): React.ReactElement => {
   // Refs
   const updateNotificationRef = useRef<UpdateNotificationRef>(null)
 
-  // Get state from the consolidated app store
-  const {
-    // Settings
-    settings,
+  // Get state from the separate stores
+  // Settings store
+  const { settings } = useSettingsStore()
 
-    // Tabs
-    tabs,
-    activeTabId,
-    showHomePage,
-    setShowHomePage,
+  // Tabs store
+  const { tabs, activeTabId, showHomePage, setShowHomePage } = useTabsStore()
 
-    // UI state
-    ui,
-    setShowSettings,
-    setShowAbout,
-    setShowUpdateNotification,
+  // UI store
+  const { ui, setShowSettings, setShowAbout, setShowUpdateNotification } = useUIStore()
 
-    // Persistence methods
-    saveAppStateToDisk,
-    initializeFromDisk
-  } = useAppStore()
+  // Window store
+  const { setWindowState } = useWindowStore()
 
   // Get the active transformation ID from the active tab
   const activeTransformationId = activeTabId
@@ -99,12 +93,14 @@ const App: React.FC = (): React.ReactElement => {
   // Save state before window unloads
   const saveStateBeforeUnload = useCallback((): void => {
     try {
-      // Save app state to disk
-      saveAppStateToDisk()
+      // State is automatically saved by the persist middleware
+      // We don't need to do anything special here as:
+      // 1. The main process already saves window state on 'before-quit' and 'will-quit' events
+      // 2. The Zustand persist middleware automatically saves state when it changes
     } catch (error) {
-      console.error('Failed to save app state before unload:', error)
+      console.error('Failed to save state before unload:', error)
     }
-  }, [saveAppStateToDisk])
+  }, [])
 
   // Get the active transformation component
   const TransformationComponent = activeTransformationId
@@ -130,10 +126,7 @@ const App: React.FC = (): React.ReactElement => {
       }
     }
 
-    // Initialize app state from disk
-    initializeFromDisk().catch((error) => {
-      console.error('Error initializing app state from disk:', error)
-    })
+    // Tabs state is automatically loaded by the persist middleware
 
     // Check for updates on startup if enabled
     if (settings.autoUpdate && settings.checkForUpdatesOnStartup) {
@@ -150,14 +143,10 @@ const App: React.FC = (): React.ReactElement => {
 
     // Listen for window state updates from the main process
     const unsubscribe = window.api.onWindowStateUpdated((windowState) => {
-      // Update the app store with the new window state
-      useAppStore.setState({ windowState })
+      // Update the window store with the new window state
+      setWindowState(windowState)
 
-      // Save the app state to disk when window state changes
-      console.log('Window state updated, saving app state to disk:', windowState)
-      saveAppStateToDisk().catch((error) => {
-        console.error('Failed to save app state after window state changed:', error)
-      })
+      // No need to save window state here as it's handled by the persist middleware
     })
 
     // Clean up event listeners
@@ -172,18 +161,12 @@ const App: React.FC = (): React.ReactElement => {
     settings.autoUpdate,
     settings.checkForUpdatesOnStartup,
     settings.wordWrap,
-    initializeFromDisk,
     saveStateBeforeUnload,
-    saveAppStateToDisk
+    setWindowState
   ])
 
-  // Watch for active tab changes to save the app state
-  useEffect(() => {
-    // Ensure app state is saved to disk when active tab changes
-    saveAppStateToDisk().catch((error) => {
-      console.error('Failed to save app state after active tab changed:', error)
-    })
-  }, [activeTabId, saveAppStateToDisk])
+  // No need to watch for active tab changes to save the tabs state
+  // The persist middleware automatically saves state when it changes
 
   // Apply CRT effect and word wrap based on settings
   useEffect(() => {
