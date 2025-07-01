@@ -55,7 +55,7 @@
     "@types/react-dom": "^19.1.2",
     "@types/xml-formatter": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
-    "@typescript-eslint/parser": "^8.31.0",
+    "@typescript-eslint/parser": "^8.35.1",
     "@vitejs/plugin-react": "^4.4.1",
     "electron": "^35.2.1",
     "electron-builder": "^26.0.12",
