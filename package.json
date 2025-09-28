@@ -50,7 +50,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/js-yaml": "^4.0.9",
     "@types/marked": "^6.0.0",
-    "@types/node": "^22.15.2",
+    "@types/node": "^24.5.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.7",
     "@types/xml-formatter": "^2.1.1",
