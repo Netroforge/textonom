@@ -40,7 +40,7 @@
     "react-dom": "^19.1.1",
     "sql-formatter": "^15.6.9",
     "xml-formatter": "^3.6.5",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^2.1.0",
