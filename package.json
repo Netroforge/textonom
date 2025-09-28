@@ -52,7 +52,7 @@
     "@types/marked": "^6.0.0",
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.7",
+    "@types/react-dom": "^19.1.9",
     "@types/xml-formatter": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^8.44.1",
     "@typescript-eslint/parser": "^8.38.0",
