@@ -228,3 +228,5 @@ https://snapcraft.io/docs/releasing-your-app
 ```shell
 snapcraft login
 ```
+
+# Misc
