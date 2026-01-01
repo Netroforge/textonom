@@ -18,7 +18,7 @@ jobs:
         run: |
           ls
       - name: Upload Hashes to release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Asset Hashes
           path: hashes.txt
