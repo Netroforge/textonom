@@ -19,30 +19,26 @@ updates:
           - 'electron'
           - 'electron-*'
           - '@electron-toolkit/*'
-      react:
+      vue:
         patterns:
-          - 'react'
-          - 'react-*'
-          - '@types/react'
-          - '@types/react-*'
-          - '@vitejs/plugin-react'
-          - 'eslint-plugin-react'
-          - 'eslint-plugin-react-*'
+          - 'vue'
+          - '@vue/*'
+          - 'pinia'
+          - '@vitejs/plugin-vue'
+          - 'vue-tsc'
+          - 'vue-eslint-parser'
+          - 'eslint-plugin-vue'
       eslint:
         patterns:
           - 'eslint'
           - 'eslint-*'
           - '@typescript-eslint/*'
         exclude-patterns:
-          - 'eslint-plugin-react'
-          - 'eslint-plugin-react-*'
+          - 'eslint-plugin-vue'
       typescript:
         patterns:
           - 'typescript'
           - '@types/*'
-        exclude-patterns:
-          - '@types/react'
-          - '@types/react-*'
       prettier:
         patterns:
           - 'prettier'
