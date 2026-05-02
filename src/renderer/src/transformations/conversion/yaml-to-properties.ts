@@ -1,5 +1,5 @@
 import * as yaml from 'js-yaml'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Converts YAML to Java properties file format

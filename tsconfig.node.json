@@ -13,6 +13,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
+    "ignoreDeprecations": "6.0",
     "skipLibCheck": true,
     "types": [
       "electron-vite/node"

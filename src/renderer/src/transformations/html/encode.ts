@@ -1,4 +1,4 @@
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Encodes HTML special characters

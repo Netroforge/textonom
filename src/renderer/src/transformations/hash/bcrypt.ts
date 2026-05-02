@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcryptjs'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Generates bcrypt hash of the input text

@@ -2,7 +2,7 @@ import * as prettier from 'prettier/standalone'
 import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginHtml from 'prettier/plugins/html'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 import { TransformationParamValues } from '../../types/transformation'
 
 /**

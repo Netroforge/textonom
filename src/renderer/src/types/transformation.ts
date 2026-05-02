@@ -1,7 +1,8 @@
 // Transformation types and interfaces
 
 // Transformation function type
-export type TransformationFunction = (text: string, ...args: unknown[]) => Promise<string>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TransformationFunction = (text: string, ...args: any[]) => Promise<string>
 
 // Parameter definition for transformations
 export interface TransformationParameter {

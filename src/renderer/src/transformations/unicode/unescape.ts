@@ -1,4 +1,4 @@
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Unescapes \uXXXX format to actual Unicode characters

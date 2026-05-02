@@ -3,8 +3,8 @@
   "include": [
     "src/renderer/src/env.d.ts",
     "src/renderer/src/**/*",
-    "src/renderer/src/**/*.tsx",
     "src/renderer/src/**/*.ts",
+    "src/renderer/src/**/*.vue",
     "src/preload/*.d.ts"
   ],
   "compilerOptions": {
@@ -16,12 +16,12 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
+    "ignoreDeprecations": "6.0",
     "skipLibCheck": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
+    "types": ["vite/client"],
     "paths": {
-      "@renderer/*": [
-        "src/renderer/src/*"
-      ]
+      "@renderer/*": ["src/renderer/src/*"]
     }
   }
 }

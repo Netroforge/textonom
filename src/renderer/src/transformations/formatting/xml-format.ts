@@ -1,5 +1,5 @@
 import xmlFormatter from 'xml-formatter'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 import { TransformationParamValues } from '../../types/transformation'
 
 /**

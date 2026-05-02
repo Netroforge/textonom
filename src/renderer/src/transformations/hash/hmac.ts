@@ -1,5 +1,5 @@
 import * as CryptoJS from 'crypto-js'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 import { TransformationParamValues } from '../../types/transformation'
 
 /**

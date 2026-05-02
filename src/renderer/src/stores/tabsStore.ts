@@ -1,180 +1,147 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { defineStore } from 'pinia'
+import { ref, watch } from 'vue'
 import { getTransformationById } from '../transformations/registry'
-import { createElectronStorage } from './electronStorage'
+import { setupPersistence } from './electronStorage'
 
-// Tabs slice
 export interface Tab {
   id: string
   title: string
   transformationId: string
 }
 
-// Tabs store interface
-interface TabsState {
-  // Tabs state
-  tabs: Tab[]
-  activeTabId: string | null
-  showHomePage: boolean
-
-  // Tabs actions
-  setShowHomePage: (show: boolean) => void
-  addTab: (transformationId: string) => string
-  closeTab: (tabId: string) => void
-  closeOtherTabs: (tabId: string) => void
-  closeAllTabs: () => void
-  closeTabsToRight: (tabId: string) => void
-  setActiveTab: (tabId: string) => void
-  reorderTabs: (fromIndex: number, toIndex: number) => void
+interface PersistedTabsState {
+  tabs?: Tab[]
+  activeTabId?: string | null
+  showHomePage?: boolean
 }
 
-// Create the tabs store
-export const useTabsStore = create<TabsState>()(
-  persist(
-    (set, get) => ({
-      // Tabs state
-      tabs: [],
-      activeTabId: null,
-      showHomePage: true,
+export const useTabsStore = defineStore('tabs', () => {
+  const tabs = ref<Tab[]>([])
+  const activeTabId = ref<string | null>(null)
+  const showHomePage = ref(true)
 
-      // Tabs actions
-      setShowHomePage: (show) => set({ showHomePage: show }),
+  const setShowHomePage = (show: boolean): void => {
+    showHomePage.value = show
+  }
 
-      addTab: (transformationId) => {
-        // Get transformation metadata
-        const transformation = getTransformationById(transformationId)
-        if (!transformation) {
-          console.error('TabsStore: Transformation not found:', transformationId)
-          return ''
-        }
+  const addTab = (transformationId: string): string => {
+    const transformation = getTransformationById(transformationId)
+    if (!transformation) {
+      console.error('TabsStore: Transformation not found:', transformationId)
+      return ''
+    }
 
-        const { tabs } = get()
+    const existingTab = tabs.value.find((tab) => tab.transformationId === transformationId)
+    if (existingTab) {
+      activeTabId.value = existingTab.id
+      showHomePage.value = false
+      return existingTab.id
+    }
 
-        // Check if a tab for this transformation already exists
-        const existingTab = tabs.find((tab) => tab.transformationId === transformationId)
+    const newTabId = crypto.randomUUID().toString()
+    const newTab: Tab = {
+      id: newTabId,
+      title: transformation.name,
+      transformationId
+    }
 
-        if (existingTab) {
-          // If it exists, just activate it
-          set({ activeTabId: existingTab.id, showHomePage: false })
-          return existingTab.id
-        }
+    tabs.value = [...tabs.value, newTab]
+    activeTabId.value = newTabId
+    showHomePage.value = false
 
-        // Create a new tab with a unique ID
-        const newTabId = crypto.randomUUID().toString()
-        const newTab: Tab = {
-          id: newTabId,
-          title: transformation.name,
-          transformationId
-        }
+    return newTabId
+  }
 
-        // Add the new tab and set it as active
-        set((state) => ({
-          tabs: [...state.tabs, newTab],
-          activeTabId: newTabId,
-          showHomePage: false
-        }))
+  const closeTab = (tabId: string): void => {
+    const tabIndex = tabs.value.findIndex((tab) => tab.id === tabId)
+    if (tabIndex === -1) return
 
-        return newTabId
-      },
+    const newTabs = tabs.value.filter((tab) => tab.id !== tabId)
 
-      closeTab: (tabId) => {
-        const { tabs, activeTabId } = get()
-
-        // Find the tab to close
-        const tabToClose = tabs.find((tab) => tab.id === tabId)
-        if (!tabToClose) return
-
-        // Find the index of the tab to close
-        const tabIndex = tabs.indexOf(tabToClose)
-
-        // Create a new tabs array without the closed tab
-        const newTabs = tabs.filter((tab) => tab.id !== tabId)
-
-        // Determine the new active tab
-        let newActiveTabId = activeTabId
-
-        // If we're closing the active tab, we need to activate another tab
-        if (activeTabId === tabId) {
-          // If there are no more tabs, show the home page
-          if (newTabs.length === 0) {
-            newActiveTabId = null
-            set({ tabs: newTabs, activeTabId: newActiveTabId, showHomePage: true })
-            return
-          }
-
-          // Otherwise, activate the tab to the left (or right if it's the first tab)
-          const newIndex = Math.min(tabIndex, newTabs.length - 1)
-          newActiveTabId = newTabs[newIndex].id
-        }
-
-        // Update the state
-        set({ tabs: newTabs, activeTabId: newActiveTabId })
-      },
-
-      closeOtherTabs: (tabId) => {
-        const { tabs } = get()
-        const tabToKeep = tabs.find((tab) => tab.id === tabId)
-
-        if (!tabToKeep) return
-
-        // Keep only the specified tab
-        set({
-          tabs: [tabToKeep],
-          activeTabId: tabId,
-          showHomePage: false
-        })
-      },
-
-      closeAllTabs: () => {
-        set({
-          tabs: [],
-          activeTabId: null,
-          showHomePage: true
-        })
-      },
-
-      closeTabsToRight: (tabId) => {
-        const { tabs, activeTabId } = get()
-
-        // Find the index of the reference tab
-        const tabIndex = tabs.findIndex((tab) => tab.id === tabId)
-        if (tabIndex === -1) return
-
-        // Keep only tabs up to and including the reference tab
-        const newTabs = tabs.slice(0, tabIndex + 1)
-
-        // If the active tab was closed, activate the reference tab
-        const wasActiveTabClosed = !newTabs.some((tab) => tab.id === activeTabId)
-        const newActiveTabId = wasActiveTabClosed ? tabId : activeTabId
-
-        // Update the state
-        set({ tabs: newTabs, activeTabId: newActiveTabId })
-      },
-
-      setActiveTab: (tabId) => {
-        set({ activeTabId: tabId, showHomePage: false })
-      },
-
-      reorderTabs: (fromIndex, toIndex) => {
-        if (fromIndex === toIndex) return
-
-        set((state) => {
-          const newTabs = [...state.tabs]
-          const [movedTab] = newTabs.splice(fromIndex, 1)
-          newTabs.splice(toIndex, 0, movedTab)
-          return { tabs: newTabs }
-        })
+    if (activeTabId.value === tabId) {
+      if (newTabs.length === 0) {
+        tabs.value = newTabs
+        activeTabId.value = null
+        showHomePage.value = true
+        return
       }
-    }),
+      const newIndex = Math.min(tabIndex, newTabs.length - 1)
+      tabs.value = newTabs
+      activeTabId.value = newTabs[newIndex].id
+      return
+    }
+
+    tabs.value = newTabs
+  }
+
+  const closeOtherTabs = (tabId: string): void => {
+    const tabToKeep = tabs.value.find((tab) => tab.id === tabId)
+    if (!tabToKeep) return
+    tabs.value = [tabToKeep]
+    activeTabId.value = tabId
+    showHomePage.value = false
+  }
+
+  const closeAllTabs = (): void => {
+    tabs.value = []
+    activeTabId.value = null
+    showHomePage.value = true
+  }
+
+  const closeTabsToRight = (tabId: string): void => {
+    const tabIndex = tabs.value.findIndex((tab) => tab.id === tabId)
+    if (tabIndex === -1) return
+    const newTabs = tabs.value.slice(0, tabIndex + 1)
+    const wasActiveTabClosed = !newTabs.some((tab) => tab.id === activeTabId.value)
+    tabs.value = newTabs
+    if (wasActiveTabClosed) {
+      activeTabId.value = tabId
+    }
+  }
+
+  const setActiveTab = (tabId: string): void => {
+    activeTabId.value = tabId
+    showHomePage.value = false
+  }
+
+  const reorderTabs = (fromIndex: number, toIndex: number): void => {
+    if (fromIndex === toIndex) return
+    const newTabs = [...tabs.value]
+    const [movedTab] = newTabs.splice(fromIndex, 1)
+    newTabs.splice(toIndex, 0, movedTab)
+    tabs.value = newTabs
+  }
+
+  setupPersistence(
     {
-      name: 'textonom-tabs',
-      storage: createJSONStorage(() => createElectronStorage('tabs')),
-      partialize: (state) => ({
-        tabs: state.tabs,
-        activeTabId: state.activeTabId,
-        showHomePage: state.showHomePage
+      key: 'tabs',
+      serialize: () => ({
+        tabs: tabs.value,
+        activeTabId: activeTabId.value,
+        showHomePage: showHomePage.value
       }),
-      version: 1
+      hydrate: (data: PersistedTabsState) => {
+        if (Array.isArray(data?.tabs)) tabs.value = data.tabs
+        if (typeof data?.activeTabId !== 'undefined') activeTabId.value = data.activeTabId
+        if (typeof data?.showHomePage === 'boolean') showHomePage.value = data.showHomePage
+      }
+    },
+    (notify) => {
+      watch([tabs, activeTabId, showHomePage], () => notify(), { deep: true })
     }
   )
-)
+
+  return {
+    tabs,
+    activeTabId,
+    showHomePage,
+    setShowHomePage,
+    addTab,
+    closeTab,
+    closeOtherTabs,
+    closeAllTabs,
+    closeTabsToRight,
+    setActiveTab,
+    reorderTabs
+  }
+})

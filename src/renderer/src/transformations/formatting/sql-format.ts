@@ -1,5 +1,5 @@
 import { format } from 'sql-formatter'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 import { TransformationParamValues } from '../../types/transformation'
 
 // Define SQL dialect type based on sql-formatter's supported dialects

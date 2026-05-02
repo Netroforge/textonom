@@ -1,8 +1,7 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import { createElectronStorage } from './electronStorage'
+import { defineStore } from 'pinia'
+import { ref, watch } from 'vue'
+import { setupPersistence } from './electronStorage'
 
-// Window state slice
 export interface WindowState {
   x?: number
   y?: number
@@ -10,10 +9,9 @@ export interface WindowState {
   height: number
   isMaximized: boolean
   isFullScreen: boolean
-  displayId?: string // Identifier for the display/monitor
+  displayId?: string
 }
 
-// Default window state
 const defaultWindowState: WindowState = {
   width: 1200,
   height: 800,
@@ -21,29 +19,33 @@ const defaultWindowState: WindowState = {
   isFullScreen: false
 }
 
-// Window store interface
-interface WindowStoreState {
-  // Window state
-  windowState: WindowState | null
+export const useWindowStore = defineStore('window', () => {
+  const windowState = ref<WindowState | null>({ ...defaultWindowState })
 
-  // Window actions
-  setWindowState: (windowState: WindowState) => void
-}
+  const setWindowState = (state: WindowState): void => {
+    windowState.value = state
+  }
 
-// Create the window store
-export const useWindowStore = create<WindowStoreState>()(
-  persist(
-    (set) => ({
-      // Window state
-      windowState: defaultWindowState,
-
-      // Window actions
-      setWindowState: (windowState) => set({ windowState })
-    }),
+  setupPersistence(
     {
-      name: 'textonom-window-state',
-      storage: createJSONStorage(() => createElectronStorage('window')),
-      version: 1
+      key: 'window',
+      serialize: (): WindowState | null => windowState.value,
+      hydrate: (data: { windowState?: WindowState } | WindowState | null) => {
+        if (!data) return
+        const incoming =
+          (data as { windowState?: WindowState }).windowState ?? (data as WindowState)
+        if (incoming) {
+          windowState.value = incoming
+        }
+      }
+    },
+    (notify) => {
+      watch(windowState, () => notify(), { deep: true })
     }
   )
-)
+
+  return {
+    windowState,
+    setWindowState
+  }
+})

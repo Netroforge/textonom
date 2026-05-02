@@ -1,5 +1,5 @@
 import { Base64 } from 'js-base64'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Decodes Base64 text to plain text

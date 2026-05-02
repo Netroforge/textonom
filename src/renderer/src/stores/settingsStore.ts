@@ -1,8 +1,7 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import { createElectronStorage } from './electronStorage'
+import { defineStore } from 'pinia'
+import { reactive, watch } from 'vue'
+import { setupPersistence } from './electronStorage'
 
-// Settings slice
 export interface Settings {
   theme: string
   fontSize: number
@@ -14,7 +13,6 @@ export interface Settings {
   wordWrap: boolean
 }
 
-// Default settings
 const defaultSettings: Settings = {
   theme: 'cyberpunk',
   fontSize: 14,
@@ -26,49 +24,63 @@ const defaultSettings: Settings = {
   wordWrap: true
 }
 
-// Settings store interface
-interface SettingsState {
-  // Settings state
-  settings: Settings
+export const useSettingsStore = defineStore('settings', () => {
+  const settings = reactive<Settings>({ ...defaultSettings })
 
-  // Settings actions
-  setTheme: (theme: string) => void
-  setFontSize: (size: number) => void
-  setFontFamily: (family: string) => void
-  setAutoUpdate: (enabled: boolean) => void
-  setCheckForUpdatesOnStartup: (enabled: boolean) => void
-  setCrtEffect: (enabled: boolean) => void
-  setBcryptRounds: (rounds: number) => void
-  setWordWrap: (enabled: boolean) => void
-  resetSettings: () => void
-}
+  const setTheme = (theme: string): void => {
+    settings.theme = theme
+  }
+  const setFontSize = (fontSize: number): void => {
+    settings.fontSize = fontSize
+  }
+  const setFontFamily = (fontFamily: string): void => {
+    settings.fontFamily = fontFamily
+  }
+  const setAutoUpdate = (autoUpdate: boolean): void => {
+    settings.autoUpdate = autoUpdate
+  }
+  const setCheckForUpdatesOnStartup = (checkForUpdatesOnStartup: boolean): void => {
+    settings.checkForUpdatesOnStartup = checkForUpdatesOnStartup
+  }
+  const setCrtEffect = (crtEffect: boolean): void => {
+    settings.crtEffect = crtEffect
+  }
+  const setBcryptRounds = (bcryptRounds: number): void => {
+    settings.bcryptRounds = bcryptRounds
+  }
+  const setWordWrap = (wordWrap: boolean): void => {
+    settings.wordWrap = wordWrap
+  }
+  const resetSettings = (): void => {
+    Object.assign(settings, defaultSettings)
+  }
 
-// Create the settings store
-export const useSettingsStore = create<SettingsState>()(
-  persist(
-    (set) => ({
-      // Settings state
-      settings: defaultSettings,
-
-      // Settings actions
-      setTheme: (theme) => set((state) => ({ settings: { ...state.settings, theme } })),
-      setFontSize: (fontSize) => set((state) => ({ settings: { ...state.settings, fontSize } })),
-      setFontFamily: (fontFamily) =>
-        set((state) => ({ settings: { ...state.settings, fontFamily } })),
-      setAutoUpdate: (autoUpdate) =>
-        set((state) => ({ settings: { ...state.settings, autoUpdate } })),
-      setCheckForUpdatesOnStartup: (checkForUpdatesOnStartup) =>
-        set((state) => ({ settings: { ...state.settings, checkForUpdatesOnStartup } })),
-      setCrtEffect: (crtEffect) => set((state) => ({ settings: { ...state.settings, crtEffect } })),
-      setBcryptRounds: (bcryptRounds) =>
-        set((state) => ({ settings: { ...state.settings, bcryptRounds } })),
-      setWordWrap: (wordWrap) => set((state) => ({ settings: { ...state.settings, wordWrap } })),
-      resetSettings: () => set({ settings: defaultSettings })
-    }),
+  setupPersistence(
     {
-      name: 'textonom-settings',
-      storage: createJSONStorage(() => createElectronStorage('settings')),
-      version: 1
+      key: 'settings',
+      serialize: () => ({ settings: { ...settings } }),
+      hydrate: (data: { settings?: Partial<Settings> } | Partial<Settings>) => {
+        const incoming = (data as { settings?: Partial<Settings> }).settings ?? data
+        if (incoming && typeof incoming === 'object') {
+          Object.assign(settings, defaultSettings, incoming)
+        }
+      }
+    },
+    (notify) => {
+      watch(settings, () => notify(), { deep: true })
     }
   )
-)
+
+  return {
+    settings,
+    setTheme,
+    setFontSize,
+    setFontFamily,
+    setAutoUpdate,
+    setCheckForUpdatesOnStartup,
+    setCrtEffect,
+    setBcryptRounds,
+    setWordWrap,
+    resetSettings
+  }
+})
