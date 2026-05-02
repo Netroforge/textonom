@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, Rectangle, screen } from 'electron'
+import { app, BrowserWindow, ipcMain, shell, screen } from 'electron'
 import path, { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/e55776f0-9aff-49ea-ba3c-7c796e1a98cf.png?asset'
@@ -135,10 +135,10 @@ function getSavedWindowState(): WindowState {
 
           let windowState: WindowState | null = null
 
-          // Try format 1: Nested JSON string in 'state' property
+          // Try format 1: 'state' property wrapping the window state
+          // Either { state: { windowState: {...} } } or { state: { ...WindowState } }
           if (parsedData.state) {
             try {
-              // The state could be a string or an object
               const state =
                 typeof parsedData.state === 'string'
                   ? JSON.parse(parsedData.state)
@@ -146,6 +146,13 @@ function getSavedWindowState(): WindowState {
 
               if (state && state.windowState) {
                 windowState = state.windowState
+              } else if (
+                state &&
+                state.width !== undefined &&
+                state.height !== undefined &&
+                state.isMaximized !== undefined
+              ) {
+                windowState = state
               }
             } catch (nestedError) {
               log.error('Failed to parse nested state JSON:', nestedError)
@@ -214,20 +221,17 @@ function updateWindowState(): void {
     const isMaximized = mainWindow.isMaximized()
     const isFullScreen = mainWindow.isFullScreen()
 
-    // Only get bounds if not maximized or fullscreen
-    let bounds: Rectangle | undefined
-    if (!isMaximized && !isFullScreen) {
-      bounds = mainWindow.getBounds()
-    }
+    // Use getNormalBounds() so we always capture the un-maximized / un-fullscreen
+    // size and position to restore to next time, even when quitting while maximized.
+    const bounds = mainWindow.getNormalBounds()
 
     // Get the display where the window is currently located
     let displayId: string | undefined
 
     try {
-      const windowBounds = mainWindow.getBounds()
       const display = screen.getDisplayNearestPoint({
-        x: windowBounds.x + windowBounds.width / 2,
-        y: windowBounds.y + windowBounds.height / 2
+        x: bounds.x + bounds.width / 2,
+        y: bounds.y + bounds.height / 2
       })
 
       // Use a unique identifier for the display
@@ -240,9 +244,10 @@ function updateWindowState(): void {
 
     // Create a window state object
     const windowState: WindowState = {
-      ...(bounds ? { x: bounds.x, y: bounds.y } : {}),
-      width: bounds ? bounds.width : defaultWindowState.width,
-      height: bounds ? bounds.height : defaultWindowState.height,
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
       isMaximized,
       isFullScreen,
       displayId
