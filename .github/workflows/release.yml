@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+
+jobs:
+  build-and-publish-linux:
+    if: github.event_name != 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Installing Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 23
+
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y rpm
+          sudo snap install snapcraft --classic
+          npm install
+          npm run publish:linux
+
+  build-and-publish-mac:
+    if: github.event_name != 'release'
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Installing Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 23
+
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npm install
+          npm run publish:mac
+
+  build-and-publish-win:
+    if: github.event_name != 'release'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Installing Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 23
+
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npm install
+          npm run publish:win
+
+  hashes:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Hashes
+        uses: MCJack123/ghaction-generate-release-hashes@v4
+        with:
+          hash-type: sha256
+          file-name: hashes.txt
+
+      - name: Upload Hashes to release
+        uses: actions/upload-artifact@v7
+        with:
+          name: Asset Hashes
+          path: hashes.txt
+          overwrite: true
