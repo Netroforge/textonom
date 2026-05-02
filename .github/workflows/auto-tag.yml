@@ -11,13 +11,12 @@ on:
 jobs:
   tag:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 2
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Read version from package.json
         id: version
@@ -38,7 +37,7 @@ jobs:
       - name: Create and push tag
         if: steps.check.outputs.exists == 'false'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           tag="v${{ steps.version.outputs.version }}"
           git config user.name "github-actions[bot]"
