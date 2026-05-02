@@ -38,7 +38,7 @@
     "marked": "^16.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.2.5",
-    "sql-formatter": "^15.6.9",
+    "sql-formatter": "^15.7.3",
     "xml-formatter": "^3.6.7",
     "zustand": "^5.0.8"
   },
