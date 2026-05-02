@@ -4,8 +4,56 @@ updates:
     directory: '/'
     schedule:
       interval: 'monthly'
+    groups:
+      github-actions:
+        patterns:
+          - '*'
   - package-ecosystem: 'npm'
     directories:
       - '**/*'
     schedule:
       interval: 'monthly'
+    groups:
+      electron:
+        patterns:
+          - 'electron'
+          - 'electron-*'
+          - '@electron-toolkit/*'
+      react:
+        patterns:
+          - 'react'
+          - 'react-*'
+          - '@types/react'
+          - '@types/react-*'
+          - '@vitejs/plugin-react'
+          - 'eslint-plugin-react'
+          - 'eslint-plugin-react-*'
+      eslint:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@typescript-eslint/*'
+        exclude-patterns:
+          - 'eslint-plugin-react'
+          - 'eslint-plugin-react-*'
+      typescript:
+        patterns:
+          - 'typescript'
+          - '@types/*'
+        exclude-patterns:
+          - '@types/react'
+          - '@types/react-*'
+      prettier:
+        patterns:
+          - 'prettier'
+          - '@prettier/*'
+      vite:
+        patterns:
+          - 'vite'
+          - 'electron-vite'
+      minor-and-patch:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
