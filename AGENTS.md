@@ -3,7 +3,7 @@
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
 ## Project overview
-Textonom is an Electron + React + TypeScript desktop app for local text transformations. It uses `electron-vite` for main/preload/renderer builds and `electron-builder` for packaging and release publishing.
+Textonom is an Electron + Vue 3 + TypeScript desktop app for local text transformations. It uses `electron-vite` for main/preload/renderer builds and `electron-builder` for packaging and release publishing.
 
 ## Canonical development commands
 Run from repository root.
@@ -45,15 +45,14 @@ There is currently no test runner configured in `package.json` (no `test` script
   - Creates frameless `BrowserWindow`, restores window position/size, manages update events, and owns IPC handlers.
   - Persists state files under Electron `userData/state`.
 - `src/preload/index.ts`: secure bridge (`window.api`) exposing IPC-backed methods to renderer (window controls, state persistence, updater).
-- `src/renderer/src/*`: React app UI and transformation engine.
+- `src/renderer/src/*`: Vue 3 app UI and transformation engine.
 
 ### State and persistence model
-- Active app state is in Zustand stores under `src/renderer/src/stores/`.
-  - Persisted stores: `settingsStore`, `tabsStore`, `homePageStore`, `windowStore`.
+- Active app state is in Pinia stores under `src/renderer/src/stores/`.
+  - Persisted stores: `settingsStore`, `tabsStore`, `homePageStore`, `windowStore`, `uiStore`.
   - Non-persisted in-memory store: `tabsContentStore` (tab input/output/params while app runs).
-- Legacy context/service code still exists under `src/renderer/src/contexts/*` and `src/renderer/src/services/{stateService,persistenceService}.ts`, but current app flow uses Zustand stores.
 - Persistence path:
-  - Store `persist` middleware -> `createElectronStorage` (`stores/electronStorage.ts`) -> `window.api.saveState/loadState` -> IPC handlers in `src/main/index.ts` -> JSON files in `userData/state/{key}.json`.
+  - Each store wires `setupPersistence` (`stores/electronStorage.ts`) -> `window.api.saveState/loadState` -> IPC handlers in `src/main/index.ts` -> JSON files in `userData/state/{key}.json`.
 - Main process separately tracks window geometry/fullscreen/maximized state and pushes updates back to renderer via `window-state-updated`.
 
 ### Transformation system wiring

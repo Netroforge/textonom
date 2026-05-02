@@ -7,18 +7,24 @@
   -webkit-app-region: drag;
   /* Make the title bar draggable */
   user-select: none;
+  position: relative;
 }
 
 .title-bar-drag-area {
   flex: 1;
   display: flex;
   align-items: center;
-  padding-left: 10px;
+  justify-content: center;
+  padding-left: 138px;
+  /* mirror the 3 × 46px window controls so the title stays optically centered */
 }
 
 .app-title {
   font-size: 12px;
   color: var(--titleBarText);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .window-controls {

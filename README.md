@@ -40,10 +40,11 @@ Helps make your sensitive data safe.
 
 Textonom is built with:
 
-- **Electron**: Cross-platform desktop application framework (v35.x.x)
-- **React**: UI library for building the user interface (v19.x.x)
-- **TypeScript**: Type-safe JavaScript (v5.x.x)
-- **Zustand**: State management
+- **Electron**: Cross-platform desktop application framework
+- **Vue 3**: UI framework (Composition API + `<script setup>`)
+- **TypeScript**: Type-safe JavaScript
+- **Pinia**: State management
+- **electron-vite**: Dev/build tooling
 - **electron-updater**: Auto-update functionality
 - **CSS**: Styling with custom themes (light, dark and cyberpunk)
 

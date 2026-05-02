@@ -133,10 +133,10 @@ onMounted(() => {
     <div class="update-notification-content">
       <div class="update-notification-header">
         <h3>Checking for updates</h3>
-        <button class="close-button" @click="closeNotification">✕</button>
+        <button class="close-button" aria-label="Close" @click="closeNotification">✕</button>
       </div>
       <div class="update-notification-body">
-        <p>In progress...</p>
+        <p>Looking for a newer version…</p>
       </div>
     </div>
   </div>
@@ -147,11 +147,11 @@ onMounted(() => {
   >
     <div class="update-notification-content">
       <div class="update-notification-header">
-        <h3>Updates check completed</h3>
-        <button class="close-button" @click="closeNotification">✕</button>
+        <h3>Update check complete</h3>
+        <button class="close-button" aria-label="Close" @click="closeNotification">✕</button>
       </div>
       <div class="update-notification-body">
-        <p>You are using latest version</p>
+        <p>You're already on the latest version.</p>
       </div>
     </div>
   </div>
@@ -159,8 +159,8 @@ onMounted(() => {
   <div v-else-if="showUpdateAvailableNotification" class="update-notification">
     <div class="update-notification-content">
       <div class="update-notification-header">
-        <h3>Update Available</h3>
-        <button class="close-button" @click="closeNotification">✕</button>
+        <h3>Update available</h3>
+        <button class="close-button" aria-label="Close" @click="closeNotification">✕</button>
       </div>
       <div class="update-notification-body">
         <p>A new version ({{ updateInfo?.version }}) is available.</p>
@@ -176,7 +176,7 @@ onMounted(() => {
             {{ downloadButtonText }}
           </button>
           <button v-else @click="installUpdate">Install</button>
-          <button @click="closeNotification">Remind Me Later</button>
+          <button @click="closeNotification">Close</button>
         </div>
       </div>
     </div>
@@ -185,8 +185,8 @@ onMounted(() => {
   <div v-else-if="show" class="update-notification">
     <div class="update-notification-content">
       <div class="update-notification-header">
-        <h2>Software Update</h2>
-        <button class="close-button" @click="onClose">✕</button>
+        <h2>Update</h2>
+        <button class="close-button" aria-label="Close" @click="onClose">✕</button>
       </div>
 
       <div class="update-notification-body">

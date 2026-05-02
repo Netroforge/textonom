@@ -37,7 +37,10 @@ interface PersistOptions<T> {
   hydrate: (data: T) => void
 }
 
-export const setupPersistence = <T>(opts: PersistOptions<T>, watcher: (cb: () => void) => void): void => {
+export const setupPersistence = <T>(
+  opts: PersistOptions<T>,
+  watcher: (cb: () => void) => void
+): void => {
   const storage = createElectronStorage(opts.key)
 
   void (async (): Promise<void> => {

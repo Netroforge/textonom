@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTabsStore } from '../stores/tabsStore'
 import './TabBar.css'
@@ -33,26 +33,16 @@ const contextMenuTabId = ref<string | null>(null)
 
 const showScrollButtons = ref<boolean>(false)
 
+const tabDensity = computed<'compact' | 'medium' | 'wide'>(() => {
+  if (tabs.value.length > 10) return 'compact'
+  if (tabs.value.length > 5) return 'medium'
+  return 'wide'
+})
+
 const checkScrollButtonsVisibility = (): void => {
   const container = tabsContainerRef.value
   if (!container) return
-
-  const shouldShowButtons = container.scrollWidth > container.clientWidth
-
-  const tabElements = container.querySelectorAll('.tab')
-  if (tabElements.length > 0) {
-    let maxWidth = '200px'
-    if (tabs.value.length > 10) {
-      maxWidth = '120px'
-    } else if (tabs.value.length > 5) {
-      maxWidth = '160px'
-    }
-    tabElements.forEach((tab) => {
-      ;(tab as HTMLElement).style.maxWidth = maxWidth
-    })
-  }
-
-  showScrollButtons.value = shouldShowButtons
+  showScrollButtons.value = container.scrollWidth > container.clientWidth
 }
 
 watch(
@@ -233,7 +223,7 @@ const handleDragEnd = (): void => {
 </script>
 
 <template>
-  <div class="tabs-container">
+  <div class="tabs-container" :data-density="tabDensity">
     <button
       class="home-button"
       :class="{ active: isHomeActive }"
@@ -278,7 +268,14 @@ const handleDragEnd = (): void => {
           @dragend="handleDragEnd"
         >
           <div class="tab-title">{{ tab.title }}</div>
-          <div class="tab-close" @click="handleCloseTab($event, tab.id)">✕</div>
+          <button
+            class="tab-close"
+            type="button"
+            :aria-label="`Close ${tab.title}`"
+            @click="handleCloseTab($event, tab.id)"
+          >
+            ✕
+          </button>
         </div>
       </div>
 
@@ -311,9 +308,7 @@ const handleDragEnd = (): void => {
         Close
       </div>
       <div class="context-menu-item" @click="handleCloseOtherTabs">Close Others</div>
-      <div class="context-menu-item" @click="handleCloseTabsToRight">
-        Close Tabs to the Right
-      </div>
+      <div class="context-menu-item" @click="handleCloseTabsToRight">Close Tabs to the Right</div>
       <div class="context-menu-item" @click="handleCloseAllTabs">Close All</div>
     </div>
   </div>

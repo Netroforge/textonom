@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { getAllCategories } from '../transformations/registry'
 import './About.css'
 
 defineProps<{
@@ -7,6 +8,17 @@ defineProps<{
 }>()
 
 const appVersion = ref<string>('Unknown')
+
+const featureCategories = getAllCategories().map((c) => ({
+  name: c.name,
+  count: c.transformations.length
+}))
+
+const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
+  if ((e.target as HTMLElement).className === 'about-overlay') {
+    onClose()
+  }
+}
 
 onMounted(async () => {
   try {
@@ -18,11 +30,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="about-overlay">
+  <div class="about-overlay" @click="(e) => onOverlayClick(e, onClose)">
     <div class="about-container">
       <div class="about-header">
         <h2>About Textonom</h2>
-        <button class="close-button" @click="onClose">✕</button>
+        <button class="close-button" aria-label="Close" @click="onClose">✕</button>
       </div>
 
       <div class="about-content">
@@ -38,16 +50,9 @@ onMounted(async () => {
         <div class="about-section">
           <h3>Features</h3>
           <ul>
-            <li>Base64 encoding/decoding</li>
-            <li>JSON formatting and minification</li>
-            <li>URL encoding/decoding</li>
-            <li>Case conversion</li>
-            <li>XML formatting</li>
-            <li>Line operations</li>
-            <li>HTML encoding/decoding</li>
-            <li>Cryptographic hashing</li>
-            <li>Format conversion (JSON/YAML)</li>
-            <li>And more...</li>
+            <li v-for="cat in featureCategories" :key="cat.name">
+              {{ cat.name }} ({{ cat.count }})
+            </li>
           </ul>
         </div>
 
@@ -72,10 +77,7 @@ onMounted(async () => {
 
         <div class="about-section">
           <h3>License</h3>
-          <p>
-            This software is open source and available under the Apache License Version 2.0
-            license.
-          </p>
+          <p>This software is open source and available under the MIT License.</p>
         </div>
       </div>
     </div>
