@@ -10,12 +10,15 @@ const props = defineProps<{
 const showManualCheckUpdateStartedNotification = ref(false)
 const showManualCheckUpdateCompletedUpdateNotAvailableNotification = ref(false)
 const showUpdateAvailableNotification = ref(false)
+const showUpdateErrorNotification = ref(false)
 
 const updateInfo = ref<{ version: string; releaseNotes?: string } | null>(null)
 const isDownloading = ref(false)
 const isInstalling = ref(false)
 const downloadButtonText = ref('Download Update')
 const updateReadyToInstall = ref(false)
+const lastError = ref<string>('')
+const copyErrorButtonText = ref('Copy details')
 
 defineExpose({
   manualCheckUpdateStarted: (): void => {
@@ -35,7 +38,32 @@ const closeNotification = (): void => {
   showManualCheckUpdateStartedNotification.value = false
   showManualCheckUpdateCompletedUpdateNotAvailableNotification.value = false
   showUpdateAvailableNotification.value = false
+  showUpdateErrorNotification.value = false
   props.onClose()
+}
+
+const showError = (error: string): void => {
+  lastError.value = error
+  showManualCheckUpdateStartedNotification.value = false
+  showUpdateErrorNotification.value = true
+}
+
+const retryDownload = async (): Promise<void> => {
+  showUpdateErrorNotification.value = false
+  showUpdateAvailableNotification.value = true
+  await downloadUpdate()
+}
+
+const copyErrorDetails = async (): Promise<void> => {
+  try {
+    await navigator.clipboard.writeText(lastError.value)
+    copyErrorButtonText.value = 'Copied'
+    setTimeout(() => {
+      copyErrorButtonText.value = 'Copy details'
+    }, 1500)
+  } catch (error) {
+    console.error('Failed to copy error details:', error)
+  }
 }
 
 const checkForUpdates = async (): Promise<void> => {
@@ -55,8 +83,7 @@ const checkForUpdates = async (): Promise<void> => {
     }
   } catch (error) {
     console.error('Failed to check for updates:', error)
-    showManualCheckUpdateStartedNotification.value = false
-    alert('Failed to check for updates. Please try again later.')
+    showError(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -69,7 +96,7 @@ const downloadUpdate = async (): Promise<void> => {
     console.error('Failed to download update:', error)
     isDownloading.value = false
     downloadButtonText.value = 'Download Update'
-    alert('Failed to download update. Please try again later.')
+    showError(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -80,16 +107,16 @@ const installUpdate = async (): Promise<void> => {
     if (result.success) {
       // The app will restart automatically
     } else if (result.isDev) {
-      alert('Update installation skipped in development mode.')
+      showError('Update installation skipped in development mode.')
       isInstalling.value = false
     } else {
-      alert('Failed to install update. Please try again later.')
+      showError('Failed to install update. Please try again later.')
       isInstalling.value = false
     }
   } catch (error) {
     console.error('Failed to install update:', error)
     isInstalling.value = false
-    alert('Failed to install update. Please try again later.')
+    showError(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -119,11 +146,11 @@ onMounted(() => {
   ipc.on('update-error', ((..._args: unknown[]) => {
     const error = _args[1] as string
     if (isDownloading.value) {
-      alert(`Update error: ${error}`)
       isDownloading.value = false
       updateReadyToInstall.value = false
       downloadButtonText.value = 'Download Update'
     }
+    showError(error)
   }) as (...args: unknown[]) => void)
 })
 </script>
@@ -176,6 +203,24 @@ onMounted(() => {
             {{ downloadButtonText }}
           </button>
           <button v-else @click="installUpdate">Install</button>
+          <button @click="closeNotification">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-else-if="showUpdateErrorNotification" class="update-notification">
+    <div class="update-notification-content">
+      <div class="update-notification-header">
+        <h3>Update error</h3>
+        <button class="close-button" aria-label="Close" @click="closeNotification">✕</button>
+      </div>
+      <div class="update-notification-body">
+        <p>The update could not be completed.</p>
+        <pre class="update-error-details">{{ lastError }}</pre>
+        <div class="update-notification-actions">
+          <button v-if="updateInfo" @click="retryDownload">Retry</button>
+          <button @click="copyErrorDetails">{{ copyErrorButtonText }}</button>
           <button @click="closeNotification">Close</button>
         </div>
       </div>

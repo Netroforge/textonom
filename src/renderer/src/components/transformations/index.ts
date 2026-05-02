@@ -21,7 +21,7 @@ import Sha1HashPage from './Sha1HashPage.vue'
 import Sha256HashPage from './Sha256HashPage.vue'
 import Sha512HashPage from './Sha512HashPage.vue'
 import HmacHashPage from './HmacHashPage.vue'
-import Argon2HashPage from './Argon2HashPage.vue'
+import Pbkdf2HashPage from './Pbkdf2HashPage.vue'
 import UnicodeEscapePage from './UnicodeEscapePage.vue'
 import UnicodeUnescapePage from './UnicodeUnescapePage.vue'
 import JsonToYamlPage from './JsonToYamlPage.vue'
@@ -44,6 +44,13 @@ import HtmlFormatPage from './HtmlFormatPage.vue'
 import CssFormatPage from './CssFormatPage.vue'
 import JsFormatPage from './JsFormatPage.vue'
 import XmlFormatPage from './XmlFormatPage.vue'
+import SlugifyPage from './SlugifyPage.vue'
+import UuidGeneratePage from './UuidGeneratePage.vue'
+import LoremGeneratePage from './LoremGeneratePage.vue'
+import TimestampToIsoPage from './TimestampToIsoPage.vue'
+import IsoToTimestampPage from './IsoToTimestampPage.vue'
+import ColorConvertPage from './ColorConvertPage.vue'
+import BaseConvertPage from './BaseConvertPage.vue'
 
 const transformationPageMap: Record<string, Component> = {
   base64Encode: Base64EncodePage,
@@ -68,7 +75,7 @@ const transformationPageMap: Record<string, Component> = {
   sha256Hash: Sha256HashPage,
   sha512Hash: Sha512HashPage,
   hmacHash: HmacHashPage,
-  argon2Hash: Argon2HashPage,
+  pbkdf2Hash: Pbkdf2HashPage,
   unicodeEscape: UnicodeEscapePage,
   unicodeUnescape: UnicodeUnescapePage,
   jsonToYaml: JsonToYamlPage,
@@ -90,7 +97,14 @@ const transformationPageMap: Record<string, Component> = {
   htmlFormat: HtmlFormatPage,
   cssFormat: CssFormatPage,
   jsFormat: JsFormatPage,
-  xmlFormat: XmlFormatPage
+  xmlFormat: XmlFormatPage,
+  slugify: SlugifyPage,
+  uuidGenerate: UuidGeneratePage,
+  loremGenerate: LoremGeneratePage,
+  timestampToIso: TimestampToIsoPage,
+  isoToTimestamp: IsoToTimestampPage,
+  colorConvert: ColorConvertPage,
+  baseConvert: BaseConvertPage
 }
 
 export const getTransformationPageComponent = (id: string): Component => {

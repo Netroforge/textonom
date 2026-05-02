@@ -13,7 +13,7 @@ import {
 import { xmlCompact, xmlPrettify } from './xml'
 import { deduplicateLines, removeEmptyLines, reverseLines, sortLines } from './lines'
 import { htmlDecode, htmlEncode } from './html'
-import { argon2Hash, bcryptHash, hmacHash, md5Hash, sha1Hash, sha256Hash, sha512Hash } from './hash'
+import { bcryptHash, hmacHash, md5Hash, pbkdf2Hash, sha1Hash, sha256Hash, sha512Hash } from './hash'
 import { unicodeEscape, unicodeUnescape } from './unicode'
 import {
   csvToJson,
@@ -26,89 +26,71 @@ import {
 import { jwtDecode } from './jwt'
 import { hexEncode, hexDecode } from './hex'
 import { markdownToHtml } from './markdown'
-import { removeDuplicateWords } from './text'
+import { removeDuplicateWords, slugify } from './text'
 import { sqlFormat, htmlFormat, cssFormat, jsFormat, xmlFormat, codeFormat } from './formatting'
+import { uuidGenerate } from './uuid'
+import { isoToTimestamp, timestampToIso } from './timestamp'
+import { loremGenerate } from './lorem'
+import { colorConvert } from './color'
+import { baseConvert } from './numeric'
 
 // Export individual transformations
 export {
-  // Base64
   base64Encode,
   base64Decode,
-
-  // JSON
   jsonPrettify,
   jsonCompact,
-
-  // URL
   urlEncode,
   urlDecode,
-
-  // Case
   toUpperCase,
   toLowerCase,
   toTitleCase,
   toSnakeCase,
   toCamelCase,
   toKebabCase,
-
-  // XML
   xmlPrettify,
   xmlCompact,
-
-  // Lines
   sortLines,
   deduplicateLines,
   reverseLines,
   removeEmptyLines,
-
-  // HTML
   htmlEncode,
   htmlDecode,
-
-  // Hash
   md5Hash,
   sha1Hash,
   sha256Hash,
   sha512Hash,
   hmacHash,
   bcryptHash,
-  argon2Hash,
-
-  // Unicode
+  pbkdf2Hash,
   unicodeEscape,
   unicodeUnescape,
-
-  // Conversion
   jsonToYaml,
   yamlToJson,
   propertiesFileToYaml,
   yamlToPropertiesFile,
   csvToJson,
   jsonToCsv,
-
-  // JWT
   jwtDecode,
-
-  // Hex
   hexEncode,
   hexDecode,
-
-  // Markdown
   markdownToHtml,
-
-  // Text
   removeDuplicateWords,
-
-  // Formatting
+  slugify,
   sqlFormat,
   htmlFormat,
   cssFormat,
   jsFormat,
   xmlFormat,
-  codeFormat
+  codeFormat,
+  uuidGenerate,
+  timestampToIso,
+  isoToTimestamp,
+  loremGenerate,
+  colorConvert,
+  baseConvert
 }
 
-// Export all transformations as a group
 export const transformations = {
   base64Encode,
   base64Decode,
@@ -136,7 +118,7 @@ export const transformations = {
   sha512Hash,
   hmacHash,
   bcryptHash,
-  argon2Hash,
+  pbkdf2Hash,
   unicodeEscape,
   unicodeUnescape,
   jsonToYaml,
@@ -150,13 +132,19 @@ export const transformations = {
   hexDecode,
   markdownToHtml,
   removeDuplicateWords,
+  slugify,
   sqlFormat,
   htmlFormat,
   cssFormat,
   jsFormat,
   xmlFormat,
-  codeFormat
+  codeFormat,
+  uuidGenerate,
+  timestampToIso,
+  isoToTimestamp,
+  loremGenerate,
+  colorConvert,
+  baseConvert
 }
 
-// Also export as default for easier importing
 export default transformations

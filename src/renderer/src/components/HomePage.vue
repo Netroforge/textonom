@@ -98,8 +98,13 @@ onUnmounted(() => {
     </div>
 
     <div class="categories-container">
-      <div v-for="category in filteredCategories" :key="category.id" class="category-section">
-        <h2 class="category-title">{{ category.name }}</h2>
+      <section
+        v-for="category in filteredCategories"
+        :key="category.id"
+        class="category-section"
+        :aria-labelledby="`category-title-${category.id}`"
+      >
+        <h2 :id="`category-title-${category.id}`" class="category-title">{{ category.name }}</h2>
         <p class="category-description">{{ category.description }}</p>
 
         <div class="transformations-grid">
@@ -121,7 +126,7 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <div v-if="filteredCategories.length === 0" class="no-results">
         <p>No transformations found matching "{{ homePage.searchQuery }}"</p>

@@ -38,6 +38,12 @@ const categories: TransformationCategory[] = [
     name: 'Format Conversion',
     description: 'Convert between different data formats',
     transformations: []
+  },
+  {
+    id: 'generators',
+    name: 'Generators',
+    description: 'Generate IDs, placeholder text, and other useful values',
+    transformations: []
   }
 ]
 
@@ -254,44 +260,41 @@ const transformationMetadata: Transformation[] = [
     fn: transformations.hmacHash
   },
   {
-    id: 'argon2Hash',
-    name: 'Argon2 Hash',
-    description:
-      'Generate Argon2-like hash of text (simulated using PBKDF2 for browser compatibility)',
+    id: 'pbkdf2Hash',
+    name: 'PBKDF2 Hash',
+    description: 'Derive a key from text using PBKDF2 with HMAC',
     category: 'hash',
     parameters: [
       {
-        name: 'type',
-        type: 'number',
-        description: 'Argon2 variant (0=argon2d, 1=argon2i, 2=argon2id)',
-        default: 2
+        name: 'algorithm',
+        type: 'string',
+        description: 'HMAC hash algorithm (SHA1, SHA256, SHA512)',
+        default: 'SHA256'
       },
       {
-        name: 'memoryCost',
-        type: 'number',
-        description: 'Memory usage in KiB',
-        default: 1024,
-        min: 256,
-        max: 4096
-      },
-      {
-        name: 'timeCost',
+        name: 'iterations',
         type: 'number',
         description: 'Number of iterations',
-        default: 3,
+        default: 100000,
         min: 1,
-        max: 10
+        max: 1000000
       },
       {
-        name: 'parallelism',
+        name: 'keyLength',
         type: 'number',
-        description: 'Degree of parallelism',
-        default: 1,
-        min: 1,
-        max: 16
+        description: 'Derived key length in bytes',
+        default: 32,
+        min: 8,
+        max: 128
+      },
+      {
+        name: 'salt',
+        type: 'string',
+        description: 'Salt (leave empty for a random 16-byte salt)',
+        default: ''
       }
     ],
-    fn: transformations.argon2Hash
+    fn: transformations.pbkdf2Hash
   },
   {
     id: 'bcryptHash',
@@ -530,6 +533,115 @@ const transformationMetadata: Transformation[] = [
       }
     ],
     fn: transformations.xmlFormat
+  },
+
+  // Text
+  {
+    id: 'slugify',
+    name: 'Slugify',
+    description: 'Convert text to a URL-friendly slug',
+    category: 'text',
+    fn: transformations.slugify
+  },
+
+  // Generators
+  {
+    id: 'uuidGenerate',
+    name: 'UUID Generator',
+    description: 'Generate one or more random UUIDs (v4)',
+    category: 'generators',
+    parameters: [
+      {
+        name: 'count',
+        type: 'number',
+        description: 'Number of UUIDs to generate',
+        default: 1,
+        min: 1,
+        max: 1000
+      },
+      {
+        name: 'uppercase',
+        type: 'boolean',
+        description: 'Output in uppercase',
+        default: false
+      }
+    ],
+    fn: transformations.uuidGenerate
+  },
+  {
+    id: 'loremGenerate',
+    name: 'Lorem Ipsum',
+    description: 'Generate placeholder lorem ipsum text',
+    category: 'generators',
+    parameters: [
+      {
+        name: 'unit',
+        type: 'string',
+        description: 'paragraphs, sentences, or words',
+        default: 'paragraphs'
+      },
+      {
+        name: 'count',
+        type: 'number',
+        description: 'How many to generate',
+        default: 3,
+        min: 1,
+        max: 100
+      }
+    ],
+    fn: transformations.loremGenerate
+  },
+
+  // Conversion (continued)
+  {
+    id: 'timestampToIso',
+    name: 'Unix Timestamp to ISO',
+    description: 'Convert Unix timestamps (seconds or milliseconds) to ISO 8601',
+    category: 'conversion',
+    fn: transformations.timestampToIso
+  },
+  {
+    id: 'isoToTimestamp',
+    name: 'ISO to Unix Timestamp',
+    description: 'Convert ISO 8601 dates to Unix timestamps',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'unit',
+        type: 'string',
+        description: 'Output unit: seconds or milliseconds',
+        default: 'seconds'
+      }
+    ],
+    fn: transformations.isoToTimestamp
+  },
+  {
+    id: 'colorConvert',
+    name: 'Color Converter',
+    description: 'Convert colors between hex, rgb(), and hsl() (one per line)',
+    category: 'conversion',
+    fn: transformations.colorConvert
+  },
+  {
+    id: 'baseConvert',
+    name: 'Number Base Converter',
+    description: 'Convert numbers between binary, octal, decimal, and hex',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'fromBase',
+        type: 'number',
+        description: 'Input base (2, 8, 10, 16)',
+        default: 10
+      },
+      {
+        name: 'toBase',
+        type: 'number',
+        description: 'Output base (2, 8, 10, 16)',
+        default: 16
+      }
+    ],
+    fn: transformations.baseConvert
   }
 ]
 

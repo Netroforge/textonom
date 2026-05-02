@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-05-02
+
+### Features
+
+- **New Transformations**:
+  - UUID Generator (v4, with count and uppercase options)
+  - Lorem Ipsum generator (paragraphs, sentences, or words)
+  - Slugify (URL-friendly slug)
+  - Unix Timestamp ↔ ISO 8601 (both directions)
+  - Color Converter (hex / rgb() / hsl())
+  - Number Base Converter (binary / octal / decimal / hex)
+  - New "Generators" category on the home page
+- **PBKDF2 Hash**: Replaces the previous Argon2 transformation, which was a PBKDF2 simulation in disguise. PBKDF2 is now exposed honestly with configurable HMAC algorithm (SHA-1/256/512), iterations, key length, and salt.
+- **Global keyboard shortcuts**: Ctrl/Cmd+W closes the active tab, Ctrl/Cmd+H jumps to the home page (alongside the existing Ctrl+K, Ctrl+Tab, and Ctrl+1–9 shortcuts).
+
+### Improvements
+
+- **Hashing off the main thread**: bcrypt and PBKDF2 now run in a Web Worker, so the UI no longer freezes on high cost factors or iteration counts.
+- **Update error UX**: Update errors now show a dedicated notification with **Retry** and **Copy details** buttons instead of a generic browser alert.
+- **Accessibility**: Tab bar tabs are now exposed as a proper `tablist` with keyboard activation; tab context menu items are keyboard-navigable; home page categories are wrapped in semantic `<section>` elements with `aria-labelledby`.
+
+### Changes
+
+- **Removed**: Argon2 transformation (replaced by PBKDF2).
+- **Build**: Removed the unused legacy `.eslintrc.cjs` config; ESLint now uses only the flat `eslint.config.mjs`.
+
 ## [1.1.0] - 2025-04-23
 
 ### Features

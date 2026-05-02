@@ -87,10 +87,38 @@ const handleKeyDown = (e: KeyboardEvent): void => {
       props.onHideHome()
     }
   }
+
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'w') {
+    if (activeTabId.value && !props.isHomeActive) {
+      e.preventDefault()
+      closeTab(activeTabId.value)
+    }
+  }
+
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'h') {
+    e.preventDefault()
+    props.onShowHome()
+  }
 }
 
 const handleClickOutsideContext = (): void => {
   contextMenuVisible.value = false
+}
+
+const handleTabKeydown = (e: KeyboardEvent, tabId: string): void => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault()
+    handleTabClick(tabId)
+  }
+}
+
+const handleContextMenuKeydown = (e: KeyboardEvent, action: () => void): void => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault()
+    action()
+  } else if (e.key === 'Escape') {
+    contextMenuVisible.value = false
+  }
 }
 
 onMounted(() => {
@@ -242,7 +270,12 @@ const handleDragEnd = (): void => {
         &lt;
       </button>
 
-      <div ref="tabsContainerRef" class="tabs-scroll-area">
+      <div
+        ref="tabsContainerRef"
+        class="tabs-scroll-area"
+        role="tablist"
+        aria-label="Open transformation tabs"
+      >
         <div
           v-if="isDragging"
           class="drop-indicator"
@@ -259,8 +292,12 @@ const handleDragEnd = (): void => {
             inactive: isHomeActive,
             dragging: draggedTab === tab.id
           }"
+          role="tab"
+          :tabindex="tab.id === activeTabId && !isHomeActive ? 0 : -1"
+          :aria-selected="tab.id === activeTabId && !isHomeActive"
           draggable="true"
           @click="handleTabClick(tab.id)"
+          @keydown="handleTabKeydown($event, tab.id)"
           @contextmenu="handleContextMenu($event, tab.id)"
           @dragstart="handleDragStart($event, tab.id, index)"
           @dragover="handleDragOver($event, tab.id, index)"
@@ -291,6 +328,7 @@ const handleDragEnd = (): void => {
     <div
       v-if="contextMenuVisible && contextMenuTabId"
       class="tab-context-menu"
+      role="menu"
       :style="{
         top: `${contextMenuPosition.y}px`,
         left: `${contextMenuPosition.x}px`
@@ -298,18 +336,50 @@ const handleDragEnd = (): void => {
     >
       <div
         class="context-menu-item"
+        role="menuitem"
+        tabindex="0"
         @click="
           () => {
             if (contextMenuTabId) closeTab(contextMenuTabId)
             contextMenuVisible = false
           }
         "
+        @keydown="
+          handleContextMenuKeydown($event, () => {
+            if (contextMenuTabId) closeTab(contextMenuTabId)
+            contextMenuVisible = false
+          })
+        "
       >
         Close
       </div>
-      <div class="context-menu-item" @click="handleCloseOtherTabs">Close Others</div>
-      <div class="context-menu-item" @click="handleCloseTabsToRight">Close Tabs to the Right</div>
-      <div class="context-menu-item" @click="handleCloseAllTabs">Close All</div>
+      <div
+        class="context-menu-item"
+        role="menuitem"
+        tabindex="0"
+        @click="handleCloseOtherTabs"
+        @keydown="handleContextMenuKeydown($event, handleCloseOtherTabs)"
+      >
+        Close Others
+      </div>
+      <div
+        class="context-menu-item"
+        role="menuitem"
+        tabindex="0"
+        @click="handleCloseTabsToRight"
+        @keydown="handleContextMenuKeydown($event, handleCloseTabsToRight)"
+      >
+        Close Tabs to the Right
+      </div>
+      <div
+        class="context-menu-item"
+        role="menuitem"
+        tabindex="0"
+        @click="handleCloseAllTabs"
+        @keydown="handleContextMenuKeydown($event, handleCloseAllTabs)"
+      >
+        Close All
+      </div>
     </div>
   </div>
 </template>
