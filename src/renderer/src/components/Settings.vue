@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useSettingsStore } from '../stores/settingsStore'
 import { THEMES } from '../styles/themes'
 import './Settings.css'
@@ -14,17 +15,8 @@ interface Section {
 }
 
 const settingsStore = useSettingsStore()
-const {
-  setTheme,
-  setFontSize,
-  setFontFamily,
-  setAutoUpdate,
-  setCheckForUpdatesOnStartup,
-  setCrtEffect,
-  setBcryptRounds,
-  setWordWrap,
-  resetSettings
-} = settingsStore
+const { settings } = storeToRefs(settingsStore)
+const { resetSettings } = settingsStore
 
 const sections: Section[] = [
   { id: 'theme', title: 'Theme' },
@@ -34,6 +26,7 @@ const sections: Section[] = [
 ]
 
 const activeSection = ref('theme')
+const showResetConfirm = ref(false)
 
 const fontOptions = [
   "Consolas, 'Courier New', monospace",
@@ -43,38 +36,48 @@ const fontOptions = [
   'monospace'
 ]
 
-const localSettings = reactive({
-  theme: settingsStore.settings.theme,
-  fontSize: settingsStore.settings.fontSize,
-  fontFamily: settingsStore.settings.fontFamily,
-  autoUpdate: settingsStore.settings.autoUpdate,
-  checkForUpdatesOnStartup: settingsStore.settings.checkForUpdatesOnStartup,
-  turboMode: settingsStore.settings.crtEffect,
-  bcryptRounds: settingsStore.settings.bcryptRounds || 12,
-  wordWrap: settingsStore.settings.wordWrap
+const theme = computed({
+  get: () => settings.value.theme,
+  set: (v) => (settings.value.theme = v)
+})
+const fontSize = computed({
+  get: () => settings.value.fontSize,
+  set: (v) => (settings.value.fontSize = Number(v))
+})
+const fontFamily = computed({
+  get: () => settings.value.fontFamily,
+  set: (v) => (settings.value.fontFamily = v)
+})
+const autoUpdate = computed({
+  get: () => settings.value.autoUpdate,
+  set: (v) => (settings.value.autoUpdate = v)
+})
+const checkForUpdatesOnStartup = computed({
+  get: () => settings.value.checkForUpdatesOnStartup,
+  set: (v) => (settings.value.checkForUpdatesOnStartup = v)
+})
+const turboMode = computed({
+  get: () => settings.value.crtEffect,
+  set: (v) => (settings.value.crtEffect = v)
+})
+const bcryptRounds = computed({
+  get: () => settings.value.bcryptRounds,
+  set: (v) => (settings.value.bcryptRounds = Number(v))
+})
+const wordWrap = computed({
+  get: () => settings.value.wordWrap,
+  set: (v) => (settings.value.wordWrap = v)
 })
 
-watch(() => localSettings.theme, (v) => setTheme(v))
-watch(() => localSettings.fontSize, (v) => setFontSize(Number(v)))
-watch(() => localSettings.fontFamily, (v) => setFontFamily(v))
-watch(() => localSettings.autoUpdate, (v) => setAutoUpdate(v))
-watch(() => localSettings.checkForUpdatesOnStartup, (v) => setCheckForUpdatesOnStartup(v))
-watch(() => localSettings.turboMode, (v) => setCrtEffect(v))
-watch(() => localSettings.bcryptRounds, (v) => setBcryptRounds(Number(v)))
-watch(() => localSettings.wordWrap, (v) => setWordWrap(v))
-
-const handleReset = (): void => {
-  if (window.confirm('Are you sure you want to reset all settings to their default values?')) {
-    resetSettings()
-    localSettings.theme = 'cyberpunk'
-    localSettings.fontSize = 14
-    localSettings.fontFamily = "Consolas, 'Courier New', monospace"
-    localSettings.autoUpdate = true
-    localSettings.checkForUpdatesOnStartup = true
-    localSettings.turboMode = true
-    localSettings.bcryptRounds = 12
-    localSettings.wordWrap = true
-  }
+const requestReset = (): void => {
+  showResetConfirm.value = true
+}
+const confirmReset = (): void => {
+  resetSettings()
+  showResetConfirm.value = false
+}
+const cancelReset = (): void => {
+  showResetConfirm.value = false
 }
 
 const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
@@ -86,24 +89,27 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
 
 <template>
   <div class="settings-overlay" @click="(e) => onOverlayClick(e, onClose)">
-    <div class="settings-container">
+    <div class="settings-container" role="dialog" aria-labelledby="settings-title">
       <div class="settings-header">
-        <h2>Settings</h2>
-        <button class="close-button" @click="onClose">✕</button>
+        <h2 id="settings-title">Settings</h2>
+        <button class="close-button" aria-label="Close settings" @click="onClose">✕</button>
       </div>
 
       <div class="settings-content">
         <div class="settings-layout">
-          <div class="settings-sidebar">
-            <div
+          <div class="settings-sidebar" role="tablist">
+            <button
               v-for="section in sections"
               :key="section.id"
+              type="button"
               class="settings-nav-item"
               :class="{ active: activeSection === section.id }"
+              role="tab"
+              :aria-selected="activeSection === section.id"
               @click="activeSection = section.id"
             >
               {{ section.title }}
-            </div>
+            </button>
           </div>
 
           <div class="settings-sections-container">
@@ -111,9 +117,9 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
               <h3 class="settings-section-title">Theme</h3>
               <div class="settings-section-content">
                 <div class="settings-row">
-                  <label class="settings-label">Theme</label>
+                  <label class="settings-label" for="setting-theme">Theme</label>
                   <div class="settings-control">
-                    <select v-model="localSettings.theme">
+                    <select id="setting-theme" v-model="theme">
                       <option :value="THEMES.LIGHT">Light</option>
                       <option :value="THEMES.DARK">Dark</option>
                       <option :value="THEMES.CYBERPUNK">Cyberpunk</option>
@@ -122,10 +128,9 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
                 </div>
 
                 <div class="settings-row">
-                  <label class="settings-label">Turbo Mode</label>
+                  <label class="settings-label" for="setting-turbo">Turbo Mode</label>
                   <div class="settings-control">
-                    <input v-model="localSettings.turboMode" type="checkbox" />
-                    <span class="settings-description">Enable</span>
+                    <input id="setting-turbo" v-model="turboMode" type="checkbox" />
                   </div>
                 </div>
 
@@ -141,9 +146,9 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
               <h3 class="settings-section-title">Font</h3>
               <div class="settings-section-content">
                 <div class="settings-row">
-                  <label class="settings-label">Font Family</label>
+                  <label class="settings-label" for="setting-font-family">Font Family</label>
                   <div class="settings-control">
-                    <select v-model="localSettings.fontFamily">
+                    <select id="setting-font-family" v-model="fontFamily">
                       <option v-for="font in fontOptions" :key="font" :value="font">
                         {{ font.split(',')[0].replace(/["']/g, '') }}
                       </option>
@@ -151,16 +156,22 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
                   </div>
                 </div>
                 <div class="settings-row">
-                  <label class="settings-label">Font Size</label>
+                  <label class="settings-label" for="setting-font-size">Font Size</label>
                   <div class="settings-control">
-                    <input v-model.number="localSettings.fontSize" type="number" min="8" max="32" />
+                    <input
+                      id="setting-font-size"
+                      v-model.number="fontSize"
+                      type="number"
+                      min="8"
+                      max="32"
+                    />
                   </div>
                 </div>
                 <div class="settings-row">
-                  <label class="settings-label">Word Wrap</label>
+                  <label class="settings-label" for="setting-wrap">Word Wrap</label>
                   <div class="settings-control">
-                    <input v-model="localSettings.wordWrap" type="checkbox" />
-                    <span class="settings-description">Enable word wrap in text areas</span>
+                    <input id="setting-wrap" v-model="wordWrap" type="checkbox" />
+                    <span class="settings-description">Wrap long lines in text areas</span>
                   </div>
                 </div>
               </div>
@@ -170,18 +181,21 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
               <h3 class="settings-section-title">Updates</h3>
               <div class="settings-section-content">
                 <div class="settings-row">
-                  <label class="settings-label">Enable Auto Update</label>
+                  <label class="settings-label" for="setting-auto-update">Enable auto update</label>
                   <div class="settings-control">
-                    <input v-model="localSettings.autoUpdate" type="checkbox" />
+                    <input id="setting-auto-update" v-model="autoUpdate" type="checkbox" />
                   </div>
                 </div>
                 <div class="settings-row">
-                  <label class="settings-label">Check for Updates on Startup</label>
+                  <label class="settings-label" for="setting-startup-update">
+                    Check for updates on startup
+                  </label>
                   <div class="settings-control">
                     <input
-                      v-model="localSettings.checkForUpdatesOnStartup"
+                      id="setting-startup-update"
+                      v-model="checkForUpdatesOnStartup"
                       type="checkbox"
-                      :disabled="!localSettings.autoUpdate"
+                      :disabled="!autoUpdate"
                     />
                   </div>
                 </div>
@@ -192,10 +206,13 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
               <h3 class="settings-section-title">Transformations</h3>
               <div class="settings-section-content">
                 <div class="settings-row">
-                  <label class="settings-label">Bcrypt Rounds (Cost Factor)</label>
+                  <label class="settings-label" for="setting-bcrypt">
+                    Bcrypt rounds (cost factor)
+                  </label>
                   <div class="settings-control">
                     <input
-                      v-model.number="localSettings.bcryptRounds"
+                      id="setting-bcrypt"
+                      v-model.number="bcryptRounds"
                       type="number"
                       min="1"
                       max="20"
@@ -205,8 +222,8 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
                 </div>
                 <div class="settings-info">
                   <p>
-                    Higher rounds provide stronger security but take longer to compute. The
-                    default value of 12 is a good balance between security and performance.
+                    Higher rounds provide stronger security but take longer to compute. The default
+                    value of 12 is a good balance between security and performance.
                   </p>
                 </div>
               </div>
@@ -216,8 +233,18 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
       </div>
 
       <div class="settings-footer">
-        <button @click="handleReset">Reset to Defaults</button>
-        <button @click="onClose">Close</button>
+        <button class="btn-secondary" @click="requestReset">Reset to defaults</button>
+        <button class="btn-primary" @click="onClose">Close</button>
+      </div>
+
+      <div v-if="showResetConfirm" class="settings-confirm-overlay" @click.self="cancelReset">
+        <div class="settings-confirm">
+          <p>Reset all settings to their default values?</p>
+          <div class="settings-confirm-actions">
+            <button class="btn-secondary" @click="cancelReset">Cancel</button>
+            <button class="btn-primary" @click="confirmReset">Reset</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

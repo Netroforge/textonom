@@ -13,7 +13,7 @@ export interface Settings {
   wordWrap: boolean
 }
 
-const defaultSettings: Settings = {
+export const defaultSettings: Settings = {
   theme: 'cyberpunk',
   fontSize: 14,
   fontFamily: "Consolas, 'Courier New', monospace",

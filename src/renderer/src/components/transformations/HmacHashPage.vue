@@ -25,19 +25,16 @@ const applyTransformation = async (): Promise<void> => {
 
   isTransforming.value = true
   try {
-    const result = await hmacHash(inputText.value, {
+    outputText.value = await hmacHash(inputText.value, {
       key: secretKey.value,
       algorithm: algorithm.value
     })
-    outputText.value = result
-    setTimeout(() => {
-      isTransforming.value = false
-    }, 100)
   } catch (error) {
     console.error('Transformation error:', error)
     if (error instanceof Error) outputText.value = `Error: ${error.message}`
     else if (typeof error === 'string') outputText.value = `Error: ${error}`
     else outputText.value = 'An unknown error occurred during transformation'
+  } finally {
     isTransforming.value = false
   }
 }
@@ -53,7 +50,13 @@ const copyOutput = async (): Promise<void> => {
     await navigator.clipboard.writeText(outputText.value)
   } catch (error) {
     console.error('Failed to copy to clipboard:', error)
-    alert('Failed to copy to clipboard. Please try again or copy manually.')
+  }
+}
+
+const handleKeydown = (e: KeyboardEvent): void => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault()
+    applyTransformation()
   }
 }
 
@@ -75,6 +78,32 @@ watch([inputText, outputText, secretKey, algorithm], () => {
       </p>
     </div>
 
+    <div class="parameters-container">
+      <div class="parameter">
+        <label for="hmac-secret-key">Secret Key</label>
+        <input
+          id="hmac-secret-key"
+          v-model="secretKey"
+          type="text"
+          class="parameter-input"
+          :disabled="isTransforming"
+          placeholder="Enter secret key"
+        />
+      </div>
+      <div class="parameter">
+        <label for="hmac-algorithm">Algorithm</label>
+        <select
+          id="hmac-algorithm"
+          v-model="algorithm"
+          class="parameter-input"
+          :disabled="isTransforming"
+        >
+          <option value="SHA256">SHA-256</option>
+          <option value="SHA512">SHA-512</option>
+        </select>
+      </div>
+    </div>
+
     <div class="transformation-content">
       <div class="textarea-container">
         <label for="input-textarea">Input</label>
@@ -85,37 +114,12 @@ watch([inputText, outputText, secretKey, algorithm], () => {
             class="transformation-textarea"
             placeholder="Enter text to hash..."
             spellcheck="false"
+            @keydown="handleKeydown"
           ></textarea>
         </div>
       </div>
 
       <div class="actions-container">
-        <div class="parameters-container">
-          <div class="parameter">
-            <label for="secret-key-input">Secret Key</label>
-            <input
-              id="secret-key-input"
-              v-model="secretKey"
-              type="text"
-              class="parameter-input"
-              :disabled="isTransforming"
-              placeholder="Enter secret key"
-            />
-          </div>
-          <div class="parameter">
-            <label for="algorithm-select">Algorithm</label>
-            <select
-              id="algorithm-select"
-              v-model="algorithm"
-              class="parameter-input"
-              :disabled="isTransforming"
-            >
-              <option value="SHA256">SHA-256</option>
-              <option value="SHA512">SHA-512</option>
-            </select>
-          </div>
-        </div>
-
         <button
           class="action-button transform-button"
           :disabled="isTransforming"
@@ -125,10 +129,10 @@ watch([inputText, outputText, secretKey, algorithm], () => {
         </button>
         <button
           class="action-button clear-button"
-          :disabled="isTransforming || !inputText"
+          :disabled="isTransforming || (!inputText && !outputText)"
           @click="clearInput"
         >
-          Clear Input
+          Clear
         </button>
         <button
           class="action-button copy-button"

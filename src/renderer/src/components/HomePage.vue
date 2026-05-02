@@ -19,8 +19,17 @@ const { homePage } = storeToRefs(homePageStore)
 const { setHomePageSearchQuery, setHomePageScrollPosition } = homePageStore
 
 const homePageRef = ref<HTMLDivElement | null>(null)
+const searchInputRef = ref<HTMLInputElement | null>(null)
 
 const categories = getAllCategories()
+
+const handleKeydown = (e: KeyboardEvent): void => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault()
+    searchInputRef.value?.focus()
+    searchInputRef.value?.select()
+  }
+}
 
 const isTransformationOpen = (transformationId: string): boolean => {
   return tabs.value.some((tab) => tab.transformationId === transformationId)
@@ -59,12 +68,14 @@ onMounted(() => {
     homePageRef.value.scrollTop = homePage.value.scrollPosition
     homePageRef.value.addEventListener('scroll', handleScroll)
   }
+  window.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
   if (homePageRef.value) {
     homePageRef.value.removeEventListener('scroll', handleScroll)
   }
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -75,9 +86,11 @@ onUnmounted(() => {
 
       <div class="search-container">
         <input
+          ref="searchInputRef"
           type="text"
           class="search-input"
-          placeholder="Search transformations..."
+          placeholder="Search transformations… (Ctrl+K)"
+          aria-label="Search transformations"
           :value="homePage.searchQuery"
           @input="handleSearchChange"
         />
@@ -85,11 +98,7 @@ onUnmounted(() => {
     </div>
 
     <div class="categories-container">
-      <div
-        v-for="category in filteredCategories"
-        :key="category.id"
-        class="category-section"
-      >
+      <div v-for="category in filteredCategories" :key="category.id" class="category-section">
         <h2 class="category-title">{{ category.name }}</h2>
         <p class="category-description">{{ category.description }}</p>
 
@@ -99,7 +108,12 @@ onUnmounted(() => {
             :key="transformation.id"
             class="transformation-card"
             :class="{ 'transformation-card-open': isTransformationOpen(transformation.id) }"
+            role="button"
+            tabindex="0"
+            :aria-pressed="isTransformationOpen(transformation.id)"
             @click="handleTransformationClick(transformation.id)"
+            @keydown.enter.prevent="handleTransformationClick(transformation.id)"
+            @keydown.space.prevent="handleTransformationClick(transformation.id)"
           >
             <div class="transformation-card-content">
               <h3 class="transformation-title">{{ transformation.name }}</h3>

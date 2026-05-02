@@ -15,6 +15,7 @@ interface Theme {
   surface: string
   surfaceHover: string
   text: string
+  textSecondary: string
   border: string
   divider: string
   error: string
@@ -52,6 +53,7 @@ export const lightTheme: Theme = {
   surface: '#f8f9fa',
   surfaceHover: '#e9ecef',
   text: '#212529',
+  textSecondary: '#6c757d',
   border: '#dee2e6',
   divider: '#e9ecef',
   error: '#dc3545',
@@ -89,6 +91,7 @@ export const darkTheme: Theme = {
   surface: '#343a40',
   surfaceHover: '#495057',
   text: '#f8f9fa',
+  textSecondary: '#adb5bd',
   border: '#495057',
   divider: '#343a40',
   error: '#dc3545',
@@ -125,7 +128,8 @@ export const cyberpunkTheme: Theme = {
   background: '#0a0a16', // Dark blue-black
   surface: '#1a1a2e', // Dark blue
   surfaceHover: '#2a2a4e', // Lighter blue
-  text: '#00ffff', // Cyan
+  text: '#d8f3ff', // Soft cyan-tinted white for body copy
+  textSecondary: '#00ffff', // Cyan kept as accent
   border: '#ff00ff', // Magenta
   divider: '#1a1a2e', // Dark blue
   error: '#ff0055', // Neon red

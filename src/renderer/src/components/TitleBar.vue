@@ -10,10 +10,10 @@ const tabsStore = useTabsStore()
 const { tabs, activeTabId, showHomePage } = storeToRefs(tabsStore)
 
 const appTitle = computed((): string => {
-  if (showHomePage.value) return 'Textonom - Home'
+  if (showHomePage.value) return 'Textonom'
   const activeTab = tabs.value.find((tab) => tab.id === activeTabId.value)
   if (!activeTab) return 'Textonom'
-  return `Textonom - ${activeTab.title}`
+  return `Textonom — ${activeTab.title}`
 })
 
 const checkMaximizedState = async (): Promise<void> => {
@@ -57,12 +57,16 @@ const closeWindow = (): void => {
       <div class="app-title">{{ appTitle }}</div>
     </div>
     <div class="window-controls">
-      <button class="window-control minimize" @click="minimizeWindow">
+      <button class="window-control minimize" aria-label="Minimize window" @click="minimizeWindow">
         <svg width="10" height="1" viewBox="0 0 10 1">
           <path d="M0 0h10v1H0z" fill="currentColor" />
         </svg>
       </button>
-      <button class="window-control maximize" @click="toggleMaximize">
+      <button
+        class="window-control maximize"
+        :aria-label="isMaximized ? 'Restore window' : 'Maximize window'"
+        @click="toggleMaximize"
+      >
         <svg v-if="isMaximized" width="10" height="10" viewBox="0 0 10 10">
           <path d="M0 0v10h10V0H0zm1 1h8v8H1V1z" fill="currentColor" />
         </svg>
@@ -70,12 +74,9 @@ const closeWindow = (): void => {
           <path d="M0 0v10h10V0H0zm9 9H1V1h8v8z" fill="currentColor" />
         </svg>
       </button>
-      <button class="window-control close" @click="closeWindow">
+      <button class="window-control close" aria-label="Close window" @click="closeWindow">
         <svg width="10" height="10" viewBox="0 0 10 10">
-          <path
-            d="M1 0L0 1l4 4-4 4 1 1 4-4 4 4 1-1-4-4 4-4-1-1-4 4-4-4z"
-            fill="currentColor"
-          />
+          <path d="M1 0L0 1l4 4-4 4 1 1 4-4 4 4 1-1-4-4 4-4-1-1-4 4-4-4z" fill="currentColor" />
         </svg>
       </button>
     </div>
