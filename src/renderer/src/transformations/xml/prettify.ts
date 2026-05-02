@@ -1,5 +1,5 @@
 import xmlFormat from 'xml-formatter'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Formats XML with proper indentation

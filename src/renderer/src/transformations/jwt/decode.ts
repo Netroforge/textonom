@@ -1,5 +1,5 @@
 import { jwtDecode as decodeJwt } from 'jwt-decode'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Decodes a JWT token and returns its contents as formatted JSON

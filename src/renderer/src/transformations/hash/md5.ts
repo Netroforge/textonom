@@ -1,5 +1,5 @@
 import * as CryptoJS from 'crypto-js'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Generates MD5 hash of the input text

@@ -1,20 +1,17 @@
-// Custom storage adapter for Zustand's persist middleware
-// This adapter uses the Electron API to save and load state from separate files
+// Storage adapter that persists Pinia store state to disk via the Electron API.
 
-import { StateStorage } from 'zustand/middleware'
+export interface PersistedStorage {
+  getItem(name: string): Promise<string | null>
+  setItem(name: string, value: string): Promise<void>
+}
 
-// Create a custom storage adapter for Electron
-export const createElectronStorage = (storeName: string): StateStorage => ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getItem: async (_name: string): Promise<string | null> => {
+export const createElectronStorage = (storeName: string): PersistedStorage => ({
+  getItem: async (): Promise<string | null> => {
     try {
-      // Use the Electron API to load the state from disk
       const result = await window.api.loadState({ key: storeName })
-
       if (result.success && result.state) {
         return result.state
       }
-
       return null
     } catch (error) {
       console.error(`[electronStorage] Failed to load state for ${storeName}:`, error)
@@ -24,22 +21,59 @@ export const createElectronStorage = (storeName: string): StateStorage => ({
 
   setItem: async (_name: string, value: string): Promise<void> => {
     try {
-      // Use the Electron API to save the state to disk
-      const result = await window.api.saveState({
-        key: storeName,
-        state: value
-      })
-
+      const result = await window.api.saveState({ key: storeName, state: value })
       if (!result.success) {
         console.error(`[electronStorage] Failed to save state for ${storeName}:`, result.error)
       }
     } catch (error) {
       console.error(`[electronStorage] Failed to save state for ${storeName}:`, error)
     }
-  },
-
-  removeItem: async (name: string): Promise<void> => {
-    // This method is not implemented as we don't need to remove state files
-    console.warn(`removeItem called for ${name}, but not implemented`)
   }
 })
+
+interface PersistOptions<T> {
+  key: string
+  serialize: () => T
+  hydrate: (data: T) => void
+}
+
+export const setupPersistence = <T>(opts: PersistOptions<T>, watcher: (cb: () => void) => void): void => {
+  const storage = createElectronStorage(opts.key)
+
+  void (async (): Promise<void> => {
+    const raw = await storage.getItem(opts.key)
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as { state?: T } | T
+        const data = (parsed as { state?: T }).state ?? (parsed as T)
+        opts.hydrate(data)
+      } catch (error) {
+        console.error(`[electronStorage] Failed to parse state for ${opts.key}:`, error)
+      }
+    }
+
+    let saving = false
+    let pending = false
+    const save = async (): Promise<void> => {
+      if (saving) {
+        pending = true
+        return
+      }
+      saving = true
+      try {
+        const value = JSON.stringify({ state: opts.serialize(), version: 1 })
+        await storage.setItem(opts.key, value)
+      } finally {
+        saving = false
+        if (pending) {
+          pending = false
+          await save()
+        }
+      }
+    }
+
+    watcher(() => {
+      void save()
+    })
+  })()
+}

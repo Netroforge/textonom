@@ -1,54 +1,50 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import { createElectronStorage } from './electronStorage'
+import { defineStore } from 'pinia'
+import { reactive, watch } from 'vue'
+import { setupPersistence } from './electronStorage'
 
-// HomePage state interface
 export interface HomePageState {
   searchQuery: string
   scrollPosition: number
 }
 
-// Default home page state
-const defaultHomePageState: HomePageState = {
+const defaultHomePageState = (): HomePageState => ({
   searchQuery: '',
   scrollPosition: 0
-}
+})
 
-// HomePage store interface
-interface HomePageStoreState {
-  // HomePage state
-  homePage: HomePageState
+export const useHomePageStore = defineStore('homePage', () => {
+  const homePage = reactive<HomePageState>(defaultHomePageState())
 
-  // HomePage actions
-  setHomePageSearchQuery: (query: string) => void
-  setHomePageScrollPosition: (position: number) => void
-  resetHomePageState: () => void
-}
+  const setHomePageSearchQuery = (searchQuery: string): void => {
+    homePage.searchQuery = searchQuery
+  }
+  const setHomePageScrollPosition = (scrollPosition: number): void => {
+    homePage.scrollPosition = scrollPosition
+  }
+  const resetHomePageState = (): void => {
+    Object.assign(homePage, defaultHomePageState())
+  }
 
-// Create the home page store
-export const useHomePageStore = create<HomePageStoreState>()(
-  persist(
-    (set) => ({
-      // HomePage state
-      homePage: defaultHomePageState,
-
-      // HomePage actions
-      setHomePageSearchQuery: (searchQuery) =>
-        set((state) => ({
-          homePage: { ...state.homePage, searchQuery }
-        })),
-
-      setHomePageScrollPosition: (scrollPosition) =>
-        set((state) => ({
-          homePage: { ...state.homePage, scrollPosition }
-        })),
-
-      resetHomePageState: () => set({ homePage: defaultHomePageState })
-    }),
+  setupPersistence(
     {
-      name: 'textonom-home-page',
-      storage: createJSONStorage(() => createElectronStorage('homePage')),
-      version: 1
+      key: 'homePage',
+      serialize: () => ({ homePage: { ...homePage } }),
+      hydrate: (data: { homePage?: Partial<HomePageState> } | Partial<HomePageState>) => {
+        const incoming = (data as { homePage?: Partial<HomePageState> }).homePage ?? data
+        if (incoming && typeof incoming === 'object') {
+          Object.assign(homePage, defaultHomePageState(), incoming)
+        }
+      }
+    },
+    (notify) => {
+      watch(homePage, () => notify(), { deep: true })
     }
   )
-)
+
+  return {
+    homePage,
+    setHomePageSearchQuery,
+    setHomePageScrollPosition,
+    resetHomePageState
+  }
+})

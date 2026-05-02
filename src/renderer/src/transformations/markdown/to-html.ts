@@ -1,5 +1,5 @@
 import { marked } from 'marked'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 
 /**
  * Converts Markdown text to HTML
@@ -14,19 +14,13 @@ const markdownToHtml: TransformationFunction = async (text: string): Promise<str
   }
 
   try {
-    // Configure marked options
     marked.setOptions({
-      gfm: true, // GitHub Flavored Markdown
-      breaks: true, // Convert line breaks to <br>
-      headerIds: true, // Include header IDs
-      mangle: false, // Don't escape HTML
-      pedantic: false, // Don't conform to original markdown.pl
-      smartLists: true, // Use smarter list behavior
-      smartypants: true // Use "smart" typographic punctuation
+      gfm: true,
+      breaks: true,
+      pedantic: false
     })
 
-    // Convert markdown to HTML
-    return marked.parse(text)
+    return await marked.parse(text)
   } catch (error) {
     console.error('Error converting Markdown to HTML:', error)
     if (error instanceof Error) {

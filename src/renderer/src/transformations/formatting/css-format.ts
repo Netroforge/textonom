@@ -1,6 +1,6 @@
 import * as prettier from 'prettier/standalone'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
-import type { TransformationFunction } from '../../types'
+import type { TransformationFunction } from '../../types/transformation'
 import { TransformationParamValues } from '../../types/transformation'
 
 /**
