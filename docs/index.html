@@ -8,17 +8,17 @@
     <link rel="icon" href="logo.png" type="image/png" />
     <meta
       name="description"
-      content="Textonom - A text editor that lets you perform common text transformations locally. Over 40 transformations to help make your sensitive data safe."
+      content="Textonom - A desktop text editor that runs 85+ text transformations entirely on your machine. Encode, decode, format, hash and convert sensitive data with nothing leaving your computer."
     />
     <meta
       name="keywords"
-      content="text editor, text transformation, base64, json, xml, hash, encode, decode, local processing, cyberpunk"
+      content="text editor, text transformation, base64, json, xml, yaml, toml, jwt, aes, hash, encode, decode, local processing, offline, cyberpunk, desktop app"
     />
-    <meta name="author" content="Textonom Team" />
+    <meta name="author" content="Netroforge" />
     <meta property="og:title" content="Textonom - Text Transformation Tool" />
     <meta
       property="og:description"
-      content="A text editor with over 40 transformations that lets you process text locally. Helps make your sensitive data safe."
+      content="A desktop text editor with 85+ transformations that process text locally. Keep your sensitive data safe — everything stays on your machine."
     />
     <meta property="og:image" content="screenshot.png" />
     <meta property="og:url" content="https://netroforge.github.io/textonom/" />
@@ -44,7 +44,7 @@
         aria-hidden="true"
       >
         <button type="button" class="close-lightbox" aria-label="Close screenshot preview">
-          &times;
+          <span class="close-lightbox-x" aria-hidden="true"></span>
         </button>
         <div class="lightbox-loader" aria-hidden="true"></div>
         <div class="lightbox-content">
@@ -70,11 +70,20 @@
 
       <section class="hero">
         <div class="hero-content">
+          <span class="hero-badge">100% offline · no telemetry</span>
           <h2 class="glow-text">Text Transformations, <span class="accent-text">Locally</span></h2>
           <p>
-            A text editor with over 40 transformations that lets you process text locally. Helps
-            make your sensitive data safe by keeping everything on your machine.
+            A desktop text editor with <strong>85+ transformations</strong> that processes
+            everything on your own machine. Encode, format, hash and convert sensitive data without
+            a single byte leaving your computer.
           </p>
+          <ul class="hero-stats">
+            <li>
+              <span class="stat-number">85+</span><span class="stat-label">Transformations</span>
+            </li>
+            <li><span class="stat-number">7</span><span class="stat-label">Categories</span></li>
+            <li><span class="stat-number">3</span><span class="stat-label">Themes</span></li>
+          </ul>
           <div class="cta-buttons">
             <a
               href="https://github.com/Netroforge/textonom/releases/latest"
@@ -112,96 +121,151 @@
           </div>
           <div class="feature-card">
             <div class="feature-icon">🔀</div>
-            <h3>Multiple Transformations</h3>
-            <p>Over 40 different text transformations organized by category.</p>
+            <h3>85+ Transformations</h3>
+            <p>
+              Encoding, formatting, hashing, case conversion, format conversion and generators — all
+              organized into seven categories.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🗂️</div>
+            <h3>Tabbed Workspace</h3>
+            <p>
+              Open multiple transformations side by side in tabs and switch between them without
+              losing your work.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Instant Search</h3>
+            <p>
+              Find any transformation in a keystroke with the searchable home screen
+              (<kbd>Ctrl</kbd>+<kbd>F</kbd>).
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">🎨</div>
-            <h3>Vibe Themes</h3>
+            <h3>Three Themes</h3>
             <p>
-              Choose between Light, Dark, and Cyberpunk themes with optional Turbo Mode for that
+              Switch between Light, Dark and Cyberpunk themes — with an optional Turbo Mode for that
               retro CRT feel.
             </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">🔄</div>
             <h3>Auto-Updates</h3>
-            <p>Stay up to date with the latest features and improvements.</p>
+            <p>Stay current automatically with the latest features and fixes on every platform.</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">⚙️</div>
-            <h3>Configurable Settings</h3>
-            <p>Customize font, size, and transformation parameters to your liking.</p>
+            <h3>Configurable</h3>
+            <p>Tune fonts, sizes and per-transformation parameters to fit the way you work.</p>
           </div>
         </div>
       </section>
 
       <section class="transformations">
         <h2 class="section-title glow-text">Transformations</h2>
+        <p class="section-subtitle">
+          85+ transformations across 7 categories — every one runs entirely on your machine.
+        </p>
         <div class="transformation-categories">
           <div class="category">
-            <h3 class="category-title">Encoding & Decoding</h3>
+            <h3 class="category-title">
+              Encoding &amp; Decoding <span class="category-count">19</span>
+            </h3>
             <ul class="transformation-list">
               <li>Base64 Encode/Decode</li>
+              <li>Base32 Encode/Decode</li>
               <li>URL Encode/Decode</li>
               <li>HTML Encode/Decode</li>
-              <li>Unicode Escape/Unescape</li>
               <li>Hex Encode/Decode</li>
+              <li>Unicode Escape/Unescape</li>
+              <li>Text ↔ Binary</li>
+              <li>Text ↔ Morse Code</li>
+              <li>AES Encrypt/Decrypt</li>
               <li>JWT Decode</li>
             </ul>
           </div>
           <div class="category">
-            <h3 class="category-title">Formatting</h3>
+            <h3 class="category-title">Formatting <span class="category-count">10</span></h3>
             <ul class="transformation-list">
               <li>JSON Prettify/Compact</li>
+              <li>Sort JSON Keys</li>
               <li>XML Prettify/Compact</li>
-              <li>SQL Format</li>
-              <li>HTML Format</li>
-              <li>CSS Format</li>
-              <li>JavaScript Format</li>
-              <li>XML Format</li>
+              <li>XML Formatter</li>
+              <li>HTML Formatter</li>
+              <li>CSS Formatter</li>
+              <li>JavaScript Formatter</li>
+              <li>SQL Formatter</li>
             </ul>
           </div>
           <div class="category">
-            <h3 class="category-title">Case Conversion</h3>
+            <h3 class="category-title">Case Conversion <span class="category-count">6</span></h3>
             <ul class="transformation-list">
               <li>To Uppercase</li>
               <li>To Lowercase</li>
               <li>To Title Case</li>
-              <li>To Snake Case</li>
-              <li>To Camel Case</li>
-              <li>To Kebab Case</li>
+              <li>To snake_case</li>
+              <li>To camelCase</li>
+              <li>To kebab-case</li>
             </ul>
           </div>
           <div class="category">
-            <h3 class="category-title">Text Operations</h3>
+            <h3 class="category-title">Text Operations <span class="category-count">16</span></h3>
             <ul class="transformation-list">
               <li>Sort Lines</li>
               <li>Deduplicate Lines</li>
-              <li>Reverse Lines</li>
+              <li>Reverse Lines / Text</li>
               <li>Remove Empty Lines</li>
               <li>Remove Duplicate Words</li>
-              <li>Markdown to HTML</li>
+              <li>Regex Find &amp; Replace</li>
+              <li>Text Statistics</li>
+              <li>Slugify</li>
+              <li>Strip HTML Tags</li>
+              <li>Tabs ↔ Spaces / Trim</li>
+              <li>ROT13 · Caesar Cipher</li>
+              <li>NATO Phonetic Alphabet</li>
             </ul>
           </div>
           <div class="category">
-            <h3 class="category-title">Hashing</h3>
+            <h3 class="category-title">Hashing <span class="category-count">9</span></h3>
             <ul class="transformation-list">
               <li>MD5 Hash</li>
               <li>SHA-1 Hash</li>
-              <li>SHA-256 Hash</li>
-              <li>SHA-512 Hash</li>
+              <li>SHA-256 / SHA-512 Hash</li>
+              <li>SHA-3 (Keccak) Hash</li>
+              <li>RIPEMD-160 Hash</li>
               <li>HMAC Hash</li>
+              <li>PBKDF2 Hash</li>
               <li>Bcrypt Hash</li>
-              <li>Argon2 Hash</li>
             </ul>
           </div>
           <div class="category">
-            <h3 class="category-title">Format Conversion</h3>
+            <h3 class="category-title">Format Conversion <span class="category-count">23</span></h3>
             <ul class="transformation-list">
-              <li title="Convert between JSON and YAML formats">JSON ↔ YAML</li>
-              <li title="Convert between Properties and YAML formats">Properties ↔ YAML</li>
-              <li title="Convert between CSV and JSON formats">CSV ↔ JSON</li>
+              <li title="Convert between JSON and YAML">JSON ↔ YAML</li>
+              <li title="Convert between JSON and TOML">JSON ↔ TOML</li>
+              <li title="Convert between YAML and TOML">YAML ↔ TOML</li>
+              <li title="Convert between JSON and XML">JSON ↔ XML</li>
+              <li title="Convert between CSV and JSON">CSV ↔ JSON</li>
+              <li title="Convert between Properties and YAML">Properties ↔ YAML</li>
+              <li title="Convert between a query string and JSON">Query String ↔ JSON</li>
+              <li>Markdown to HTML · HTML to Markdown</li>
+              <li>Unix Timestamp ↔ ISO 8601</li>
+              <li>Color Converter (hex/rgb/hsl)</li>
+              <li>Number Base Converter</li>
+              <li>Roman Numerals ↔ Number</li>
+              <li>Cron to Human-readable</li>
+            </ul>
+          </div>
+          <div class="category">
+            <h3 class="category-title">Generators <span class="category-count">4</span></h3>
+            <ul class="transformation-list">
+              <li>UUID Generator</li>
+              <li>ULID Generator</li>
+              <li>Token / Password Generator</li>
+              <li>Lorem Ipsum</li>
             </ul>
           </div>
         </div>
@@ -249,7 +313,7 @@
           </div>
         </div>
         <div class="footer-copyright">
-          <p>&copy; 2025 Textonom. All rights reserved.</p>
+          <p>&copy; 2025–2026 Textonom · Netroforge. Released under the MIT License.</p>
         </div>
       </footer>
     </div>
