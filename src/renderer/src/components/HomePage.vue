@@ -24,7 +24,7 @@ const searchInputRef = ref<HTMLInputElement | null>(null)
 const categories = getAllCategories()
 
 const handleKeydown = (e: KeyboardEvent): void => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
     e.preventDefault()
     searchInputRef.value?.focus()
     searchInputRef.value?.select()
@@ -50,6 +50,11 @@ const filteredCategories = computed(() => {
 const handleSearchChange = (e: Event): void => {
   const target = e.target as HTMLInputElement
   setHomePageSearchQuery(target.value)
+}
+
+const handleClearSearch = (): void => {
+  setHomePageSearchQuery('')
+  searchInputRef.value?.focus()
 }
 
 const handleTransformationClick = (transformationId: string): void => {
@@ -82,18 +87,29 @@ onUnmounted(() => {
 <template>
   <div ref="homePageRef" class="home-page">
     <div class="home-header">
-      <h1>Textonom Transformations</h1>
+      <h1>Text transformations</h1>
 
       <div class="search-container">
         <input
           ref="searchInputRef"
           type="text"
           class="search-input"
-          placeholder="Search transformations… (Ctrl+K)"
+          placeholder="Search transformations… (Ctrl+F)"
           aria-label="Search transformations"
           :value="homePage.searchQuery"
           @input="handleSearchChange"
+          @keydown.esc="handleClearSearch"
         />
+        <button
+          v-if="homePage.searchQuery"
+          type="button"
+          class="search-clear"
+          aria-label="Clear search"
+          title="Clear search"
+          @click="handleClearSearch"
+        >
+          ✕
+        </button>
       </div>
     </div>
 
