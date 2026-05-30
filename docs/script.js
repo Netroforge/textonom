@@ -8,37 +8,70 @@ document.addEventListener('DOMContentLoaded', function () {
   const closeButton = document.querySelector('.close-lightbox')
   const screenshotLinks = document.querySelectorAll('.screenshot-link')
 
+  // Remember the element that opened the lightbox so focus can be restored
+  let lastFocusedElement = null
+
+  // Hide the loading spinner once the full-size image has loaded (or failed)
+  lightboxImage.addEventListener('load', function () {
+    lightbox.classList.remove('loading')
+  })
+  lightboxImage.addEventListener('error', function () {
+    lightbox.classList.remove('loading')
+  })
+
+  function openLightbox(imageSrc, trigger) {
+    lastFocusedElement = trigger
+    lightbox.classList.add('active', 'loading')
+    lightbox.setAttribute('aria-hidden', 'false')
+    lightboxImage.src = imageSrc
+
+    // If the image is cached it may already be complete, so no load event fires
+    if (lightboxImage.complete && lightboxImage.naturalWidth > 0) {
+      lightbox.classList.remove('loading')
+    }
+
+    // Move focus into the dialog for keyboard users
+    closeButton.focus()
+
+    // Add cyberpunk glitch effect when opening lightbox
+    if (turboToggle.checked) {
+      createRandomGlitch()
+    }
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active', 'loading')
+    lightbox.setAttribute('aria-hidden', 'true')
+
+    // Restore focus to the element that opened the lightbox
+    if (lastFocusedElement) {
+      lastFocusedElement.focus()
+      lastFocusedElement = null
+    }
+  }
+
   // Open lightbox when clicking on a screenshot
   screenshotLinks.forEach((link) => {
     link.addEventListener('click', function (e) {
       e.preventDefault()
-      const imageSrc = this.getAttribute('data-src')
-      lightboxImage.src = imageSrc
-      lightbox.classList.add('active')
-
-      // Add cyberpunk glitch effect when opening lightbox
-      if (turboToggle.checked) {
-        createRandomGlitch()
-      }
+      openLightbox(this.getAttribute('data-src'), this)
     })
   })
 
   // Close lightbox when clicking the close button
-  closeButton.addEventListener('click', function () {
-    lightbox.classList.remove('active')
-  })
+  closeButton.addEventListener('click', closeLightbox)
 
   // Close lightbox when clicking outside the image
   lightbox.addEventListener('click', function (e) {
     if (e.target === lightbox) {
-      lightbox.classList.remove('active')
+      closeLightbox()
     }
   })
 
   // Close lightbox with Escape key
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-      lightbox.classList.remove('active')
+      closeLightbox()
     }
   })
 

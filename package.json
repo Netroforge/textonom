@@ -1,6 +1,6 @@
 {
   "name": "textonom",
-  "version": "1.3.1",
+  "version": "1.3.3",
   "description": "A text editor that lets you perform common text transformations locally",
   "main": "./out/main/index.js",
   "author": "Netroforge",
@@ -13,7 +13,7 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "npm run type-check && electron-vite build",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "node node_modules/electron/install.js && electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
@@ -61,7 +61,7 @@
     "prettier": "^3.8.3",
     "typescript": "^6.0.3",
     "undici-types": "^8.3.0",
-    "vite": "^8.0.14",
+    "vite": "^7.3.3",
     "vue-eslint-parser": "^10.0.0",
     "vue-tsc": "^3.3.3"
   }

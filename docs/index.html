@@ -3,29 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="text/javascript">
-      ;(function (i, m, p, a, c, t) {
-        c.ire_o = p
-        c[p] =
-          c[p] ||
-          function () {
-            ;(c[p].a = c[p].a || []).push(arguments)
-          }
-        t = a.createElement(m)
-        var z = a.getElementsByTagName(m)[0]
-        t.async = 1
-        t.src = i
-        z.parentNode.insertBefore(t, z)
-      })(
-        'https://utt.impactcdn.com/P-A7339941-f4f7-4e51-87f6-2233d126698c1.js',
-        'script',
-        'impactStat',
-        document,
-        window
-      )
-      impactStat('transformLinks')
-      impactStat('trackImpression')
-    </script>
     <title>Textonom - Text Transformation Tool</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="logo.png" type="image/png" />
@@ -58,10 +35,20 @@
       <div class="crt-glow"></div>
 
       <!-- Lightbox for screenshots -->
-      <div id="screenshot-lightbox" class="lightbox">
+      <div
+        id="screenshot-lightbox"
+        class="lightbox"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Screenshot preview"
+        aria-hidden="true"
+      >
+        <button type="button" class="close-lightbox" aria-label="Close screenshot preview">
+          &times;
+        </button>
+        <div class="lightbox-loader" aria-hidden="true"></div>
         <div class="lightbox-content">
-          <span class="close-lightbox">&times;</span>
-          <img id="lightbox-image" src="" alt="Full-size Screenshot" />
+          <img id="lightbox-image" src="" alt="Full-size Textonom screenshot" />
         </div>
       </div>
 
@@ -268,5 +255,30 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- Impact affiliate tracker (loaded after content to avoid blocking render) -->
+    <script type="text/javascript">
+      ;(function (i, m, p, a, c, t) {
+        c.ire_o = p
+        c[p] =
+          c[p] ||
+          function () {
+            ;(c[p].a = c[p].a || []).push(arguments)
+          }
+        t = a.createElement(m)
+        var z = a.getElementsByTagName(m)[0]
+        t.async = 1
+        t.src = i
+        z.parentNode.insertBefore(t, z)
+      })(
+        'https://utt.impactcdn.com/P-A7339941-f4f7-4e51-87f6-2233d126698c1.js',
+        'script',
+        'impactStat',
+        document,
+        window
+      )
+      impactStat('transformLinks')
+      impactStat('trackImpression')
+    </script>
   </body>
 </html>
