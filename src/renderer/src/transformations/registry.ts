@@ -642,6 +642,76 @@ const transformationMetadata: Transformation[] = [
       }
     ],
     fn: transformations.baseConvert
+  },
+
+  // AES
+  {
+    id: 'aesEncrypt',
+    name: 'AES Encrypt',
+    description: 'Encrypt text using AES (Advanced Encryption Standard)',
+    category: 'encoding',
+    parameters: [
+      {
+        name: 'key',
+        type: 'string',
+        description: 'Secret encryption key'
+      },
+      {
+        name: 'output',
+        type: 'string',
+        description: 'Output format (base64 or hex)',
+        default: 'base64'
+      }
+    ],
+    fn: transformations.aesEncrypt
+  },
+  {
+    id: 'aesDecrypt',
+    name: 'AES Decrypt',
+    description: 'Decrypt AES-encrypted text back to plain text',
+    category: 'encoding',
+    parameters: [
+      {
+        name: 'key',
+        type: 'string',
+        description: 'Secret decryption key'
+      },
+      {
+        name: 'output',
+        type: 'string',
+        description: 'Output format (base64 or hex)',
+        default: 'base64'
+      }
+    ],
+    fn: transformations.aesDecrypt
+  },
+
+  // Regex
+  {
+    id: 'regexReplace',
+    name: 'Regex Find & Replace',
+    description: 'Search and replace text using regular expressions',
+    category: 'text',
+    parameters: [
+      {
+        name: 'pattern',
+        type: 'string',
+        description: 'Regular expression pattern'
+      },
+      {
+        name: 'replacement',
+        type: 'string',
+        description: 'Replacement string',
+        default: ''
+      },
+      {
+        name: 'flags',
+        type: 'string',
+        description: 'Regex flags (g, i, m, etc.)',
+        default: 'g'
+      }
+    ],
+    fn: transformations.regexReplace
   }
 ]
 

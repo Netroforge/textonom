@@ -10,6 +10,7 @@ import Settings from './components/Settings.vue'
 import About from './components/About.vue'
 import CRTEffect from './components/CRTEffect.vue'
 import UpdateNotification from './components/UpdateNotification.vue'
+import Toast from './components/Toast.vue'
 import { applyTheme, type ThemeType } from './styles/themes'
 import { getTransformationPageComponent } from './components/transformations'
 import { useSettingsStore } from './stores/settingsStore'
@@ -216,5 +217,6 @@ watch(
       :show="ui.showUpdateNotification"
       :on-close="() => setShowUpdateNotification(false)"
     />
+    <Toast />
   </div>
 </template>

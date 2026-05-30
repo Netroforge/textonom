@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { aesEncrypt, aesDecrypt } from '../../transformations/aes'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
-import { TransformationParamValues } from '../../types/transformation'
 import { useToast } from '../../stores/toastStore'
 import TransformationAnimation from '../TransformationAnimation.vue'
 import './TransformationPage.css'
 
-const props = defineProps<{
-  tabId: string
-  transformationName: string
-  transformationDescription: string
-  inputPlaceholder: string
-  outputPlaceholder: string
-  transformButtonText: string
-  transformFunction: (text: string, params?: TransformationParamValues) => Promise<string>
-}>()
+const props = defineProps<{ tabId: string }>()
 
 const tabsContentStore = useTabsContentStore()
 const { showToast } = useToast()
@@ -22,31 +14,23 @@ const initialContent = tabsContentStore.getTabContent(props.tabId)
 
 const inputText = ref(initialContent.inputText)
 const outputText = ref(initialContent.outputText)
-const paramValues = ref<TransformationParamValues>(initialContent.paramValues)
+const key = ref(String(initialContent.paramValues?.key ?? ''))
+const mode = ref(String(initialContent.paramValues?.mode ?? 'encrypt'))
+const outputFormat = ref(String(initialContent.paramValues?.output ?? 'base64'))
 const isTransforming = ref(false)
-
-// Show the spinner only if the transform takes long enough that the eye notices.
-const SPINNER_THRESHOLD_MS = 150
 
 const applyTransformation = async (): Promise<void> => {
   if (!inputText.value) return
-  const spinnerTimer = setTimeout(() => {
-    isTransforming.value = true
-  }, SPINNER_THRESHOLD_MS)
-
+  isTransforming.value = true
   try {
-    outputText.value = await props.transformFunction(inputText.value, paramValues.value)
+    const params = { key: key.value, output: outputFormat.value }
+    const fn = mode.value === 'encrypt' ? aesEncrypt : aesDecrypt
+    outputText.value = await fn(inputText.value, params)
   } catch (error) {
-    console.error('Transformation error:', error)
-    if (error instanceof Error) {
-      outputText.value = `Error: ${error.message}`
-    } else if (typeof error === 'string') {
-      outputText.value = `Error: ${error}`
-    } else {
-      outputText.value = 'An unknown error occurred during transformation'
-    }
+    if (error instanceof Error) outputText.value = `Error: ${error.message}`
+    else if (typeof error === 'string') outputText.value = `Error: ${error}`
+    else outputText.value = 'An unknown error occurred during transformation'
   } finally {
-    clearTimeout(spinnerTimer)
     isTransforming.value = false
   }
 }
@@ -82,35 +66,22 @@ const swapIO = (): void => {
   outputText.value = tmp
 }
 
-const handleInputKeydown = (e: KeyboardEvent): void => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault()
-    applyTransformation()
-  }
-}
-
-watch(
-  [inputText, outputText, paramValues],
-  () => {
-    tabsContentStore.saveTabContent(props.tabId, {
-      inputText: inputText.value,
-      outputText: outputText.value,
-      paramValues: paramValues.value
-    })
-  },
-  { deep: true }
-)
+watch([inputText, outputText, key, mode, outputFormat], () => {
+  tabsContentStore.saveTabContent(props.tabId, {
+    inputText: inputText.value,
+    outputText: outputText.value,
+    paramValues: { key: key.value, mode: mode.value, output: outputFormat.value }
+  })
+})
 </script>
 
 <template>
   <div class="transformation-page">
     <div class="transformation-header">
-      <h1>{{ transformationName }}</h1>
-      <p class="transformation-description">{{ transformationDescription }}</p>
-    </div>
-
-    <div v-if="$slots.parameters" class="parameters-container">
-      <slot name="parameters" />
+      <h1>AES Encrypt / Decrypt</h1>
+      <p class="transformation-description">
+        Encrypt or decrypt text using AES (Advanced Encryption Standard)
+      </p>
     </div>
 
     <div class="transformation-content">
@@ -121,28 +92,54 @@ watch(
             id="input-textarea"
             v-model="inputText"
             class="transformation-textarea"
-            :placeholder="inputPlaceholder"
+            :placeholder="
+              mode === 'encrypt' ? 'Enter text to encrypt...' : 'Enter encrypted text to decrypt...'
+            "
             spellcheck="false"
-            @keydown="handleInputKeydown"
           ></textarea>
         </div>
       </div>
 
       <div class="actions-container">
+        <div class="parameters-container">
+          <div class="parameter">
+            <label for="aes-mode">Mode</label>
+            <select id="aes-mode" v-model="mode" class="parameter-input" :disabled="isTransforming">
+              <option value="encrypt">Encrypt</option>
+              <option value="decrypt">Decrypt</option>
+            </select>
+          </div>
+          <div class="parameter">
+            <label for="aes-key">Secret Key</label>
+            <input
+              id="aes-key"
+              v-model="key"
+              type="text"
+              class="parameter-input"
+              :disabled="isTransforming"
+              placeholder="Enter encryption key..."
+            />
+          </div>
+          <div class="parameter">
+            <label for="aes-format">Output Format</label>
+            <select
+              id="aes-format"
+              v-model="outputFormat"
+              class="parameter-input"
+              :disabled="isTransforming"
+            >
+              <option value="base64">Base64</option>
+              <option value="hex">Hex</option>
+            </select>
+          </div>
+        </div>
+
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText || !key"
           @click="applyTransformation"
         >
-          {{ transformButtonText }}
-        </button>
-        <button
-          class="action-button swap-button"
-          :disabled="isTransforming || !outputText"
-          title="Swap input with output"
-          @click="swapIO"
-        >
-          Swap I/O
+          {{ mode === 'encrypt' ? 'Encrypt' : 'Decrypt' }}
         </button>
         <button
           class="action-button clear-button"
@@ -152,9 +149,15 @@ watch(
           Clear
         </button>
         <button
+          class="action-button swap-button"
+          :disabled="isTransforming || !outputText"
+          @click="swapIO"
+        >
+          Swap I/O
+        </button>
+        <button
           class="action-button copy-button"
           :disabled="isTransforming || !inputText"
-          title="Copy input to clipboard"
           @click="copyInput"
         >
           Copy Input
@@ -171,16 +174,17 @@ watch(
       <div class="textarea-container">
         <label for="output-textarea">Output</label>
         <div class="textarea-wrapper">
-          <TransformationAnimation
-            v-if="isTransforming"
-            :transformation-name="transformationName"
-          />
+          <TransformationAnimation v-if="isTransforming" transformation-name="AES" />
           <textarea
             id="output-textarea"
             :value="outputText"
             readonly
             class="transformation-textarea"
-            :placeholder="outputPlaceholder"
+            :placeholder="
+              mode === 'encrypt'
+                ? 'Encrypted output will appear here...'
+                : 'Decrypted output will appear here...'
+            "
             spellcheck="false"
           ></textarea>
         </div>

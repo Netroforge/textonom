@@ -33,6 +33,8 @@ import { isoToTimestamp, timestampToIso } from './timestamp'
 import { loremGenerate } from './lorem'
 import { colorConvert } from './color'
 import { baseConvert } from './numeric'
+import { regexReplace, regexTest } from './regex'
+import { aesEncrypt, aesDecrypt } from './aes'
 
 // Export individual transformations
 export {
@@ -88,7 +90,11 @@ export {
   isoToTimestamp,
   loremGenerate,
   colorConvert,
-  baseConvert
+  baseConvert,
+  regexReplace,
+  regexTest,
+  aesEncrypt,
+  aesDecrypt
 }
 
 export const transformations = {
@@ -144,7 +150,11 @@ export const transformations = {
   isoToTimestamp,
   loremGenerate,
   colorConvert,
-  baseConvert
+  baseConvert,
+  regexReplace,
+  regexTest,
+  aesEncrypt,
+  aesDecrypt
 }
 
 export default transformations
