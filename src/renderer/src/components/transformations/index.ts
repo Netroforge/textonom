@@ -1,4 +1,6 @@
 import type { Component } from 'vue'
+import { getTransformationById } from '../../transformations/registry'
+import GenericTransformationPage from './GenericTransformationPage.vue'
 import Base64EncodePage from './Base64EncodePage.vue'
 import Base64DecodePage from './Base64DecodePage.vue'
 import JsonPrettifyPage from './JsonPrettifyPage.vue'
@@ -114,11 +116,18 @@ const transformationPageMap: Record<string, Component> = {
 
 export const getTransformationPageComponent = (id: string): Component => {
   const component = transformationPageMap[id]
-  if (!component) {
-    console.error(`Transformation page component not found for ID: ${id}`)
-    return Base64EncodePage
+  if (component) {
+    return component
   }
-  return component
+  // Any transformation without a bespoke page (e.g. the newer ones) is rendered
+  // by the registry-driven GenericTransformationPage, which builds its UI from
+  // the transformation's metadata. This keeps the page map from silently
+  // falling back to the wrong page when a transformation is added.
+  if (getTransformationById(id)) {
+    return GenericTransformationPage
+  }
+  console.error(`Transformation page component not found for ID: ${id}`)
+  return GenericTransformationPage
 }
 
 export default transformationPageMap

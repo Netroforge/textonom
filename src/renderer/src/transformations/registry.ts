@@ -712,6 +712,326 @@ const transformationMetadata: Transformation[] = [
       }
     ],
     fn: transformations.regexReplace
+  },
+
+  // Base32
+  {
+    id: 'base32Encode',
+    name: 'Base32 Encode',
+    description: 'Encode text to Base32 (RFC 4648)',
+    category: 'encoding',
+    fn: transformations.base32Encode
+  },
+  {
+    id: 'base32Decode',
+    name: 'Base32 Decode',
+    description: 'Decode Base32 (RFC 4648) encoded text',
+    category: 'encoding',
+    fn: transformations.base32Decode
+  },
+
+  // Binary
+  {
+    id: 'binaryEncode',
+    name: 'Text to Binary',
+    description: 'Encode text to a string of 8-bit binary bytes',
+    category: 'encoding',
+    fn: transformations.binaryEncode
+  },
+  {
+    id: 'binaryDecode',
+    name: 'Binary to Text',
+    description: 'Decode a string of binary bytes back to text',
+    category: 'encoding',
+    fn: transformations.binaryDecode
+  },
+
+  // Morse code
+  {
+    id: 'morseEncode',
+    name: 'Text to Morse Code',
+    description: 'Encode text to International Morse code',
+    category: 'encoding',
+    fn: transformations.morseEncode
+  },
+  {
+    id: 'morseDecode',
+    name: 'Morse Code to Text',
+    description: 'Decode International Morse code back to text',
+    category: 'encoding',
+    fn: transformations.morseDecode
+  },
+
+  // Hash (additional)
+  {
+    id: 'sha3Hash',
+    name: 'SHA-3 Hash',
+    description: 'Generate a SHA-3 (Keccak) hash of text',
+    category: 'hash',
+    parameters: [
+      {
+        name: 'outputLength',
+        type: 'number',
+        description: 'Digest length in bits (224, 256, 384, or 512)',
+        default: 512
+      }
+    ],
+    fn: transformations.sha3Hash
+  },
+  {
+    id: 'ripemd160Hash',
+    name: 'RIPEMD-160 Hash',
+    description: 'Generate a RIPEMD-160 hash of text',
+    category: 'hash',
+    fn: transformations.ripemd160Hash
+  },
+
+  // Text (additional)
+  {
+    id: 'reverseString',
+    name: 'Reverse Text',
+    description: 'Reverse the characters in the text',
+    category: 'text',
+    fn: transformations.reverseString
+  },
+  {
+    id: 'textStatistics',
+    name: 'Text Statistics',
+    description: 'Count characters, words, lines, bytes, and estimate reading time',
+    category: 'text',
+    fn: transformations.textStatistics
+  },
+  {
+    id: 'rot13',
+    name: 'ROT13',
+    description: 'Apply the ROT13 substitution cipher (run twice to decode)',
+    category: 'text',
+    fn: transformations.rot13
+  },
+  {
+    id: 'caesarCipher',
+    name: 'Caesar Cipher',
+    description: 'Shift letters by a fixed amount (use a negative shift to decode)',
+    category: 'text',
+    parameters: [
+      {
+        name: 'shift',
+        type: 'number',
+        description: 'Number of positions to shift',
+        default: 3
+      }
+    ],
+    fn: transformations.caesarCipher
+  },
+  {
+    id: 'natoAlphabet',
+    name: 'NATO Phonetic Alphabet',
+    description: 'Spell out text using the NATO phonetic alphabet',
+    category: 'text',
+    fn: transformations.natoAlphabet
+  },
+  {
+    id: 'stripHtmlTags',
+    name: 'Strip HTML Tags',
+    description: 'Remove HTML tags, leaving the plain text content',
+    category: 'text',
+    fn: transformations.stripHtmlTags
+  },
+  {
+    id: 'tabsToSpaces',
+    name: 'Tabs to Spaces',
+    description: 'Replace tab characters with spaces',
+    category: 'text',
+    parameters: [
+      {
+        name: 'tabSize',
+        type: 'number',
+        description: 'Number of spaces per tab',
+        default: 4,
+        min: 1,
+        max: 16
+      }
+    ],
+    fn: transformations.tabsToSpaces
+  },
+  {
+    id: 'spacesToTabs',
+    name: 'Spaces to Tabs',
+    description: 'Convert leading spaces (indentation) to tab characters',
+    category: 'text',
+    parameters: [
+      {
+        name: 'tabSize',
+        type: 'number',
+        description: 'Number of spaces that make up one tab',
+        default: 4,
+        min: 1,
+        max: 16
+      }
+    ],
+    fn: transformations.spacesToTabs
+  },
+  {
+    id: 'trimLines',
+    name: 'Trim Trailing Whitespace',
+    description: 'Remove trailing whitespace from the end of every line',
+    category: 'text',
+    fn: transformations.trimLines
+  },
+
+  // Formatting (additional)
+  {
+    id: 'sortJsonKeys',
+    name: 'Sort JSON Keys',
+    description: 'Recursively sort object keys alphabetically',
+    category: 'formatting',
+    fn: transformations.sortJsonKeys
+  },
+
+  // Conversion (additional)
+  {
+    id: 'jsonToToml',
+    name: 'JSON to TOML',
+    description: 'Convert JSON to TOML format',
+    category: 'conversion',
+    fn: transformations.jsonToToml
+  },
+  {
+    id: 'tomlToJson',
+    name: 'TOML to JSON',
+    description: 'Convert TOML to JSON format',
+    category: 'conversion',
+    fn: transformations.tomlToJson
+  },
+  {
+    id: 'yamlToToml',
+    name: 'YAML to TOML',
+    description: 'Convert YAML to TOML format',
+    category: 'conversion',
+    fn: transformations.yamlToToml
+  },
+  {
+    id: 'tomlToYaml',
+    name: 'TOML to YAML',
+    description: 'Convert TOML to YAML format',
+    category: 'conversion',
+    fn: transformations.tomlToYaml
+  },
+  {
+    id: 'jsonToXml',
+    name: 'JSON to XML',
+    description: 'Convert JSON to XML format',
+    category: 'conversion',
+    fn: transformations.jsonToXml
+  },
+  {
+    id: 'xmlToJson',
+    name: 'XML to JSON',
+    description: 'Convert XML to JSON format',
+    category: 'conversion',
+    fn: transformations.xmlToJson
+  },
+  {
+    id: 'htmlToMarkdown',
+    name: 'HTML to Markdown',
+    description: 'Convert HTML to Markdown',
+    category: 'conversion',
+    fn: transformations.htmlToMarkdown
+  },
+  {
+    id: 'queryStringToJson',
+    name: 'Query String to JSON',
+    description: 'Parse a URL query string into JSON',
+    category: 'conversion',
+    fn: transformations.queryStringToJson
+  },
+  {
+    id: 'jsonToQueryString',
+    name: 'JSON to Query String',
+    description: 'Convert a flat JSON object into a URL query string',
+    category: 'conversion',
+    fn: transformations.jsonToQueryString
+  },
+  {
+    id: 'romanToNumber',
+    name: 'Roman Numerals to Number',
+    description: 'Convert Roman numerals (one per line) to integers',
+    category: 'conversion',
+    fn: transformations.romanToNumber
+  },
+  {
+    id: 'numberToRoman',
+    name: 'Number to Roman Numerals',
+    description: 'Convert integers (1-3999, one per line) to Roman numerals',
+    category: 'conversion',
+    fn: transformations.numberToRoman
+  },
+  {
+    id: 'cronToHuman',
+    name: 'Cron to Human-readable',
+    description: 'Describe cron expressions (one per line) in plain English',
+    category: 'conversion',
+    fn: transformations.cronToHuman
+  },
+
+  // Generators (additional)
+  {
+    id: 'ulidGenerate',
+    name: 'ULID Generator',
+    description: 'Generate one or more ULIDs (sortable unique identifiers)',
+    category: 'generators',
+    parameters: [
+      {
+        name: 'count',
+        type: 'number',
+        description: 'Number of ULIDs to generate',
+        default: 1,
+        min: 1,
+        max: 1000
+      }
+    ],
+    fn: transformations.ulidGenerate
+  },
+  {
+    id: 'tokenGenerate',
+    name: 'Token / Password Generator',
+    description: 'Generate a random token from the selected character sets',
+    category: 'generators',
+    parameters: [
+      {
+        name: 'length',
+        type: 'number',
+        description: 'Token length',
+        default: 32,
+        min: 1,
+        max: 1024
+      },
+      {
+        name: 'uppercase',
+        type: 'boolean',
+        description: 'Include uppercase letters (A-Z)',
+        default: true
+      },
+      {
+        name: 'lowercase',
+        type: 'boolean',
+        description: 'Include lowercase letters (a-z)',
+        default: true
+      },
+      {
+        name: 'numbers',
+        type: 'boolean',
+        description: 'Include digits (0-9)',
+        default: true
+      },
+      {
+        name: 'symbols',
+        type: 'boolean',
+        description: 'Include symbols',
+        default: false
+      }
+    ],
+    fn: transformations.tokenGenerate
   }
 ]
 

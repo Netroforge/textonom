@@ -15,6 +15,8 @@ import md5Hash from '@renderer/transformations/hash/md5'
 import sha1Hash from '@renderer/transformations/hash/sha1'
 import sha256Hash from '@renderer/transformations/hash/sha256'
 import sha512Hash from '@renderer/transformations/hash/sha512'
+import sha3Hash from '@renderer/transformations/hash/sha3'
+import ripemd160Hash from '@renderer/transformations/hash/ripemd160'
 import bcryptHash from '@renderer/transformations/hash/bcrypt'
 import pbkdf2Hash from '@renderer/transformations/hash/pbkdf2'
 import hmacHash from '@renderer/transformations/hash/hmac'
@@ -49,6 +51,43 @@ describe('sha512Hash', () => {
     expect(await sha512Hash('abc')).toBe(
       'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f'
     )
+  })
+})
+
+describe('sha3Hash', () => {
+  it('returns empty string for empty input', async () => {
+    expect(await sha3Hash('')).toBe('')
+  })
+
+  it('hashes a known Keccak-256 value', async () => {
+    expect(await sha3Hash('abc', { outputLength: 256 })).toBe(
+      '4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45'
+    )
+  })
+
+  it('defaults to a 512-bit (128 hex char) digest', async () => {
+    expect(await sha3Hash('abc')).toHaveLength(128)
+  })
+
+  it('produces digests sized to the requested output length', async () => {
+    expect(await sha3Hash('abc', { outputLength: 224 })).toHaveLength(56)
+    expect(await sha3Hash('abc', { outputLength: 384 })).toHaveLength(96)
+  })
+
+  it('throws on an invalid output length', async () => {
+    await expect(sha3Hash('abc', { outputLength: 100 })).rejects.toThrow(
+      'Output length must be 224, 256, 384, or 512'
+    )
+  })
+})
+
+describe('ripemd160Hash', () => {
+  it('returns empty string for empty input', async () => {
+    expect(await ripemd160Hash('')).toBe('')
+  })
+
+  it('hashes a known value', async () => {
+    expect(await ripemd160Hash('abc')).toBe('8eb208f7e05d987a9b044a8e98c6b087f15a0bfc')
   })
 })
 

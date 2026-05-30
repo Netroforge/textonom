@@ -1,6 +1,9 @@
 // Import transformations from category modules
 import { base64Decode, base64Encode } from './base64'
-import { jsonCompact, jsonPrettify } from './json'
+import { base32Decode, base32Encode } from './base32'
+import { binaryDecode, binaryEncode } from './binary'
+import { morseDecode, morseEncode } from './morse'
+import { jsonCompact, jsonPrettify, sortJsonKeys } from './json'
 import { urlDecode, urlEncode } from './url'
 import {
   toCamelCase,
@@ -13,7 +16,17 @@ import {
 import { xmlCompact, xmlPrettify } from './xml'
 import { deduplicateLines, removeEmptyLines, reverseLines, sortLines } from './lines'
 import { htmlDecode, htmlEncode } from './html'
-import { bcryptHash, hmacHash, md5Hash, pbkdf2Hash, sha1Hash, sha256Hash, sha512Hash } from './hash'
+import {
+  bcryptHash,
+  hmacHash,
+  md5Hash,
+  pbkdf2Hash,
+  ripemd160Hash,
+  sha1Hash,
+  sha256Hash,
+  sha3Hash,
+  sha512Hash
+} from './hash'
 import { unicodeEscape, unicodeUnescape } from './unicode'
 import {
   csvToJson,
@@ -21,14 +34,38 @@ import {
   jsonToYaml,
   propertiesFileToYaml,
   yamlToJson,
-  yamlToPropertiesFile
+  yamlToPropertiesFile,
+  jsonToToml,
+  tomlToJson,
+  yamlToToml,
+  tomlToYaml,
+  jsonToXml,
+  xmlToJson,
+  htmlToMarkdown,
+  queryStringToJson,
+  jsonToQueryString,
+  romanToNumber,
+  numberToRoman,
+  cronToHuman
 } from './conversion'
 import { jwtDecode } from './jwt'
 import { hexEncode, hexDecode } from './hex'
 import { markdownToHtml } from './markdown'
-import { removeDuplicateWords, slugify } from './text'
+import {
+  removeDuplicateWords,
+  slugify,
+  reverseString,
+  textStatistics,
+  rot13,
+  caesarCipher,
+  natoAlphabet,
+  stripHtmlTags
+} from './text'
+import { tabsToSpaces, spacesToTabs, trimLines } from './whitespace'
 import { sqlFormat, htmlFormat, cssFormat, jsFormat, xmlFormat, codeFormat } from './formatting'
 import { uuidGenerate } from './uuid'
+import { ulidGenerate } from './ulid'
+import { tokenGenerate } from './token'
 import { isoToTimestamp, timestampToIso } from './timestamp'
 import { loremGenerate } from './lorem'
 import { colorConvert } from './color'
@@ -94,7 +131,39 @@ export {
   regexReplace,
   regexTest,
   aesEncrypt,
-  aesDecrypt
+  aesDecrypt,
+  base32Encode,
+  base32Decode,
+  binaryEncode,
+  binaryDecode,
+  morseEncode,
+  morseDecode,
+  sha3Hash,
+  ripemd160Hash,
+  reverseString,
+  textStatistics,
+  rot13,
+  caesarCipher,
+  natoAlphabet,
+  stripHtmlTags,
+  tabsToSpaces,
+  spacesToTabs,
+  trimLines,
+  sortJsonKeys,
+  jsonToToml,
+  tomlToJson,
+  yamlToToml,
+  tomlToYaml,
+  jsonToXml,
+  xmlToJson,
+  htmlToMarkdown,
+  queryStringToJson,
+  jsonToQueryString,
+  romanToNumber,
+  numberToRoman,
+  cronToHuman,
+  ulidGenerate,
+  tokenGenerate
 }
 
 export const transformations = {
@@ -154,7 +223,39 @@ export const transformations = {
   regexReplace,
   regexTest,
   aesEncrypt,
-  aesDecrypt
+  aesDecrypt,
+  base32Encode,
+  base32Decode,
+  binaryEncode,
+  binaryDecode,
+  morseEncode,
+  morseDecode,
+  sha3Hash,
+  ripemd160Hash,
+  reverseString,
+  textStatistics,
+  rot13,
+  caesarCipher,
+  natoAlphabet,
+  stripHtmlTags,
+  tabsToSpaces,
+  spacesToTabs,
+  trimLines,
+  sortJsonKeys,
+  jsonToToml,
+  tomlToJson,
+  yamlToToml,
+  tomlToYaml,
+  jsonToXml,
+  xmlToJson,
+  htmlToMarkdown,
+  queryStringToJson,
+  jsonToQueryString,
+  romanToNumber,
+  numberToRoman,
+  cronToHuman,
+  ulidGenerate,
+  tokenGenerate
 }
 
 export default transformations

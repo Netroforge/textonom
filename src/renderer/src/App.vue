@@ -203,7 +203,9 @@ watch(
       <component
         :is="TransformationComponent"
         v-else-if="activeTabId && activeTransformationId && TransformationComponent"
+        :key="activeTabId"
         :tab-id="activeTabId"
+        :transformation-id="activeTransformationId"
       />
 
       <StatusBar />
