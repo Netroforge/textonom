@@ -18,7 +18,9 @@
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: -1rem;
-  z-index: 10;
+  /* Stay below the top-nav's stacking context (z-index 10) so its dropdown
+     menu renders above the pinned header, while still covering page content. */
+  z-index: 5;
   background-color: var(--background);
   /* Offset the .home-page padding so the header spans full width while pinned. */
   margin-left: -1rem;
