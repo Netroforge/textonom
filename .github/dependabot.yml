@@ -9,6 +9,7 @@ updates:
         patterns:
           - '*'
   - package-ecosystem: 'npm'
+    open-pull-requests-limit: 10
     directories:
       - '**/*'
     schedule:

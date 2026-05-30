@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingsStore } from '../stores/settingsStore'
 import { THEMES } from '../styles/themes'
 import './Settings.css'
 
-defineProps<{
+const props = defineProps<{
   onClose: () => void
 }>()
+
+const { onClose } = props
 
 interface Section {
   id: string
@@ -85,6 +87,18 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
     onClose()
   }
 }
+
+const handleKeydown = (e: KeyboardEvent): void => {
+  if (e.key === 'Escape') onClose()
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>

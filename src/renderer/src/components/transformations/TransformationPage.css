@@ -177,6 +177,15 @@
   background-color: var(--infoDark);
 }
 
+.swap-button {
+  background-color: var(--warning);
+  color: #000;
+}
+
+.swap-button:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
 @media (min-width: 768px) {
   .transformation-content {
     flex-direction: row;

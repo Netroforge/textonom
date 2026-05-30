@@ -1,11 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { getAllCategories } from '../transformations/registry'
 import './About.css'
 
-defineProps<{
+const props = defineProps<{
   onClose: () => void
 }>()
+
+const handleKeydown = (e: KeyboardEvent): void => {
+  if (e.key === 'Escape') props.onClose()
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 
 const appVersion = ref<string>('Unknown')
 

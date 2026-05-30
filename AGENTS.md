@@ -3,9 +3,11 @@
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
 ## Project overview
+
 Textonom is an Electron + Vue 3 + TypeScript desktop app for local text transformations. It uses `electron-vite` for main/preload/renderer builds and `electron-builder` for packaging and release publishing.
 
 ## Canonical development commands
+
 Run from repository root.
 
 - Install dependencies:
@@ -32,6 +34,7 @@ Run from repository root.
   - `npm run build:unpack`
 
 ## Testing status
+
 There is currently no test runner configured in `package.json` (no `test` script, and no Jest/Vitest/Playwright config in the repo).
 
 - “Single test” command: not available yet.
@@ -40,7 +43,9 @@ There is currently no test runner configured in `package.json` (no `test` script
   - `npx tsc --noEmit -p tsconfig.json`
 
 ## Architecture map (big picture)
+
 ### Process boundaries
+
 - `src/main/index.ts`: Electron main process.
   - Creates frameless `BrowserWindow`, restores window position/size, manages update events, and owns IPC handlers.
   - Persists state files under Electron `userData/state`.
@@ -48,6 +53,7 @@ There is currently no test runner configured in `package.json` (no `test` script
 - `src/renderer/src/*`: Vue 3 app UI and transformation engine.
 
 ### State and persistence model
+
 - Active app state is in Pinia stores under `src/renderer/src/stores/`.
   - Persisted stores: `settingsStore`, `tabsStore`, `homePageStore`, `windowStore`, `uiStore`.
   - Non-persisted in-memory store: `tabsContentStore` (tab input/output/params while app runs).
@@ -56,18 +62,21 @@ There is currently no test runner configured in `package.json` (no `test` script
 - Main process separately tracks window geometry/fullscreen/maximized state and pushes updates back to renderer via `window-state-updated`.
 
 ### Transformation system wiring
+
 - Pure transformation functions live in `src/renderer/src/transformations/**` (grouped by domain: `base64`, `json`, `hash`, `conversion`, etc.).
 - Metadata and discoverability are centralized in `src/renderer/src/transformations/registry.ts` (IDs, categories, descriptions, parameter metadata, search).
 - UI pages are mapped in `src/renderer/src/components/transformations/index.ts` (transformation ID -> page component).
 - Most page components are thin wrappers around `BaseTransformationPage`, which handles input/output UX and per-tab content persistence.
 
 When adding a transformation, the minimum cross-file path is:
-1) implement function in `transformations/**`,
-2) export it through `transformations/index.ts`,
-3) add metadata in `transformations/registry.ts`,
-4) add UI page + ID mapping in `components/transformations/index.ts`.
+
+1. implement function in `transformations/**`,
+2. export it through `transformations/index.ts`,
+3. add metadata in `transformations/registry.ts`,
+4. add UI page + ID mapping in `components/transformations/index.ts`.
 
 ### UI composition flow
+
 - `App.tsx` composes shell UI (title bar, top nav, tabs, status bar, dialogs).
 - `HomePage.tsx` reads categories from registry, supports search, and opens transformations as tabs.
 - Tabs store controls which transformation page renders; active tab’s `transformationId` selects component via `getTransformationPageComponent`.
