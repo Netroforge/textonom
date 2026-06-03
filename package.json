@@ -57,7 +57,7 @@
     "@types/node": "^25.9.1",
     "@types/turndown": "^5.0.6",
     "@types/xml-formatter": "^2.1.1",
-    "@typescript-eslint/eslint-plugin": "^8.60.0",
+    "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.60.0",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/test-utils": "^2.4.10",
