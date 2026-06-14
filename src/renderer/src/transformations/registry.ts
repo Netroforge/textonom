@@ -1,5 +1,10 @@
 import { Transformation, TransformationCategory } from '../types/transformation'
 import transformations from './index'
+import { getCustomTransformations, initializeCustomTransformations } from './index'
+import type { CustomTransformation } from './custom'
+
+// Initialize custom transformations at module load
+initializeCustomTransformations()
 
 // Define categories
 const categories: TransformationCategory[] = [
@@ -43,6 +48,12 @@ const categories: TransformationCategory[] = [
     id: 'generators',
     name: 'Generators',
     description: 'Generate IDs, placeholder text, and other useful values',
+    transformations: []
+  },
+  {
+    id: 'pipeline',
+    name: 'Pipeline / Batch',
+    description: 'Chain multiple transformations together for complex workflows',
     transformations: []
   }
 ]
@@ -1032,8 +1043,59 @@ const transformationMetadata: Transformation[] = [
       }
     ],
     fn: transformations.tokenGenerate
+  },
+  // Pipeline
+  {
+    id: 'pipelineTransform',
+    name: 'Pipeline Transform',
+    description:
+      'Chain multiple transformations together in sequence to create complex text processing workflows',
+    category: 'pipeline',
+    parameters: [
+      {
+        name: 'pipeline',
+        type: 'string',
+        description: 'Pipeline configuration (JSON)'
+      }
+    ],
+    fn: transformations.pipelineTransform
+  },
+  // Custom Transformation Builder
+  {
+    id: 'customTransformationBuilder',
+    name: 'Custom Transformation Builder',
+    description: 'Create your own custom text transformations with a visual builder',
+    category: 'custom',
+    fn: transformations.customTransformationBuilder
   }
 ]
+// Add custom transformations from the transformations object
+const addCustomTransformationsToRegistry = (): void => {
+  const customIds = Object.keys(transformations).filter((key) => key.startsWith('custom_'))
+  for (const id of customIds) {
+    const fn = transformations[id]
+    if (fn) {
+      // Find the custom transformation in localStorage to get metadata
+      const customTransforms = getCustomTransformations ? getCustomTransformations() : []
+      const custom = customTransforms.find((c: CustomTransformation) => c.id === id)
+      if (custom) {
+        const metadata: Transformation = {
+          id: custom.id,
+          name: custom.name,
+          description: custom.description,
+          category: custom.category,
+          parameters: custom.parameters,
+          fn
+        }
+        transformationMetadata.push(metadata)
+        const category = categories.find((cat) => cat.id === custom.category)
+        if (category) {
+          category.transformations.push(metadata)
+        }
+      }
+    }
+  }
+}
 
 // Organize transformations into categories
 transformationMetadata.forEach((transformation) => {
@@ -1043,14 +1105,36 @@ transformationMetadata.forEach((transformation) => {
   }
 })
 
+// Add custom transformations after initial setup
+addCustomTransformationsToRegistry()
+
 // Get all transformations
 export const getAllTransformations = (): Transformation[] => {
+  // Refresh custom transformations
+  addCustomTransformationsToRegistry()
   return transformationMetadata
 }
 
 // Get transformation by ID
 export const getTransformationById = (id: string): Transformation | undefined => {
-  return transformationMetadata.find((t) => t.id === id)
+  // Check static metadata first
+  let result = transformationMetadata.find((t) => t.id === id)
+  // Check custom transformations
+  if (!result && id.startsWith('custom_')) {
+    const customTransforms = getCustomTransformations ? getCustomTransformations() : []
+    const custom = customTransforms.find((c: CustomTransformation) => c.id === id)
+    if (custom && transformations[id]) {
+      result = {
+        id: custom.id,
+        name: custom.name,
+        description: custom.description,
+        category: custom.category,
+        parameters: custom.parameters,
+        fn: transformations[id]
+      }
+    }
+  }
+  return result
 }
 
 // Get all categories with their transformations

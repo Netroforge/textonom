@@ -55,6 +55,8 @@ import ColorConvertPage from './ColorConvertPage.vue'
 import BaseConvertPage from './BaseConvertPage.vue'
 import AesPage from './AesPage.vue'
 import RegexReplacePage from './RegexReplacePage.vue'
+import PipelinePage from './PipelinePage.vue'
+import CustomTransformationBuilderPage from './CustomTransformationBuilderPage.vue'
 
 const transformationPageMap: Record<string, Component> = {
   base64Encode: Base64EncodePage,
@@ -111,7 +113,9 @@ const transformationPageMap: Record<string, Component> = {
   baseConvert: BaseConvertPage,
   aesEncrypt: AesPage,
   aesDecrypt: AesPage,
-  regexReplace: RegexReplacePage
+  regexReplace: RegexReplacePage,
+  pipelineTransform: PipelinePage,
+  customTransformationBuilder: CustomTransformationBuilderPage
 }
 
 export const getTransformationPageComponent = (id: string): Component => {

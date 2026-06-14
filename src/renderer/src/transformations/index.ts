@@ -72,6 +72,20 @@ import { colorConvert } from './color'
 import { baseConvert } from './numeric'
 import { regexReplace, regexTest } from './regex'
 import { aesEncrypt, aesDecrypt } from './aes'
+import { pipelineTransform, pipelinePreview } from './pipeline'
+import {
+  getCustomTransformations,
+  createCustomTransformationMetadata,
+  addCustomTransformation,
+  updateCustomTransformation,
+  deleteCustomTransformation,
+  generateCustomId,
+  validateCustomCode
+} from './custom'
+// Custom Transformation Builder (placeholder - actual function is handled by the page component)
+const customTransformationBuilder = async (): Promise<string> => {
+  return 'Open the Custom Transformation Builder to create and test transformations.'
+}
 
 // Export individual transformations
 export {
@@ -163,7 +177,10 @@ export {
   numberToRoman,
   cronToHuman,
   ulidGenerate,
-  tokenGenerate
+  tokenGenerate,
+  pipelineTransform,
+  pipelinePreview,
+  customTransformationBuilder
 }
 
 export const transformations = {
@@ -255,7 +272,41 @@ export const transformations = {
   numberToRoman,
   cronToHuman,
   ulidGenerate,
-  tokenGenerate
+  tokenGenerate,
+  pipelineTransform,
+  pipelinePreview,
+  customTransformationBuilder
 }
 
 export default transformations
+
+// Initialize custom transformations - call this at app startup
+export const initializeCustomTransformations = (): void => {
+  const customTransforms = getCustomTransformations()
+  for (const custom of customTransforms) {
+    const metadata = createCustomTransformationMetadata(custom)
+    // Add to transformations object so it's available for use
+    ;(transformations as Record<string, unknown>)[custom.id] = metadata.fn
+  }
+}
+
+// Refresh custom transformations (call after adding/removing)
+export const refreshCustomTransformations = (): void => {
+  // Remove old custom transformations
+  const customTransforms = getCustomTransformations()
+  for (const custom of customTransforms) {
+    delete (transformations as Record<string, unknown>)[custom.id]
+  }
+  // Re-add current ones
+  initializeCustomTransformations()
+}
+
+// Re-export custom transformation functions
+export {
+  getCustomTransformations,
+  addCustomTransformation,
+  updateCustomTransformation,
+  deleteCustomTransformation,
+  generateCustomId,
+  validateCustomCode
+}
