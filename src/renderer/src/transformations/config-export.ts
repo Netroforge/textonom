@@ -91,12 +91,11 @@ export const importConfiguration = async (
       refreshCustomTransformations()
     }
 
-    // Persist all stores to electron
+    // Persist imported state to disk (uiStore is intentionally ephemeral)
     settingsStore.persist()
     tabsStore.persist()
     homePageStore.persist()
     windowStore.persist()
-    uiStore.persist()
 
     return { success: true }
   } catch (error) {

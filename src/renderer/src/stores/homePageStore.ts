@@ -25,7 +25,7 @@ export const useHomePageStore = defineStore('homePage', () => {
     Object.assign(homePage, defaultHomePageState())
   }
 
-  setupPersistence(
+  const { persist } = setupPersistence(
     {
       key: 'homePage',
       serialize: () => ({ homePage: { ...homePage } }),
@@ -45,6 +45,7 @@ export const useHomePageStore = defineStore('homePage', () => {
     homePage,
     setHomePageSearchQuery,
     setHomePageScrollPosition,
-    resetHomePageState
+    resetHomePageState,
+    persist
   }
 })

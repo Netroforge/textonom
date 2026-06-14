@@ -112,7 +112,7 @@ export const useTabsStore = defineStore('tabs', () => {
     tabs.value = newTabs
   }
 
-  setupPersistence(
+  const { persist } = setupPersistence(
     {
       key: 'tabs',
       serialize: () => ({
@@ -142,6 +142,7 @@ export const useTabsStore = defineStore('tabs', () => {
     closeAllTabs,
     closeTabsToRight,
     setActiveTab,
-    reorderTabs
+    reorderTabs,
+    persist
   }
 })

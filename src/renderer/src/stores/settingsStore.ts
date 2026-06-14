@@ -55,7 +55,7 @@ export const useSettingsStore = defineStore('settings', () => {
     Object.assign(settings, defaultSettings)
   }
 
-  setupPersistence(
+  const { persist } = setupPersistence(
     {
       key: 'settings',
       serialize: () => ({ settings: { ...settings } }),
@@ -81,6 +81,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setCrtEffect,
     setBcryptRounds,
     setWordWrap,
-    resetSettings
+    resetSettings,
+    persist
   }
 })

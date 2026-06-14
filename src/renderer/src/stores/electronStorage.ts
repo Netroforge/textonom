@@ -37,11 +37,36 @@ interface PersistOptions<T> {
   hydrate: (data: T) => void
 }
 
+export interface Persistence {
+  /** Force the current store state to be written to disk immediately. */
+  persist: () => void
+}
+
 export const setupPersistence = <T>(
   opts: PersistOptions<T>,
   watcher: (cb: () => void) => void
-): void => {
+): Persistence => {
   const storage = createElectronStorage(opts.key)
+
+  let saving = false
+  let pending = false
+  const save = async (): Promise<void> => {
+    if (saving) {
+      pending = true
+      return
+    }
+    saving = true
+    try {
+      const value = JSON.stringify({ state: opts.serialize(), version: 1 })
+      await storage.setItem(opts.key, value)
+    } finally {
+      saving = false
+      if (pending) {
+        pending = false
+        await save()
+      }
+    }
+  }
 
   void (async (): Promise<void> => {
     const raw = await storage.getItem(opts.key)
@@ -55,28 +80,14 @@ export const setupPersistence = <T>(
       }
     }
 
-    let saving = false
-    let pending = false
-    const save = async (): Promise<void> => {
-      if (saving) {
-        pending = true
-        return
-      }
-      saving = true
-      try {
-        const value = JSON.stringify({ state: opts.serialize(), version: 1 })
-        await storage.setItem(opts.key, value)
-      } finally {
-        saving = false
-        if (pending) {
-          pending = false
-          await save()
-        }
-      }
-    }
-
     watcher(() => {
       void save()
     })
   })()
+
+  return {
+    persist: () => {
+      void save()
+    }
+  }
 }

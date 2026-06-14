@@ -26,7 +26,7 @@ export const useWindowStore = defineStore('window', () => {
     windowState.value = state
   }
 
-  setupPersistence(
+  const { persist } = setupPersistence(
     {
       key: 'window',
       serialize: (): WindowState | null => windowState.value,
@@ -46,6 +46,7 @@ export const useWindowStore = defineStore('window', () => {
 
   return {
     windowState,
-    setWindowState
+    setWindowState,
+    persist
   }
 })
