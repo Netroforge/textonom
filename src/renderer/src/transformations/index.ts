@@ -70,6 +70,7 @@ import { isoToTimestamp, timestampToIso } from './timestamp'
 import { loremGenerate } from './lorem'
 import { colorConvert } from './color'
 import { baseConvert } from './numeric'
+import { computeTextDiff, formatDiffAsText } from './diff'
 import { regexReplace, regexTest } from './regex'
 import { aesEncrypt, aesDecrypt } from './aes'
 import { pipelineTransform, pipelinePreview } from './pipeline'
@@ -142,6 +143,8 @@ export {
   loremGenerate,
   colorConvert,
   baseConvert,
+  computeTextDiff,
+  formatDiffAsText,
   regexReplace,
   regexTest,
   aesEncrypt,
@@ -237,6 +240,8 @@ export const transformations = {
   loremGenerate,
   colorConvert,
   baseConvert,
+  computeTextDiff,
+  formatDiffAsText,
   regexReplace,
   regexTest,
   aesEncrypt,

@@ -210,6 +210,13 @@ const transformationMetadata: Transformation[] = [
     category: 'text',
     fn: transformations.removeDuplicateWords
   },
+  {
+    id: 'textDiff',
+    name: 'Text Diff',
+    description: 'Compare two texts and see the differences between them',
+    category: 'text',
+    fn: async () => 'Use the Text Diff page for comparing texts'
+  },
 
   // HTML
   {

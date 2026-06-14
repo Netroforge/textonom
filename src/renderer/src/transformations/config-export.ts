@@ -47,7 +47,9 @@ export const downloadConfiguration = (config: ExportedConfig, filename?: string)
   URL.revokeObjectURL(url)
 }
 
-export const importConfiguration = async (file: File): Promise<{ success: boolean; error?: string }> => {
+export const importConfiguration = async (
+  file: File
+): Promise<{ success: boolean; error?: string }> => {
   try {
     const text = await file.text()
     const config = JSON.parse(text) as ExportedConfig
