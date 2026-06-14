@@ -1,6 +1,6 @@
 {
   "name": "textonom",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "A text editor that lets you perform common text transformations locally",
   "main": "./out/main/index.js",
   "author": "Netroforge",
