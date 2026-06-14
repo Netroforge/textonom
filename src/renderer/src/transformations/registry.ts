@@ -55,6 +55,12 @@ const categories: TransformationCategory[] = [
     name: 'Pipeline / Batch',
     description: 'Chain multiple transformations together for complex workflows',
     transformations: []
+  },
+  {
+    id: 'custom',
+    name: 'Custom',
+    description: 'Create and manage your own custom transformations',
+    transformations: []
   }
 ]
 
