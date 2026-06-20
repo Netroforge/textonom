@@ -1,5 +1,5 @@
 ![Static Badge](https://img.shields.io/badge/vibe_coded-purple?style=for-the-badge&logo=musicbrainz&logoColor=white)
-![Static Badge](https://img.shields.io/badge/vibe_debuged-red?style=for-the-badge&logo=spring_creators&logoColor=white)
+![Static Badge](https://img.shields.io/badge/vibe_debugged-red?style=for-the-badge&logo=spring_creators&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/vibe_refactored-blue?style=for-the-badge&logo=linuxcontainers&logoColor=white)
 
 [![slack](https://img.shields.io/badge/slack-join-brightgreen.svg?style=for-the-badge&logo=slack)](https://join.slack.com/t/netroforge/shared_invite/zt-335byot5g-Z6PVCx45OgKKiTjJxz7odw)
@@ -216,9 +216,20 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 
 Join our [Slack channel](https://join.slack.com/t/netroforge/shared_invite/zt-335byot5g-Z6PVCx45OgKKiTjJxz7odw) for discussions.
 
+## Support the Project
+
+If you find Textonom useful, consider supporting its development:
+
+- [GitHub Sponsors](https://github.com/sponsors/Netroforge)
+- [Ko-fi](https://ko-fi.com/netroforge)
+- [Open Collective](https://opencollective.com/netroforge)
+- [Patreon](https://patreon.com/Netroforge)
+
+Your support helps cover development costs, server infrastructure, and enables new features.
+
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
 
 ## Misc
 

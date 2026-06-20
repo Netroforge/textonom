@@ -88,8 +88,43 @@ onMounted(async () => {
         </div>
 
         <div class="about-section">
+          <h3>Support the Project</h3>
+          <p>If you find Textonom useful, consider supporting its development:</p>
+          <ul>
+            <li>
+              <a
+                href="https://github.com/sponsors/Netroforge"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub Sponsors
+              </a>
+            </li>
+            <li>
+              <a href="https://ko-fi.com/netroforge" target="_blank" rel="noopener noreferrer">
+                Ko-fi
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://opencollective.com/netroforge"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Collective
+              </a>
+            </li>
+            <li>
+              <a href="https://patreon.com/Netroforge" target="_blank" rel="noopener noreferrer">
+                Patreon
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="about-section">
           <h3>License</h3>
-          <p>This software is open source and available under the MIT License.</p>
+          <p>This software is open source and available under the Apache License 2.0.</p>
         </div>
       </div>
     </div>

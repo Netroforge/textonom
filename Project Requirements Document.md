@@ -7,7 +7,7 @@ This document outlines the current implementation and features of the Textonom a
 | Requirement ID | Description                              | Implementation Status                  |
 | -------------- | ---------------------------------------- | -------------------------------------- |
 | CORE-01        | Cross-platform desktop application       | Implemented using Electron             |
-| CORE-02        | Modern UI with React                     | Implemented with React 19              |
+| CORE-02        | Modern UI with Vue 3                     | Implemented with Vue 3                 |
 | CORE-03        | Type-safe codebase                       | Implemented with TypeScript            |
 | CORE-04        | Multiple themes                          | Implemented (Light, Dark, Cyberpunk)   |
 | CORE-05        | Tab-based interface                      | Implemented with drag-and-drop support |

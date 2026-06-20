@@ -47,7 +47,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements
 
-- **Migration to React**: Migrated the application from Vue to React 19 for better performance and maintainability
+- **Framework Update**: Migrated the application to use Vue 3 Composition API for better performance and maintainability
 - **Word Wrap**: Added option to enable/disable word wrap for all text areas
 - **Status Bar**: Improved status bar to display the current open tab name
 - **Tab Behavior**: Adjusted tab behavior to switch to another open tab when closing a tab
