@@ -172,12 +172,13 @@ watch(
           </div>
         </div>
         <div class="textarea-wrapper">
-          <!-- eslint-disable-next-line vue/no-v-html -->
+          <!-- eslint-disable vue/no-v-html -->
           <div
             v-if="showLivePreview && highlightedInput"
             class="live-preview-input"
             v-html="highlightedInput"
           ></div>
+          <!-- eslint-enable vue/no-v-html -->
           <textarea
             id="input-textarea"
             v-model="inputText"

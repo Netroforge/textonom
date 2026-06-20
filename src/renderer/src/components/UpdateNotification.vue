@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { marked } from 'marked'
 import './UpdateNotification.css'
 
 const props = defineProps<{
@@ -19,6 +20,15 @@ const downloadButtonText = ref('Download Update')
 const updateReadyToInstall = ref(false)
 const lastError = ref<string>('')
 const copyErrorButtonText = ref('Copy details')
+
+const safeReleaseNotes = ref('')
+
+watch(
+  () => updateInfo.value?.releaseNotes,
+  async (notes) => {
+    safeReleaseNotes.value = notes ? await marked.parse(notes) : ''
+  }
+)
 
 defineExpose({
   manualCheckUpdateStarted: (): void => {
@@ -192,11 +202,8 @@ onMounted(() => {
       <div class="update-notification-body">
         <p>A new version ({{ updateInfo?.version }}) is available.</p>
 
-        <p
-          v-if="updateInfo?.releaseNotes"
-          class="release-notes"
-          v-html="updateInfo.releaseNotes"
-        ></p>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <p v-if="updateInfo?.releaseNotes" class="release-notes" v-html="safeReleaseNotes"></p>
 
         <div class="update-notification-actions">
           <button v-if="!updateReadyToInstall" :disabled="isDownloading" @click="downloadUpdate">
@@ -240,7 +247,8 @@ onMounted(() => {
 
           <div v-if="updateInfo.releaseNotes" class="release-notes">
             <h3>Release Notes:</h3>
-            <div v-html="updateInfo.releaseNotes"></div>
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div v-html="safeReleaseNotes"></div>
           </div>
 
           <div class="update-actions">

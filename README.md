@@ -1,6 +1,6 @@
-![Static Badge](https://img.shields.io/badge/vibe_coded-purple?style=for-the-badge&logo=musicbrainz&logoColor=white)
-![Static Badge](https://img.shields.io/badge/vibe_debugged-red?style=for-the-badge&logo=spring_creators&logoColor=white)
-![Static Badge](https://img.shields.io/badge/vibe_refactored-blue?style=for-the-badge&logo=linuxcontainers&logoColor=white)
+[![GitHub Release](https://img.shields.io/github/v/release/Netroforge/textonom?style=for-the-badge&logo=github)](https://github.com/Netroforge/textonom/releases)
+[![License](https://img.shields.io/github/license/Netroforge/textonom?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey?style=for-the-badge)]()
 
 [![slack](https://img.shields.io/badge/slack-join-brightgreen.svg?style=for-the-badge&logo=slack)](https://join.slack.com/t/netroforge/shared_invite/zt-335byot5g-Z6PVCx45OgKKiTjJxz7odw)
 
@@ -218,12 +218,12 @@ Join our [Slack channel](https://join.slack.com/t/netroforge/shared_invite/zt-33
 
 ## Support the Project
 
-If you find Textonom useful, consider supporting its development:
+Support the ongoing development of Textonom:
 
-- [GitHub Sponsors](https://github.com/sponsors/Netroforge)
-- [Ko-fi](https://ko-fi.com/netroforge)
-- [Open Collective](https://opencollective.com/netroforge)
-- [Patreon](https://patreon.com/Netroforge)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/Netroforge?style=for-the-badge&logo=githubsponsors)](https://github.com/sponsors/Netroforge)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-donate-FF5E5B?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/netroforge)
+[![Open Collective](https://img.shields.io/badge/Open%20Collective-contribute-7FADF2?style=for-the-badge&logo=opencollective)](https://opencollective.com/netroforge)
+[![Patreon](https://img.shields.io/badge/Patreon-support-FF424D?style=for-the-badge&logo=patreon)](https://patreon.com/Netroforge)
 
 Your support helps cover development costs, server infrastructure, and enables new features.
 

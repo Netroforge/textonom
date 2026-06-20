@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { mount, flushPromises, type VueWrapper as VueWrapperType } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import GenericTransformationPage from './GenericTransformationPage.vue'
 
-const mountPage = (transformationId: string, tabId = 'tab-1') =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mountPage = (transformationId: string, tabId = 'tab-1'): VueWrapperType<any> =>
   mount(GenericTransformationPage, { props: { tabId, transformationId } })
 
 beforeEach(() => {

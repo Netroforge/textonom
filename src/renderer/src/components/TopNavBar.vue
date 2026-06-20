@@ -103,6 +103,9 @@ const openGithub = (): void => {
         <div class="menu-item" @click="openGithub">
           <span>GitHub Repository</span>
         </div>
+        <div class="menu-item" @click="openGithub">
+          <span>Star on GitHub</span>
+        </div>
         <div class="menu-item" @click="handleMenuAction('checkForUpdates')">
           <span>Check for Updates</span>
         </div>
