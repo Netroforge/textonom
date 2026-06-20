@@ -1057,6 +1057,77 @@ const transformationMetadata: Transformation[] = [
     ],
     fn: transformations.tokenGenerate
   },
+  // CRC
+  {
+    id: 'crc32Hash',
+    name: 'CRC32 Hash',
+    description: 'Generate a CRC32 checksum of text',
+    category: 'hash',
+    fn: transformations.crc32Hash
+  },
+  {
+    id: 'crc16Hash',
+    name: 'CRC16 Hash',
+    description: 'Generate a CRC-16-IBM checksum of text',
+    category: 'hash',
+    fn: transformations.crc16Hash
+  },
+
+  // bcrypt verify
+  {
+    id: 'bcryptVerify',
+    name: 'Bcrypt Verify',
+    description: 'Verify that plain text matches a bcrypt hash',
+    category: 'hash',
+    parameters: [
+      {
+        name: 'hash',
+        type: 'string',
+        description: 'The bcrypt hash to verify against'
+      }
+    ],
+    fn: transformations.bcryptVerify
+  },
+
+  // Extract
+  {
+    id: 'extractEmails',
+    name: 'Extract Emails',
+    description: 'Extract all email addresses from text',
+    category: 'text',
+    fn: transformations.extractEmails
+  },
+  {
+    id: 'extractUrls',
+    name: 'Extract URLs',
+    description: 'Extract all URLs from text',
+    category: 'text',
+    fn: transformations.extractUrls
+  },
+  {
+    id: 'extractIps',
+    name: 'Extract IP Addresses',
+    description: 'Extract all IPv4 addresses from text',
+    category: 'text',
+    fn: transformations.extractIps
+  },
+  {
+    id: 'extractNumbers',
+    name: 'Extract Numbers',
+    description: 'Extract all numbers from text',
+    category: 'text',
+    fn: transformations.extractNumbers
+  },
+
+  // Image Base64
+  {
+    id: 'imageBase64',
+    name: 'Image to / from Base64',
+    description: 'Convert images to Base64 data URIs, or decode Base64 back to images',
+    category: 'conversion',
+    fn: transformations.base64ToImage
+  },
+
   // Pipeline
   {
     id: 'pipelineTransform',

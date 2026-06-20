@@ -2,7 +2,12 @@
 import { ref, watch, onUnmounted, onMounted, computed, nextTick } from 'vue'
 import { useTabsContentStore } from '../../stores/tabsContentStore'
 import { useToast } from '../../stores/toastStore'
-import { computeTextDiff, formatDiffAsText, type DiffLine } from '../../transformations/diff'
+import {
+  computeTextDiff,
+  formatDiffAsText,
+  computeWordDiff,
+  type DiffLine
+} from '../../transformations/diff'
 import TransformationAnimation from '../TransformationAnimation.vue'
 import './TransformationPage.css'
 
@@ -18,9 +23,26 @@ const diffOutput = ref(initialContent.outputText)
 const diffLines = ref<DiffLine[]>([])
 const isTransforming = ref(false)
 const showLineNumbers = ref((initialContent.paramValues?.showLineNumbers as boolean) ?? true)
-const outputMode = ref<'side-by-side' | 'text'>(
-  (initialContent.paramValues?.outputMode as 'side-by-side' | 'text') ?? 'side-by-side'
+const outputMode = ref<'side-by-side' | 'text' | 'word-diff'>(
+  (initialContent.paramValues?.outputMode as 'side-by-side' | 'text' | 'word-diff') ??
+    'side-by-side'
 )
+
+const fileInputLeft = ref<HTMLInputElement | null>(null)
+const fileInputRight = ref<HTMLInputElement | null>(null)
+
+const loadFile = async (side: 'left' | 'right'): Promise<void> => {
+  const input = side === 'left' ? fileInputLeft.value : fileInputRight.value
+  if (!input?.files?.[0]) return
+  try {
+    const text = await input.files[0].text()
+    if (side === 'left') originalText.value = text
+    else changedText.value = text
+  } catch {
+    showToast('Failed to read file', 'error')
+  }
+  input.value = ''
+}
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -34,6 +56,21 @@ const summary = computed(() => {
 // Lines as typed on each side (updates instantly so the gutters stay in sync).
 const leftLines = computed(() => originalText.value.split('\n'))
 const rightLines = computed(() => changedText.value.split('\n'))
+
+const wordDiffHtml = computed(() => {
+  if (!originalText.value && !changedText.value) return ''
+  const segments = computeWordDiff(originalText.value, changedText.value)
+  let html = ''
+  for (const seg of segments) {
+    const cls = seg.type === 'equal' ? 'wd-equal' : seg.type === 'added' ? 'wd-added' : 'wd-removed'
+    html += `<span class="${cls}">${escapeHtml(seg.text)}</span>`
+  }
+  return html
+})
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
 
 // 1-based line numbers that changed, derived from the last computed diff.
 const removedLineSet = computed(
@@ -216,6 +253,7 @@ onUnmounted(() => {
           View:
           <select v-model="outputMode" class="output-mode-select">
             <option value="side-by-side">Side by Side</option>
+            <option value="word-diff">Word Diff</option>
             <option value="text">Plain Text</option>
           </select>
         </label>
@@ -258,7 +296,19 @@ onUnmounted(() => {
       <!-- Side-by-side editable diff -->
       <div v-show="outputMode === 'side-by-side'" class="diff-view">
         <div class="diff-pane">
-          <div class="pane-header">Original</div>
+          <div class="pane-header">
+            <span>Original</span>
+            <label class="file-load-btn" title="Load from file">
+              <input
+                ref="fileInputLeft"
+                type="file"
+                class="file-input-hidden"
+                accept=".txt,.md,.json,.csv,.xml,.yaml,.yml,.html,.css,.js,.ts"
+                @change="loadFile('left')"
+              />
+              Load File
+            </label>
+          </div>
           <div class="pane-body">
             <div v-if="showLineNumbers" class="diff-gutter">
               <div ref="leftGutter" class="gutter-inner">
@@ -294,7 +344,19 @@ onUnmounted(() => {
         </div>
 
         <div class="diff-pane">
-          <div class="pane-header">Changed</div>
+          <div class="pane-header">
+            <span>Changed</span>
+            <label class="file-load-btn" title="Load from file">
+              <input
+                ref="fileInputRight"
+                type="file"
+                class="file-input-hidden"
+                accept=".txt,.md,.json,.csv,.xml,.yaml,.yml,.html,.css,.js,.ts"
+                @change="loadFile('right')"
+              />
+              Load File
+            </label>
+          </div>
           <div class="pane-body">
             <div v-if="showLineNumbers" class="diff-gutter">
               <div ref="rightGutter" class="gutter-inner">
@@ -328,6 +390,24 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Word-level inline diff -->
+      <div v-show="outputMode === 'word-diff'" class="word-diff-container">
+        <div class="word-diff-legend">
+          <span class="legend-removed">Removed</span>
+          <span class="legend-added">Added</span>
+          <span class="legend-equal">Unchanged</span>
+        </div>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div v-if="wordDiffHtml" class="word-diff-output" v-html="wordDiffHtml"></div>
+        <textarea
+          v-else
+          readonly
+          class="transformation-textarea plain-diff"
+          placeholder="Enter text in both panes to see word-level differences."
+          spellcheck="false"
+        ></textarea>
       </div>
 
       <!-- Plain-text unified diff (read-only) -->
@@ -499,6 +579,90 @@ onUnmounted(() => {
   flex: 1;
   min-height: 0;
   width: 100%;
+}
+
+.file-load-btn {
+  font-size: 0.7rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.file-load-btn:hover {
+  background: var(--surfaceHover);
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.word-diff-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--inputBackground);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow-y: auto;
+}
+
+.word-diff-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.legend-removed,
+.legend-added,
+.legend-equal {
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+}
+
+.legend-removed {
+  background: rgba(244, 67, 54, 0.22);
+  color: #e57373;
+}
+
+.legend-added {
+  background: rgba(76, 175, 80, 0.22);
+  color: #81c784;
+}
+
+.legend-equal {
+  background: transparent;
+  color: var(--text-muted, #888);
+}
+
+.word-diff-output {
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--fontFamily, monospace);
+  font-size: var(--fontSize, 0.9rem);
+}
+
+.word-diff-output :deep(.wd-equal) {
+  background: transparent;
+}
+
+.word-diff-output :deep(.wd-removed) {
+  background: rgba(244, 67, 54, 0.22);
+  text-decoration: line-through;
+  border-radius: 2px;
+}
+
+.word-diff-output :deep(.wd-added) {
+  background: rgba(76, 175, 80, 0.22);
+  border-radius: 2px;
 }
 
 @media (max-width: 768px) {

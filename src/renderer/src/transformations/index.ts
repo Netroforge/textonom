@@ -18,6 +18,7 @@ import { deduplicateLines, removeEmptyLines, reverseLines, sortLines } from './l
 import { htmlDecode, htmlEncode } from './html'
 import {
   bcryptHash,
+  bcryptVerify,
   hmacHash,
   md5Hash,
   pbkdf2Hash,
@@ -25,7 +26,9 @@ import {
   sha1Hash,
   sha256Hash,
   sha3Hash,
-  sha512Hash
+  sha512Hash,
+  crc32Hash,
+  crc16Hash
 } from './hash'
 import { unicodeEscape, unicodeUnescape } from './unicode'
 import {
@@ -61,6 +64,8 @@ import {
   natoAlphabet,
   stripHtmlTags
 } from './text'
+import { extractEmails, extractUrls, extractIps, extractNumbers } from './extract'
+import { base64ToImage } from './image'
 import { tabsToSpaces, spacesToTabs, trimLines } from './whitespace'
 import { sqlFormat, htmlFormat, cssFormat, jsFormat, xmlFormat, codeFormat } from './formatting'
 import { uuidGenerate } from './uuid'
@@ -116,7 +121,10 @@ export {
   sha512Hash,
   hmacHash,
   bcryptHash,
+  bcryptVerify,
   pbkdf2Hash,
+  crc32Hash,
+  crc16Hash,
   unicodeEscape,
   unicodeUnescape,
   jsonToYaml,
@@ -181,6 +189,11 @@ export {
   cronToHuman,
   ulidGenerate,
   tokenGenerate,
+  extractEmails,
+  extractUrls,
+  extractIps,
+  extractNumbers,
+  base64ToImage,
   pipelineTransform,
   pipelinePreview,
   customTransformationBuilder
@@ -213,7 +226,10 @@ export const transformations = {
   sha512Hash,
   hmacHash,
   bcryptHash,
+  bcryptVerify,
   pbkdf2Hash,
+  crc32Hash,
+  crc16Hash,
   unicodeEscape,
   unicodeUnescape,
   jsonToYaml,
@@ -278,6 +294,11 @@ export const transformations = {
   cronToHuman,
   ulidGenerate,
   tokenGenerate,
+  extractEmails,
+  extractUrls,
+  extractIps,
+  extractNumbers,
+  base64ToImage,
   pipelineTransform,
   pipelinePreview,
   customTransformationBuilder

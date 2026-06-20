@@ -1,4 +1,5 @@
-import type { TransformationFunction } from '../../types/transformation'
+import type { TransformationFunction, TransformationParamValues } from '../../types/transformation'
+import bcryptjs from 'bcryptjs'
 import { bcryptInWorker } from '../../workers/hashWorkerClient'
 
 const bcryptHash: TransformationFunction = async (
@@ -22,6 +23,24 @@ const bcryptHash: TransformationFunction = async (
       throw new Error(`Failed to generate bcrypt hash: ${error.message}`)
     }
     throw new Error('Failed to generate bcrypt hash: Unknown error')
+  }
+}
+
+export const bcryptVerify: TransformationFunction = async (
+  text: string,
+  params?: TransformationParamValues
+): Promise<string> => {
+  if (!text) return ''
+  const hash = (params?.hash as string) || ''
+  if (!hash) throw new Error('Hash is required')
+
+  try {
+    const match = await bcryptjs.compare(text, hash)
+    return match
+      ? '✓ Match — the text matches the hash'
+      : '✗ No match — the text does not match the hash'
+  } catch {
+    throw new Error('Invalid bcrypt hash format')
   }
 }
 

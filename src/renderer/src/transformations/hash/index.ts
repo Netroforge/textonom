@@ -4,9 +4,10 @@ import sha256Hash from './sha256'
 import sha512Hash from './sha512'
 import sha3Hash from './sha3'
 import ripemd160Hash from './ripemd160'
-import bcryptHash from './bcrypt'
+import bcryptHash, { bcryptVerify } from './bcrypt'
 import hmacHash from './hmac'
 import pbkdf2Hash from './pbkdf2'
+import { crc32Hash, crc16Hash } from './crc'
 
 export {
   md5Hash,
@@ -16,6 +17,9 @@ export {
   sha3Hash,
   ripemd160Hash,
   bcryptHash,
+  bcryptVerify,
   hmacHash,
-  pbkdf2Hash
+  pbkdf2Hash,
+  crc32Hash,
+  crc16Hash
 }

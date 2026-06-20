@@ -5,6 +5,11 @@ export interface DiffLine {
   newLine?: number
 }
 
+export interface WordSegment {
+  text: string
+  type: 'equal' | 'added' | 'removed'
+}
+
 export function computeTextDiff(oldText: string, newText: string): DiffLine[] {
   if (oldText === newText) {
     const lines = newText === '' ? [''] : newText.split('\n')
@@ -65,6 +70,46 @@ function buildDiff(oldLines: string[], newLines: string[]): DiffLine[] {
     result.push(temp[k])
   }
 
+  return result
+}
+
+export function computeWordDiff(oldStr: string, newStr: string): WordSegment[] {
+  if (oldStr === newStr) return [{ text: oldStr, type: 'equal' }]
+  const oldWords = oldStr.split(/(\s+)/)
+  const newWords = newStr.split(/(\s+)/)
+  const dp: number[][] = []
+  for (let i = 0; i <= oldWords.length; i++) {
+    dp.push(new Array(newWords.length + 1).fill(0))
+  }
+  for (let i = 1; i <= oldWords.length; i++) {
+    for (let j = 1; j <= newWords.length; j++) {
+      if (oldWords[i - 1] === newWords[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1
+      } else {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+      }
+    }
+  }
+  const result: WordSegment[] = []
+  let i = oldWords.length
+  let j = newWords.length
+  const temp: WordSegment[] = []
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && oldWords[i - 1] === newWords[j - 1]) {
+      temp.push({ text: oldWords[i - 1], type: 'equal' })
+      i--
+      j--
+    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+      temp.push({ text: newWords[j - 1], type: 'added' })
+      j--
+    } else {
+      temp.push({ text: oldWords[i - 1], type: 'removed' })
+      i--
+    }
+  }
+  for (let k = temp.length - 1; k >= 0; k--) {
+    result.push(temp[k])
+  }
   return result
 }
 

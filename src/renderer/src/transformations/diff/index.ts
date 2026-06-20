@@ -1,3 +1,9 @@
-import { computeTextDiff, formatDiffAsText, type DiffLine } from './text-diff'
+import {
+  computeTextDiff,
+  formatDiffAsText,
+  computeWordDiff,
+  type DiffLine,
+  type WordSegment
+} from './text-diff'
 
-export { computeTextDiff, formatDiffAsText, type DiffLine }
+export { computeTextDiff, formatDiffAsText, computeWordDiff, type DiffLine, type WordSegment }
