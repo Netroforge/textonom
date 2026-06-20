@@ -46,12 +46,9 @@ const loadFile = async (side: 'left' | 'right'): Promise<void> => {
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-const summary = computed(() => {
-  const added = diffLines.value.filter((l) => l.type === 'added').length
-  const removed = diffLines.value.filter((l) => l.type === 'removed').length
-  if (added === 0 && removed === 0) return ''
-  return `${added} addition${added !== 1 ? 's' : ''}, ${removed} deletion${removed !== 1 ? 's' : ''}`
-})
+const addedCount = computed(() => diffLines.value.filter((l) => l.type === 'added').length)
+const removedCount = computed(() => diffLines.value.filter((l) => l.type === 'removed').length)
+const hasChanges = computed(() => addedCount.value > 0 || removedCount.value > 0)
 
 // Lines as typed on each side (updates instantly so the gutters stay in sync).
 const leftLines = computed(() => originalText.value.split('\n'))
@@ -243,51 +240,76 @@ onUnmounted(() => {
       </p>
     </div>
 
-    <div class="actions-container">
-      <div class="diff-options">
-        <label class="checkbox-label" title="Show line numbers">
+    <div class="diff-toolbar">
+      <div class="toolbar-group">
+        <label class="tool-toggle" title="Show line numbers">
           <input v-model="showLineNumbers" type="checkbox" />
-          Line Numbers
+          <span>Line numbers</span>
         </label>
-        <label class="checkbox-label">
-          View:
+        <label class="tool-field">
+          <span>View</span>
           <select v-model="outputMode" class="output-mode-select">
             <option value="side-by-side">Side by Side</option>
             <option value="word-diff">Word Diff</option>
             <option value="text">Plain Text</option>
           </select>
         </label>
-        <span v-if="summary" class="diff-summary">{{ summary }}</span>
+        <div
+          v-if="hasChanges"
+          class="diff-stats"
+          :title="`${addedCount} added, ${removedCount} removed`"
+        >
+          <span class="stat stat-added">+{{ addedCount }}</span>
+          <span class="stat stat-removed">−{{ removedCount }}</span>
+        </div>
       </div>
 
-      <button
-        class="action-button swap-button"
-        :disabled="!originalText && !changedText"
-        title="Swap original and changed text"
-        @click="swapSides"
-      >
-        Swap Sides
-      </button>
-      <button
-        class="action-button clear-button"
-        :disabled="!originalText && !changedText && !diffOutput"
-        @click="clearAll"
-      >
-        Clear
-      </button>
-      <button
-        class="action-button copy-button"
-        :disabled="diffLines.length === 0"
-        @click="copyOutput"
-      >
-        Copy Diff
-      </button>
-      <button class="action-button copy-button" :disabled="!originalText" @click="copyOriginal">
-        Copy Original
-      </button>
-      <button class="action-button copy-button" :disabled="!changedText" @click="copyChanged">
-        Copy Changed
-      </button>
+      <div class="toolbar-group">
+        <button
+          class="tool-btn"
+          :disabled="!originalText && !changedText"
+          title="Swap original and changed text"
+          @click="swapSides"
+        >
+          <svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 3 4 7l4 4" />
+            <path d="M4 7h16" />
+            <path d="M16 21l4-4-4-4" />
+            <path d="M20 17H4" />
+          </svg>
+          Swap
+        </button>
+        <button
+          class="tool-btn"
+          :disabled="!originalText && !changedText && !diffOutput"
+          title="Clear both sides"
+          @click="clearAll"
+        >
+          <svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18" />
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          </svg>
+          Clear
+        </button>
+
+        <span class="toolbar-divider" aria-hidden="true"></span>
+
+        <span class="copy-label">
+          <svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="8" y="8" width="13" height="13" rx="2" />
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+          </svg>
+          Copy
+        </span>
+        <div class="copy-group">
+          <button class="tool-btn" :disabled="diffLines.length === 0" @click="copyOutput">
+            Diff
+          </button>
+          <button class="tool-btn" :disabled="!originalText" @click="copyOriginal">Original</button>
+          <button class="tool-btn" :disabled="!changedText" @click="copyChanged">Changed</button>
+        </div>
+      </div>
     </div>
 
     <div class="diff-workspace">
@@ -297,8 +319,8 @@ onUnmounted(() => {
       <div v-show="outputMode === 'side-by-side'" class="diff-view">
         <div class="diff-pane">
           <div class="pane-header">
-            <span>Original</span>
-            <label class="file-load-btn" title="Load from file">
+            <span class="pane-title">Original</span>
+            <label class="file-load-btn" title="Load original from a file">
               <input
                 ref="fileInputLeft"
                 type="file"
@@ -306,7 +328,12 @@ onUnmounted(() => {
                 accept=".txt,.md,.json,.csv,.xml,.yaml,.yml,.html,.css,.js,.ts"
                 @change="loadFile('left')"
               />
-              Load File
+              <svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="M17 8 12 3 7 8" />
+                <path d="M12 3v12" />
+              </svg>
+              Load
             </label>
           </div>
           <div class="pane-body">
@@ -345,8 +372,8 @@ onUnmounted(() => {
 
         <div class="diff-pane">
           <div class="pane-header">
-            <span>Changed</span>
-            <label class="file-load-btn" title="Load from file">
+            <span class="pane-title">Changed</span>
+            <label class="file-load-btn" title="Load changed from a file">
               <input
                 ref="fileInputRight"
                 type="file"
@@ -354,7 +381,12 @@ onUnmounted(() => {
                 accept=".txt,.md,.json,.csv,.xml,.yaml,.yml,.html,.css,.js,.ts"
                 @change="loadFile('right')"
               />
-              Load File
+              <svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="M17 8 12 3 7 8" />
+                <path d="M12 3v12" />
+              </svg>
+              Load
             </label>
           </div>
           <div class="pane-body">
@@ -424,40 +456,171 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.diff-options {
+/* Tighten the shared page header so the editors get more room. */
+.transformation-page > .transformation-header {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+}
+
+/* ---------- Toolbar ---------- */
+.diff-toolbar {
   display: flex;
-  gap: 1rem;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  margin-bottom: 0.85rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--surface);
+  border: 1px solid rgba(var(--borderRgb), 0.45);
+  border-radius: 7px;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.checkbox-label {
-  display: flex;
+.tool-toggle {
+  display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  font-size: 0.85rem;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text);
   cursor: pointer;
   white-space: nowrap;
 }
 
+.tool-toggle input {
+  width: 0.95rem;
+  height: 0.95rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.tool-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--textSecondary);
+  white-space: nowrap;
+}
+
 .output-mode-select {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  padding: 0.28rem 0.5rem;
+  border: 1px solid rgba(var(--borderRgb), 0.5);
+  border-radius: 5px;
   background-color: var(--inputBackground);
   color: var(--text);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 
-.diff-summary {
-  font-size: 0.8rem;
-  color: var(--text-muted, #888);
-  background: var(--surface);
-  padding: 0.125rem 0.5rem;
+.output-mode-select:hover {
+  border-color: var(--primary);
+}
+
+/* Live add/remove counters */
+.diff-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.stat {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.1rem 0.4rem;
   border-radius: 4px;
 }
 
-/* The workspace takes all remaining vertical space. */
+.stat-added {
+  color: var(--success);
+  background: rgba(var(--successRgb), 0.14);
+}
+
+.stat-removed {
+  color: var(--error);
+  background: rgba(var(--errorRgb), 0.14);
+}
+
+/* Ghost toolbar buttons */
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.34rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--inputBackground);
+  border: 1px solid rgba(var(--borderRgb), 0.5);
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    background 0.15s;
+}
+
+.tool-btn:hover:not(:disabled) {
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(var(--primaryRgb), 0.35);
+}
+
+.tool-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tool-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.toolbar-divider {
+  width: 1px;
+  align-self: stretch;
+  min-height: 1.2rem;
+  margin: 0 0.15rem;
+  background: rgba(var(--borderRgb), 0.5);
+}
+
+.copy-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--textSecondary);
+}
+
+.copy-group {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.copy-group .tool-btn {
+  padding: 0.34rem 0.55rem;
+}
+
+/* ---------- Workspace ---------- */
 .diff-workspace {
   position: relative;
   flex: 1;
@@ -470,9 +633,9 @@ onUnmounted(() => {
   min-height: 0;
   display: flex;
   gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  background: rgba(var(--borderRgb), 0.55);
+  border: 1px solid rgba(var(--borderRgb), 0.55);
+  border-radius: 7px;
   overflow: hidden;
 }
 
@@ -486,12 +649,21 @@ onUnmounted(() => {
 
 .pane-header {
   flex-shrink: 0;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: var(--text-muted, #888);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.4rem 0.35rem 0.75rem;
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(var(--borderRgb), 0.5);
+}
+
+.pane-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--textSecondary);
 }
 
 .pane-body {
@@ -506,7 +678,7 @@ onUnmounted(() => {
   flex-shrink: 0;
   overflow: hidden;
   background: var(--surface);
-  border-right: 1px solid var(--border);
+  border-right: 1px solid rgba(var(--borderRgb), 0.4);
   user-select: none;
 }
 
@@ -519,9 +691,10 @@ onUnmounted(() => {
 }
 
 .gutter-line {
-  padding: 0 0.5rem;
+  padding: 0 0.6rem;
   text-align: right;
-  color: var(--text-muted, #888);
+  color: var(--textSecondary);
+  opacity: 0.6;
   white-space: pre;
 }
 
@@ -551,11 +724,13 @@ onUnmounted(() => {
 }
 
 .hl-removed {
-  background-color: rgba(244, 67, 54, 0.22);
+  background-color: rgba(var(--errorRgb), 0.16);
+  box-shadow: inset 2px 0 var(--error);
 }
 
 .hl-added {
-  background-color: rgba(76, 175, 80, 0.22);
+  background-color: rgba(var(--successRgb), 0.16);
+  box-shadow: inset 2px 0 var(--success);
 }
 
 /* Transparent background so the highlight bands show through. */
@@ -581,25 +756,36 @@ onUnmounted(() => {
   width: 100%;
 }
 
+/* ---------- Load-from-file affordance ---------- */
 .file-load-btn {
-  font-size: 0.7rem;
-  padding: 0.125rem 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--surface);
-  color: var(--text-muted, #888);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--textSecondary);
+  background: transparent;
+  border: 1px solid rgba(var(--borderRgb), 0.45);
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .file-load-btn:hover {
-  background: var(--surfaceHover);
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(var(--primaryRgb), 0.3);
 }
 
 .file-input-hidden {
   display: none;
 }
 
+/* ---------- Word diff ---------- */
 .word-diff-container {
   flex: 1;
   min-height: 0;
@@ -608,8 +794,8 @@ onUnmounted(() => {
   gap: 0.5rem;
   padding: 0.75rem;
   background: var(--inputBackground);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px solid rgba(var(--borderRgb), 0.55);
+  border-radius: 7px;
   overflow-y: auto;
 }
 
@@ -628,18 +814,18 @@ onUnmounted(() => {
 }
 
 .legend-removed {
-  background: rgba(244, 67, 54, 0.22);
-  color: #e57373;
+  background: rgba(var(--errorRgb), 0.2);
+  color: var(--error);
 }
 
 .legend-added {
-  background: rgba(76, 175, 80, 0.22);
-  color: #81c784;
+  background: rgba(var(--successRgb), 0.2);
+  color: var(--success);
 }
 
 .legend-equal {
   background: transparent;
-  color: var(--text-muted, #888);
+  color: var(--textSecondary);
 }
 
 .word-diff-output {
@@ -655,13 +841,13 @@ onUnmounted(() => {
 }
 
 .word-diff-output :deep(.wd-removed) {
-  background: rgba(244, 67, 54, 0.22);
+  background: rgba(var(--errorRgb), 0.2);
   text-decoration: line-through;
   border-radius: 2px;
 }
 
 .word-diff-output :deep(.wd-added) {
-  background: rgba(76, 175, 80, 0.22);
+  background: rgba(var(--successRgb), 0.2);
   border-radius: 2px;
 }
 
