@@ -43,7 +43,6 @@ const codeFormat: TransformationFunction = async (
         throw new Error(`Unsupported language: ${language}`)
     }
   } catch (error) {
-    console.error('Error formatting code:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to format code: ${error.message}`)
     } else if (typeof error === 'string') {

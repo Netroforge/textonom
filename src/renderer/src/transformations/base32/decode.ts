@@ -32,7 +32,6 @@ const base32Decode: TransformationFunction = async (text: string): Promise<strin
 
     return new TextDecoder().decode(new Uint8Array(bytes))
   } catch (error) {
-    console.error('Error decoding from Base32:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to decode Base32: ${error.message}`)
     }

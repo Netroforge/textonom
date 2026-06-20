@@ -14,7 +14,6 @@ const tomlToYaml: TransformationFunction = async (text: string): Promise<string>
     const parsed = tomlParse(text)
     return yaml.dump(parsed)
   } catch (error) {
-    console.error('Error converting TOML to YAML:', error)
     const err = error as Error
     throw new Error('Failed to convert TOML to YAML: ' + err.message)
   }

@@ -20,7 +20,6 @@ const removeEmptyLines: TransformationFunction = async (text: string): Promise<s
     // Join the non-empty lines back together
     return nonEmptyLines.join('\n')
   } catch (error) {
-    console.error('Error removing empty lines:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to remove empty lines: ${error.message}`)
     } else if (typeof error === 'string') {

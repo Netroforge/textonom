@@ -1,56 +1,35 @@
 version: 2
 updates:
-  - package-ecosystem: github-actions
-    directory: '/'
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: 'monthly'
+      interval: "weekly"
     groups:
-      github-actions:
-        patterns:
-          - '*'
-  - package-ecosystem: 'npm'
-    open-pull-requests-limit: 10
-    directories:
-      - '**/*'
-    schedule:
-      interval: 'monthly'
-    groups:
-      electron:
-        patterns:
-          - 'electron'
-          - 'electron-*'
-          - '@electron-toolkit/*'
-      vue:
-        patterns:
-          - 'vue'
-          - '@vue/*'
-          - 'pinia'
-          - '@vitejs/plugin-vue'
-          - 'vue-tsc'
-          - 'vue-eslint-parser'
-          - 'eslint-plugin-vue'
-      eslint:
-        patterns:
-          - 'eslint'
-          - 'eslint-*'
-          - '@typescript-eslint/*'
-        exclude-patterns:
-          - 'eslint-plugin-vue'
       typescript:
         patterns:
-          - 'typescript'
-          - '@types/*'
-      prettier:
+          - "@types/*"
+          - "typescript"
+      vue:
         patterns:
-          - 'prettier'
-          - '@prettier/*'
-      vite:
+          - "vue*"
+          - "@vue/*"
+      eslint:
         patterns:
-          - 'vite'
-          - 'electron-vite'
+          - "eslint*"
+          - "@eslint/*"
+          - "@typescript-eslint/*"
+      electron:
+        patterns:
+          - "electron"
+          - "electron-*"
+          - "@electron-toolkit/*"
       minor-and-patch:
-        patterns:
-          - '*'
         update-types:
-          - 'minor'
-          - 'patch'
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

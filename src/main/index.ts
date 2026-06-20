@@ -21,20 +21,6 @@ interface WindowState {
   displayId?: string // Identifier for the display/monitor
 }
 
-// Interface for app state
-interface AppState {
-  tabs?: Array<{
-    id: string
-    title: string
-    transformationId: string
-  }>
-  activeTabId?: string | null
-  showHomePage?: boolean
-  version?: string
-  windowState?: WindowState
-  [key: string]: unknown
-}
-
 // Logger
 const log = electronLog
 if (is.dev) {
@@ -379,7 +365,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.github.netroforge')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -420,8 +406,6 @@ app.whenReady().then(() => {
     return window ? window.isMaximized() : false
   })
 
-  // File operations IPC handlers have been removed
-
   // Auto-update IPC handlers
   ipcMain.handle('check-for-updates', async () => {
     try {
@@ -460,8 +444,6 @@ app.whenReady().then(() => {
     return app.getVersion()
   })
 
-  // Last directory handler has been removed
-
   // Set the window title
   ipcMain.handle('set-window-title', (_, title: string) => {
     if (mainWindow) {
@@ -473,47 +455,6 @@ app.whenReady().then(() => {
 
   // Ensure state directory exists
   ensureStateDirExists()
-
-  // Legacy app state persistence handlers (for backward compatibility)
-  ipcMain.handle('save-app-state', (_, { state }: { state: string }) => {
-    try {
-      // Validate that the state is valid JSON and conforms to our AppState interface
-      try {
-        JSON.parse(state) as AppState
-      } catch (parseError) {
-        log.error('Invalid app state JSON:', parseError)
-        return { success: false, error: 'Invalid app state format' }
-      }
-
-      fs.writeFileSync(appStateFilePath, state, 'utf8')
-      return { success: true }
-    } catch (error) {
-      const err = error as Error
-      log.error('Error saving app state:', error)
-      return { success: false, error: err.message }
-    }
-  })
-
-  ipcMain.handle('load-app-state', () => {
-    try {
-      if (fs.existsSync(appStateFilePath)) {
-        const stateData = fs.readFileSync(appStateFilePath, 'utf8')
-        // Validate that the state is valid JSON
-        try {
-          JSON.parse(stateData) as AppState
-        } catch (parseError) {
-          log.error('Invalid app state JSON:', parseError)
-          return { success: false, error: 'Invalid app state format' }
-        }
-        return { success: true, state: stateData }
-      }
-      return { success: false, error: 'App state file does not exist' }
-    } catch (error) {
-      const err = error as Error
-      log.error('Error loading app state:', error)
-      return { success: false, error: err.message }
-    }
-  })
 
   // New app state persistence handlers (for separate files)
   ipcMain.handle('save-state', (_, { key, state }: { key: string; state: string }) => {

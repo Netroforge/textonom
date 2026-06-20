@@ -26,7 +26,6 @@ const jsonToQueryString: TransformationFunction = async (text: string): Promise<
 
     return params.toString()
   } catch (error) {
-    console.error('Error converting JSON to query string:', error)
     const err = error as Error
     throw new Error('Failed to convert JSON to query string: ' + err.message)
   }

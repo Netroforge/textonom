@@ -11,7 +11,6 @@ const xmlCompact: TransformationFunction = async (text: string): Promise<string>
       collapseContent: true
     })
   } catch (error) {
-    console.error('Error compacting XML:', error)
     const err = error as Error
     throw new Error('Failed to compact XML: ' + err.message)
   }

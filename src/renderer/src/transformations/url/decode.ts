@@ -6,8 +6,7 @@ import type { TransformationFunction } from '../../types/transformation'
 const urlDecode: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return decodeURIComponent(text)
-  } catch (error) {
-    console.error('Error URL decoding:', error)
+  } catch {
     throw new Error('Failed to URL decode text')
   }
 }

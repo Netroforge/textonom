@@ -67,7 +67,6 @@ const jsonToCsv: TransformationFunction = async (
 
     return lines.join('\n')
   } catch (error) {
-    console.error('Error converting JSON to CSV:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to convert JSON to CSV: ${error.message}`)
     } else if (typeof error === 'string') {

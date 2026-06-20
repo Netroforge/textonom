@@ -12,7 +12,6 @@ const ripemd160Hash: TransformationFunction = async (text: string): Promise<stri
   try {
     return CryptoJS.RIPEMD160(text).toString()
   } catch (error) {
-    console.error('Error generating RIPEMD-160 hash:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to generate RIPEMD-160 hash: ${error.message}`)
     }

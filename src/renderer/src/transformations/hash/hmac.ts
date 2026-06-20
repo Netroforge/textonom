@@ -46,7 +46,6 @@ const hmacHash: TransformationFunction = async (
     // Return the HMAC as a hex string
     return hmac.toString()
   } catch (error) {
-    console.error('Error generating HMAC:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to generate HMAC: ${error.message}`)
     } else if (typeof error === 'string') {

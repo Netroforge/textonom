@@ -37,14 +37,10 @@ const applyTransformation = async (): Promise<void> => {
   try {
     outputText.value = await props.transformFunction(inputText.value, paramValues.value)
   } catch (error) {
-    console.error('Transformation error:', error)
-    if (error instanceof Error) {
-      outputText.value = `Error: ${error.message}`
-    } else if (typeof error === 'string') {
-      outputText.value = `Error: ${error}`
-    } else {
-      outputText.value = 'An unknown error occurred during transformation'
-    }
+    const message =
+      error instanceof Error ? error.message : typeof error === 'string' ? error : 'Unknown error'
+    showToast(`Transformation failed: ${message}`, 'error')
+    outputText.value = `Error: ${message}`
   } finally {
     clearTimeout(spinnerTimer)
     isTransforming.value = false

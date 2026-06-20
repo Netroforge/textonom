@@ -21,7 +21,6 @@ const hexEncode: TransformationFunction = async (text: string): Promise<string> 
     }
     return result
   } catch (error) {
-    console.error('Error encoding to hex:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to encode text to hex: ${error.message}`)
     } else if (typeof error === 'string') {

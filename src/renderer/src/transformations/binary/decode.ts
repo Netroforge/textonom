@@ -26,7 +26,6 @@ const binaryDecode: TransformationFunction = async (text: string): Promise<strin
 
     return new TextDecoder().decode(new Uint8Array(bytes))
   } catch (error) {
-    console.error('Error decoding binary:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to decode binary: ${error.message}`)
     }

@@ -60,7 +60,6 @@ const applyTransformation = async (): Promise<void> => {
     const source = isGenerator.value ? '' : inputText.value
     outputText.value = await fn(source, paramValues.value)
   } catch (error) {
-    console.error('Transformation error:', error)
     if (error instanceof Error) {
       outputText.value = `Error: ${error.message}`
     } else if (typeof error === 'string') {

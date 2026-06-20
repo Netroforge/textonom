@@ -41,7 +41,6 @@ const propertiesFileToYaml: TransformationFunction = async (text: string): Promi
 
     return yaml.dump(result)
   } catch (error) {
-    console.error('Error converting properties to YAML:', error)
     const err = error as Error
     throw new Error('Failed to convert properties to YAML: ' + err.message)
   }

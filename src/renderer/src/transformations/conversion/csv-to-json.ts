@@ -66,7 +66,6 @@ const csvToJson: TransformationFunction = async (
     // Format the result as JSON with 2-space indentation
     return JSON.stringify(result, null, 2)
   } catch (error) {
-    console.error('Error converting CSV to JSON:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to convert CSV to JSON: ${error.message}`)
     } else if (typeof error === 'string') {

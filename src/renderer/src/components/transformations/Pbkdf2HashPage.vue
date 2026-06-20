@@ -45,8 +45,8 @@ const copyOutput = async (): Promise<void> => {
   if (!outputText.value) return
   try {
     await navigator.clipboard.writeText(outputText.value)
-  } catch (error) {
-    console.error('Failed to copy to clipboard:', error)
+  } catch {
+    // Ignore clipboard errors
   }
 }
 

@@ -21,7 +21,6 @@ const toSnakeCase: TransformationFunction = async (text: string): Promise<string
 
     return withUnderscores
   } catch (error) {
-    console.error('Error converting to snake_case:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to convert to snake_case: ${error.message}`)
     } else if (typeof error === 'string') {

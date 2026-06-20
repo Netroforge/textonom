@@ -217,8 +217,7 @@ export const applyTheme = (themeName: ThemeType): void => {
     const settingsString = localStorage.getItem('textonom-settings')
     if (settingsString) {
       const parsedData = JSON.parse(settingsString)
-      // The Zustand store structure is different in production vs development
-      // Handle both possible structures
+      // Settings may be nested under `state` or flat
       const settings = parsedData.state?.settings || parsedData
       const turboMode = settings.crtEffect !== undefined ? settings.crtEffect : true
 

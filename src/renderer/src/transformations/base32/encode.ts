@@ -36,7 +36,6 @@ const base32Encode: TransformationFunction = async (text: string): Promise<strin
 
     return output
   } catch (error) {
-    console.error('Error encoding to Base32:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to encode text to Base32: ${error.message}`)
     }

@@ -30,7 +30,6 @@ const applyTransformation = async (): Promise<void> => {
       algorithm: algorithm.value
     })
   } catch (error) {
-    console.error('Transformation error:', error)
     if (error instanceof Error) outputText.value = `Error: ${error.message}`
     else if (typeof error === 'string') outputText.value = `Error: ${error}`
     else outputText.value = 'An unknown error occurred during transformation'
@@ -48,8 +47,8 @@ const copyOutput = async (): Promise<void> => {
   if (!outputText.value) return
   try {
     await navigator.clipboard.writeText(outputText.value)
-  } catch (error) {
-    console.error('Failed to copy to clipboard:', error)
+  } catch {
+    // Ignore clipboard errors
   }
 }
 

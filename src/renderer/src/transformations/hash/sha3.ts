@@ -25,7 +25,6 @@ const sha3Hash: TransformationFunction = async (
   try {
     return CryptoJS.SHA3(text, { outputLength }).toString()
   } catch (error) {
-    console.error('Error generating SHA-3 hash:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to generate SHA-3 hash: ${error.message}`)
     }

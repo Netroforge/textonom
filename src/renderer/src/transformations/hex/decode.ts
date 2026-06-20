@@ -36,7 +36,6 @@ const hexDecode: TransformationFunction = async (text: string): Promise<string> 
 
     return result
   } catch (error) {
-    console.error('Error decoding from hex:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to decode hex: ${error.message}`)
     } else if (typeof error === 'string') {

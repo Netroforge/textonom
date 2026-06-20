@@ -23,7 +23,6 @@ const yamlToPropertiesFile: TransformationFunction = async (text: string): Promi
     flattenObject(parsed)
     return lines.join('\n')
   } catch (error) {
-    console.error('Error converting YAML to properties:', error)
     const err = error as Error
     throw new Error('Failed to convert YAML to properties: ' + err.message)
   }

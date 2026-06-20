@@ -20,7 +20,6 @@ const toCamelCase: TransformationFunction = async (text: string): Promise<string
 
     return camelCase
   } catch (error) {
-    console.error('Error converting to camelCase:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to convert to camelCase: ${error.message}`)
     } else if (typeof error === 'string') {

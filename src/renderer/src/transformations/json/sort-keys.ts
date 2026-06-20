@@ -12,8 +12,7 @@ const sortJsonKeys: TransformationFunction = async (text: string): Promise<strin
   try {
     const parsed = JSON.parse(text)
     return JSON.stringify(sortValue(parsed), null, 2)
-  } catch (error) {
-    console.error('Error sorting JSON keys:', error)
+  } catch {
     throw new Error('Failed to sort JSON keys: Invalid JSON format')
   }
 }

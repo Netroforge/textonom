@@ -17,7 +17,6 @@ const htmlToMarkdown: TransformationFunction = async (text: string): Promise<str
     })
     return turndown.turndown(text)
   } catch (error) {
-    console.error('Error converting HTML to Markdown:', error)
     const err = error as Error
     throw new Error('Failed to convert HTML to Markdown: ' + err.message)
   }

@@ -38,7 +38,6 @@ const removeDuplicateWords: TransformationFunction = async (text: string): Promi
     // Join the words back together
     return result.join('')
   } catch (error) {
-    console.error('Error removing duplicate words:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to remove duplicate words: ${error.message}`)
     } else if (typeof error === 'string') {

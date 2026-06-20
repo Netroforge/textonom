@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.9] - 2026-06-20
+
+### Improvements
+
+- **Donation infrastructure**: Added "Support the Project" section to About dialog and README with links to GitHub Sponsors, Ko-fi, Open Collective, and Patreon. Added GitHub Sponsors to FUNDING.yml.
+- **Error handling**: Replaced all `console.error` calls in transformation functions and page components with visible user feedback via toast notifications. Errors are now shown both in the output text area and as toast alerts.
+- **Dead code removal**: Removed legacy `save-app-state`/`load-app-state` IPC handlers, preload APIs, and type definitions that were superseded by the per-key persistence system. Removed empty `saveStateBeforeUnload` handler in App.vue.
+
+### Fixes
+
+- **License consistency**: All references now correctly say "Apache License 2.0" to match the LICENSE file.
+- **Badge spelling**: Fixed "vibe_debuged" → "vibe_debugged" in README.
+- **CHANGELOG accuracy**: Corrected v1.1.0 changelog entry that incorrectly claimed "Migration to React 19" (the app uses Vue 3).
+- **AppUserModelId**: Changed from generic `com.electron` to `com.github.netroforge`.
+- **Zustand reference**: Removed stale Zustand comment in themes.ts.
+
+### Chores
+
+- Added Dependabot configuration for npm and GitHub Actions dependency updates.
+- Stripped redundant `console.error` calls from 43 transformation functions and 24 page components.
+
 ## [1.3.0] - 2026-05-02
 
 ### Features
@@ -47,7 +68,6 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements
 
-- **Framework Update**: Migrated the application to use Vue 3 Composition API for better performance and maintainability
 - **Word Wrap**: Added option to enable/disable word wrap for all text areas
 - **Status Bar**: Improved status bar to display the current open tab name
 - **Tab Behavior**: Adjusted tab behavior to switch to another open tab when closing a tab

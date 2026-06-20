@@ -21,7 +21,6 @@ const toKebabCase: TransformationFunction = async (text: string): Promise<string
 
     return withHyphens
   } catch (error) {
-    console.error('Error converting to kebab-case:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to convert to kebab-case: ${error.message}`)
     } else if (typeof error === 'string') {

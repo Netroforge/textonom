@@ -7,8 +7,7 @@ const jsonPrettify: TransformationFunction = async (text: string): Promise<strin
   try {
     const parsed = JSON.parse(text)
     return JSON.stringify(parsed, null, 2)
-  } catch (error) {
-    console.error('Error prettifying JSON:', error)
+  } catch {
     throw new Error('Failed to prettify JSON: Invalid JSON format')
   }
 }

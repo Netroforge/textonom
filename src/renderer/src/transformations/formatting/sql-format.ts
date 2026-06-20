@@ -46,7 +46,6 @@ const sqlFormat: TransformationFunction = async (
       linesBetweenQueries: 2
     })
   } catch (error) {
-    console.error('Error formatting SQL:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to format SQL: ${error.message}`)
     } else if (typeof error === 'string') {

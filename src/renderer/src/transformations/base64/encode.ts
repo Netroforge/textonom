@@ -15,7 +15,6 @@ const base64Encode: TransformationFunction = async (text: string): Promise<strin
   try {
     return Base64.encode(text)
   } catch (error) {
-    console.error('Error encoding to Base64:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to encode text to Base64: ${error.message}`)
     } else if (typeof error === 'string') {

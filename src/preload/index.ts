@@ -29,23 +29,7 @@ const api = {
     }
   },
 
-  // File operations have been removed
-
-  // Legacy app state persistence (for backward compatibility)
-  saveAppState: (data: {
-    state: string
-  }): Promise<{
-    success: boolean
-    error?: string
-  }> => ipcRenderer.invoke('save-app-state', data),
-
-  loadAppState: (): Promise<{
-    success: boolean
-    state?: string
-    error?: string
-  }> => ipcRenderer.invoke('load-app-state'),
-
-  // New app state persistence (for separate files)
+  // App state persistence (for separate files)
   saveState: (data: {
     key: string
     state: string

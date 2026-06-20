@@ -88,10 +88,6 @@ const handleMenuAction = (action: string): void => {
 const closeSettings = (): void => setShowSettings(false)
 const closeAbout = (): void => setShowAbout(false)
 
-const saveStateBeforeUnload = (): void => {
-  // Persistence runs on store mutations; nothing to do here.
-}
-
 let unsubscribeWindowState: (() => void) | null = null
 
 onMounted(() => {
@@ -111,13 +107,11 @@ onMounted(() => {
 
   if (settings.value.autoUpdate && settings.value.checkForUpdatesOnStartup) {
     setTimeout(() => {
-      window.api.checkForUpdates().catch((error) => {
-        console.error('Error checking for updates on startup:', error)
+      window.api.checkForUpdates().catch(() => {
+        // Silently ignore — auto-update check failures are non-critical on startup
       })
     }, 5000)
   }
-
-  window.addEventListener('beforeunload', saveStateBeforeUnload)
 
   unsubscribeWindowState = window.api.onWindowStateUpdated((windowState) => {
     setWindowState(windowState)
@@ -125,7 +119,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('beforeunload', saveStateBeforeUnload)
   if (unsubscribeWindowState) unsubscribeWindowState()
 })
 

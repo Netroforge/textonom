@@ -7,8 +7,7 @@ import type { TransformationFunction } from '../../types/transformation'
 const base64Decode: TransformationFunction = async (text: string): Promise<string> => {
   try {
     return Base64.decode(text)
-  } catch (error) {
-    console.error('Error decoding from Base64:', error)
+  } catch {
     throw new Error('Failed to decode Base64 text')
   }
 }

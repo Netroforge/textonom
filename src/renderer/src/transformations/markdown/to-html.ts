@@ -22,7 +22,6 @@ const markdownToHtml: TransformationFunction = async (text: string): Promise<str
 
     return await marked.parse(text)
   } catch (error) {
-    console.error('Error converting Markdown to HTML:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to convert Markdown to HTML: ${error.message}`)
     } else if (typeof error === 'string') {

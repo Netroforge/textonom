@@ -1,13 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
-// FileOperationResult interface has been removed
-
-interface AppStateResult {
-  success: boolean
-  state?: string
-  error?: string
-}
-
 interface UpdateCheckResult {
   updateAvailable: boolean
   version: string
@@ -40,21 +32,16 @@ interface API {
   setWindowTitle: (title: string) => Promise<boolean>
   onWindowStateUpdated: (callback: (windowState: WindowState) => void) => () => void
 
-  // File operations have been removed
-
-  // Legacy app state persistence (for backward compatibility)
-  saveAppState: (data: { state: string }) => Promise<{
-    success: boolean
-    error?: string
-  }>
-  loadAppState: () => Promise<AppStateResult>
-
-  // New app state persistence (for separate files)
+  // App state persistence (for separate files)
   saveState: (data: { key: string; state: string }) => Promise<{
     success: boolean
     error?: string
   }>
-  loadState: (data: { key: string }) => Promise<AppStateResult>
+  loadState: (data: { key: string }) => Promise<{
+    success: boolean
+    state?: string
+    error?: string
+  }>
 
   // Auto-update operations
   checkForUpdates: () => Promise<UpdateCheckResult>

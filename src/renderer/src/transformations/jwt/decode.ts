@@ -29,7 +29,6 @@ const jwtDecode: TransformationFunction = async (text: string): Promise<string> 
     // Format the decoded token as JSON with 2-space indentation
     return JSON.stringify(decoded, null, 2)
   } catch (error) {
-    console.error('Error decoding JWT:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to decode JWT: ${error.message}`)
     } else if (typeof error === 'string') {

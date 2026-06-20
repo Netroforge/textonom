@@ -36,7 +36,6 @@ const htmlFormat: TransformationFunction = async (
 
     return formatted
   } catch (error) {
-    console.error('Error formatting HTML:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to format HTML: ${error.message}`)
     } else if (typeof error === 'string') {

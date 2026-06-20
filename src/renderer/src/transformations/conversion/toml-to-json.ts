@@ -13,7 +13,6 @@ const tomlToJson: TransformationFunction = async (text: string): Promise<string>
     const parsed = tomlParse(text)
     return JSON.stringify(parsed, null, 2)
   } catch (error) {
-    console.error('Error converting TOML to JSON:', error)
     const err = error as Error
     throw new Error('Failed to convert TOML to JSON: ' + err.message)
   }

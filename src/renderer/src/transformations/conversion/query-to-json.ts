@@ -27,7 +27,6 @@ const queryStringToJson: TransformationFunction = async (text: string): Promise<
 
     return JSON.stringify(result, null, 2)
   } catch (error) {
-    console.error('Error converting query string to JSON:', error)
     const err = error as Error
     throw new Error('Failed to convert query string to JSON: ' + err.message)
   }
