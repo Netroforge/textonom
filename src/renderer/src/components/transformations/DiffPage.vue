@@ -31,17 +31,39 @@ const outputMode = ref<'side-by-side' | 'text' | 'word-diff'>(
 const fileInputLeft = ref<HTMLInputElement | null>(null)
 const fileInputRight = ref<HTMLInputElement | null>(null)
 
-const loadFile = async (side: 'left' | 'right'): Promise<void> => {
-  const input = side === 'left' ? fileInputLeft.value : fileInputRight.value
-  if (!input?.files?.[0]) return
+const readFileToSide = async (file: File, side: 'left' | 'right'): Promise<void> => {
   try {
-    const text = await input.files[0].text()
+    const text = await file.text()
     if (side === 'left') originalText.value = text
     else changedText.value = text
   } catch {
     showToast('Failed to read file', 'error')
   }
-  input.value = ''
+}
+
+const loadFile = async (side: 'left' | 'right'): Promise<void> => {
+  const input = side === 'left' ? fileInputLeft.value : fileInputRight.value
+  const file = input?.files?.[0]
+  if (!file) return
+  await readFileToSide(file, side)
+  input!.value = ''
+}
+
+// Drag-and-drop: drop a text file directly onto either pane to load it.
+const dragSide = ref<'left' | 'right' | null>(null)
+
+const onPaneDragOver = (side: 'left' | 'right'): void => {
+  dragSide.value = side
+}
+
+const onPaneDragLeave = (side: 'left' | 'right'): void => {
+  if (dragSide.value === side) dragSide.value = null
+}
+
+const onPaneDrop = (side: 'left' | 'right', event: DragEvent): void => {
+  dragSide.value = null
+  const file = event.dataTransfer?.files?.[0]
+  if (file) readFileToSide(file, side)
 }
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -317,7 +339,13 @@ onUnmounted(() => {
 
       <!-- Side-by-side editable diff -->
       <div v-show="outputMode === 'side-by-side'" class="diff-view">
-        <div class="diff-pane">
+        <div
+          class="diff-pane"
+          :class="{ 'drag-over': dragSide === 'left' }"
+          @dragover.prevent="onPaneDragOver('left')"
+          @dragleave="onPaneDragLeave('left')"
+          @drop.prevent="onPaneDrop('left', $event)"
+        >
           <div class="pane-header">
             <span class="pane-title">Original</span>
             <label class="file-load-btn" title="Load original from a file">
@@ -368,9 +396,16 @@ onUnmounted(() => {
               ></textarea>
             </div>
           </div>
+          <div v-if="dragSide === 'left'" class="drop-overlay">Drop file to load</div>
         </div>
 
-        <div class="diff-pane">
+        <div
+          class="diff-pane"
+          :class="{ 'drag-over': dragSide === 'right' }"
+          @dragover.prevent="onPaneDragOver('right')"
+          @dragleave="onPaneDragLeave('right')"
+          @drop.prevent="onPaneDrop('right', $event)"
+        >
           <div class="pane-header">
             <span class="pane-title">Changed</span>
             <label class="file-load-btn" title="Load changed from a file">
@@ -421,6 +456,7 @@ onUnmounted(() => {
               ></textarea>
             </div>
           </div>
+          <div v-if="dragSide === 'right'" class="drop-overlay">Drop file to load</div>
         </div>
       </div>
 
@@ -640,11 +676,32 @@ onUnmounted(() => {
 }
 
 .diff-pane {
+  position: relative;
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
   background-color: var(--inputBackground);
+}
+
+.diff-pane.drag-over {
+  outline: 2px dashed var(--primary);
+  outline-offset: -2px;
+}
+
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--primaryRgb), 0.12);
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  pointer-events: none;
 }
 
 .pane-header {
