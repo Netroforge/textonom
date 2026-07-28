@@ -1,0 +1,795 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Textonom Growth and Donation Strategy",
+    "description": "A prioritized product, distribution, trust, and funding roadmap for increasing adoption, repeat use, and voluntary support.",
+    "generatedAt": "2026-07-28T19:34:26+03:00",
+    "sources": [
+      {
+        "id": "source_registry",
+        "label": "Textonom transformation registry at commit 194dd29",
+        "href": "https://github.com/Netroforge/textonom/blob/194dd292a8b20e23871539a8ed20ba5583b07a4b/src/renderer/src/transformations/registry.ts",
+        "query": {
+          "engine": "SQLite reviewed snapshot",
+          "sql": "SELECT 100 AS transformations, 9 AS categories;",
+          "description": "Materializes the transformation and category counts reviewed from the linked registry source.",
+          "executed_at": "2026-07-28T19:34:26+03:00",
+          "language": "SQL",
+          "metric_definitions": [
+            "Transformation count: metadata entries with a top-level category in transformationMetadata.",
+            "Category count: top-level entries in the categories array, including Pipeline and Custom."
+          ]
+        }
+      },
+      {
+        "id": "source_github_state",
+        "label": "GitHub repository API: Netroforge/textonom",
+        "href": "https://api.github.com/repos/Netroforge/textonom",
+        "query": {
+          "engine": "SQLite reviewed snapshot",
+          "sql": "SELECT 0 AS stars, 1 AS forks;",
+          "description": "Materializes the repository reach values reviewed from the linked GitHub REST response.",
+          "executed_at": "2026-07-28T19:07:00+03:00",
+          "language": "SQL",
+          "metric_definitions": [
+            "Stars: stargazers_count returned by GitHub.",
+            "Forks: forks_count returned by GitHub."
+          ]
+        }
+      },
+      {
+        "id": "source_github_releases",
+        "label": "GitHub Releases API: Netroforge/textonom",
+        "href": "https://api.github.com/repos/Netroforge/textonom/releases?per_page=100",
+        "query": {
+          "engine": "SQLite reviewed snapshot",
+          "sql": "SELECT 876 AS binary_asset_downloads, 28 AS release_count;",
+          "description": "Materializes the reviewed release totals after deterministic filename exclusions.",
+          "executed_at": "2026-07-28T19:09:00+03:00",
+          "language": "SQL",
+          "filters": ["Excluded updater metadata, checksum manifests, and .blockmap assets."],
+          "metric_definitions": [
+            "Binary asset downloads: cumulative GitHub download_count for remaining installer and package assets; not unique users or successful installs."
+          ]
+        }
+      },
+      {
+        "id": "source_landing_page",
+        "label": "Textonom landing page at commit 194dd29",
+        "href": "https://github.com/Netroforge/textonom/blob/194dd292a8b20e23871539a8ed20ba5583b07a4b/docs/index.html"
+      },
+      {
+        "id": "source_build_config",
+        "label": "Textonom electron-builder configuration at commit 194dd29",
+        "href": "https://github.com/Netroforge/textonom/blob/194dd292a8b20e23871539a8ed20ba5583b07a4b/electron-builder.yml"
+      },
+      {
+        "id": "source_competitive_review",
+        "label": "Competitive review: DevToys, CyberChef, DevUtils, and IT-Tools",
+        "href": "https://devtoys.app/",
+        "query": {
+          "engine": "SQLite reviewed snapshot",
+          "sql": "WITH reviewed(product, stars, documented_strength, implication) AS (VALUES ('IT-Tools', 39979, 'Large self-hostable browser toolbox', 'Discovery and zero-install access are major advantages'), ('CyberChef', 35462, 'Magic detection, recipes, step-through, files', 'Make complex workflows reusable and inspectable'), ('DevToys', 31805, 'Smart Detection, CLI, extensions, stores', 'Reduce invocation friction and distribute where developers install'), ('DevUtils', 0, 'Smart Detection and system-level quick access', 'Convenience can support a paid or supported utility')) SELECT * FROM reviewed;",
+          "description": "Materializes the reviewed competitor comparison; feature claims come from official product sources and stars from GitHub REST.",
+          "executed_at": "2026-07-28T18:55:00+03:00",
+          "language": "SQL",
+          "metric_definitions": [
+            "Stars: current GitHub stargazers_count for open-source repositories; DevUtils is proprietary and therefore has no comparable repository-star measure.",
+            "Documented strength: capability explicitly described by an official product site, repository, or documentation."
+          ]
+        }
+      },
+      {
+        "id": "source_signing_guidance",
+        "label": "Apple, Microsoft, and electron-builder signing guidance",
+        "href": "https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation"
+      },
+      {
+        "id": "source_donation_research",
+        "label": "Open-source donation research and platform guidance",
+        "href": "https://www.cs.cmu.edu/~ckaestne/pdf/icse20-donations.pdf"
+      },
+      {
+        "id": "source_scoring_model",
+        "label": "Textonom opportunity scoring model",
+        "path": "textonom-growth-strategy-source-notes.md",
+        "query": {
+          "engine": "SQLite reviewed snapshot",
+          "sql": "WITH priorities(rank, initiative, score, adoption, habit, trust, evidence, ease, phase, effort, expected_outcome) AS (VALUES (1, 'Smart clipboard detection', 86, 4, 5, 4, 5, 3, '2', 'Medium', 'Faster activation and more repeat use'), (2, 'Signed builds + smart downloads', 83, 5, 2, 5, 5, 4, '1', 'Low–Medium plus fees', 'Fewer install warnings and abandoned downloads'), (3, 'System-wide quick window', 82, 4, 5, 3, 5, 3, '2', 'Medium', 'Textonom becomes a desktop habit'), (4, 'Named and shareable recipes', 80, 3, 5, 4, 5, 3, '3', 'Medium', 'Reusable workflows and organic sharing'), (5, 'Package-manager distribution', 78, 5, 3, 3, 5, 3, '3', 'Medium', 'More discovery and easier updates'), (6, 'Truthful landing page refresh', 76, 5, 1, 4, 5, 5, '1', 'Low', 'Clearer value and higher download conversion'), (7, 'Textonom CLI', 71, 3, 5, 3, 4, 2, '4', 'High', 'Power-user automation and CI use'), (8, 'Concrete funding goal + milestone ask', 64, 2, 2, 5, 4, 5, '1–3', 'Low', 'More credible and measurable support conversion'), (9, 'Extension ecosystem', 60, 3, 4, 2, 4, 1, 'Later', 'Very high', 'Community expansion after a security model exists'), (10, 'More standalone transformations', 45, 2, 2, 2, 3, 3, 'Demand-led', 'Variable', 'Incremental breadth only when users request it')) SELECT * FROM priorities;",
+          "description": "Materializes the weighted opportunity model documented in the linked source notes.",
+          "executed_at": "2026-07-28T19:34:26+03:00",
+          "language": "SQL",
+          "metric_definitions": [
+            "Priority score = 20 × (30% adoption + 25% habit + 20% trust/donation leverage + 15% evidence + 10% implementation ease).",
+            "Each component uses a 1–5 judgment scale. Scores guide sequencing and are not forecasts."
+          ]
+        }
+      },
+      {
+        "id": "source_roadmap_model",
+        "label": "Textonom twelve-week roadmap model",
+        "path": "textonom-growth-strategy-source-notes.md",
+        "query": {
+          "engine": "SQLite reviewed snapshot",
+          "sql": "WITH roadmap(phase_order, period, ship, exit_gate, funding_role) AS (VALUES (1, 'Weeks 1–2', 'Accurate website/README, new screenshots, OS-specific downloads, privacy copy, verified funding path, signing plan', 'Every platform has one recommended download and trust warnings are documented; baseline tracking is live', 'Publish the signed-build funding goal'), (2, 'Weeks 3–6', 'Smart Paste detectors and configurable system-wide quick window', 'Five high-confidence detectors pass false-positive tests; median invoke-to-copy time is under 10 seconds in user sessions', 'No interruptive ask during onboarding'), (3, 'Weeks 7–10', 'Named recipe library, safe import/export, tray execution, WinGet and Homebrew submissions', 'At least five users create a second recipe or reuse one during a follow-up test', 'Enable the local milestone support prompt'), (4, 'Weeks 11–12', 'Relaunch, use-case pages, demo video, public roadmap, first funding update', 'Qualified weekly downloads are at least 3× the four-week pre-launch median', 'Report what support funded and set the next goal')) SELECT * FROM roadmap;",
+          "description": "Materializes the recommended execution sequence and phase gates.",
+          "executed_at": "2026-07-28T19:34:26+03:00",
+          "language": "SQL"
+        }
+      },
+      {
+        "id": "source_kpi_model",
+        "label": "Textonom privacy-safe KPI model",
+        "path": "textonom-growth-strategy-source-notes.md",
+        "query": {
+          "engine": "SQLite reviewed snapshot",
+          "sql": "WITH kpis(priority, kpi, definition, provisional_target, measurement, guardrail) AS (VALUES (1, 'Qualified weekly installs', 'Package-manager installs plus installer asset downloads, reported separately by platform; excludes updater metadata and blockmaps', '3× the four-week pre-launch median by week 12', 'GitHub Releases, WinGet, Homebrew, and store dashboards', 'Never call asset downloads unique users'), (2, 'Four-week repeat-use rate', 'Share of opted-in devices with a successful transformation in week 1 that also have one in week 4', 'Set after the four-week baseline; use 25–35% only as an experiment range', 'Explicit opt-in aggregate events with random rotating device identifiers', 'No text, parameters, clipboard data, filenames, recipes, or custom code'), (3, 'Support conversion', 'Completed one-time or recurring supporters divided by users who reached the local milestone and opened the support page', 'Baseline first; improve support-page conversion, not prompt frequency', 'Local eligibility counter, aggregate support-page opens, platform-side completed contributions', 'One dismissible prompt; respect dismiss forever'), (4, 'Install trust coverage', 'Share of published Windows and macOS release assets that are signed; macOS assets must also be notarized', '100% before the public relaunch', 'CI signature and notarization verification', 'CI fails rather than publishing unsigned production assets')) SELECT * FROM kpis;",
+          "description": "Materializes the recommended KPI definitions, provisional targets, measurement paths, and privacy guardrails.",
+          "executed_at": "2026-07-28T19:34:26+03:00",
+          "language": "SQL"
+        }
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_transformations",
+        "dataset": "product_state",
+        "sourceId": "source_registry",
+        "description": "Current breadth in the local registry, including pipeline and custom-tool surfaces.",
+        "metrics": [
+          {
+            "label": "Transformations",
+            "field": "transformations",
+            "format": "number"
+          },
+          {
+            "label": "Categories",
+            "field": "categories",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "card_stars",
+        "dataset": "github_state",
+        "sourceId": "source_github_state",
+        "description": "Current public GitHub audience signal.",
+        "metrics": [
+          {
+            "label": "GitHub stars",
+            "field": "stars",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "card_downloads",
+        "dataset": "github_state",
+        "sourceId": "source_github_releases",
+        "description": "Cumulative package-asset downloads; repeated, automated, and maintainer downloads may be included.",
+        "metrics": [
+          {
+            "label": "Binary asset downloads",
+            "field": "binary_asset_downloads",
+            "format": "compact"
+          },
+          {
+            "label": "Releases",
+            "field": "release_count",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "chart_priority_scores",
+        "title": "Opportunity priority score",
+        "subtitle": "Weighted 0–100 decision model; higher scores indicate stronger near-term leverage.",
+        "showDescription": true,
+        "intent": "comparison",
+        "question": "Which initiatives best combine adoption reach, repeat-use potential, trust, evidence, and implementation ease?",
+        "rationale": "A sorted horizontal bar chart makes ten long initiative labels readable and supports direct rank comparison.",
+        "comparisonContext": {
+          "baseline": "Relative comparison across the ten reviewed initiatives",
+          "denominator": "Maximum possible weighted score of 100",
+          "grain": "One initiative",
+          "normalization": "Five 1–5 ratings combined with fixed weights",
+          "semanticFamily": "Product opportunity prioritization",
+          "unit": "score"
+        },
+        "type": "horizontalBar",
+        "dataset": "priorities",
+        "sourceId": "source_scoring_model",
+        "encodings": {
+          "x": {
+            "field": "initiative",
+            "type": "nominal",
+            "label": "Initiative"
+          },
+          "y": {
+            "field": "score",
+            "type": "quantitative",
+            "label": "Priority score",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "score",
+              "type": "quantitative",
+              "label": "Score",
+              "format": "number"
+            },
+            {
+              "field": "phase",
+              "type": "text",
+              "label": "Phase"
+            },
+            {
+              "field": "effort",
+              "type": "text",
+              "label": "Effort"
+            }
+          ]
+        },
+        "xAxisTitle": "Initiative",
+        "yAxisTitle": "Priority score (0–100)",
+        "valueFormat": "number",
+        "unit": "points",
+        "layout": "full",
+        "maxRows": 10,
+        "palette": {
+          "kind": "sequential",
+          "name": "blue"
+        },
+        "settings": {
+          "orientation": "horizontal",
+          "sort": "descending",
+          "showValues": true
+        },
+        "surface": {
+          "surface": "card",
+          "showControls": false,
+          "viewMode": "visualization"
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "table_competitive_patterns",
+        "title": "Competitive workflow patterns",
+        "subtitle": "Current primary-source review of direct text and developer utility products.",
+        "showDescription": true,
+        "dataset": "competitive_patterns",
+        "sourceId": "source_competitive_review",
+        "layout": "full",
+        "density": "spacious",
+        "defaultSort": {
+          "field": "stars",
+          "direction": "desc"
+        },
+        "columns": [
+          {
+            "field": "product",
+            "label": "Product",
+            "type": "text"
+          },
+          {
+            "field": "stars",
+            "label": "GitHub stars",
+            "type": "number",
+            "format": "compact"
+          },
+          {
+            "field": "documented_strength",
+            "label": "Documented strength",
+            "type": "text"
+          },
+          {
+            "field": "implication",
+            "label": "Implication for Textonom",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "table_prioritized_backlog",
+        "title": "Prioritized opportunity backlog",
+        "subtitle": "Scores guide sequencing; expected outcomes remain hypotheses until measured.",
+        "showDescription": true,
+        "dataset": "priorities",
+        "sourceId": "source_scoring_model",
+        "layout": "full",
+        "density": "spacious",
+        "defaultSort": {
+          "field": "score",
+          "direction": "desc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "initiative",
+            "label": "Initiative",
+            "type": "text"
+          },
+          {
+            "field": "score",
+            "label": "Score",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "phase",
+            "label": "Phase",
+            "type": "text"
+          },
+          {
+            "field": "effort",
+            "label": "Effort",
+            "type": "text"
+          },
+          {
+            "field": "expected_outcome",
+            "label": "Expected outcome",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "table_roadmap",
+        "title": "Twelve-week execution sequence",
+        "subtitle": "Each phase has an exit gate so feature work follows evidence instead of accumulating.",
+        "showDescription": true,
+        "dataset": "roadmap",
+        "sourceId": "source_roadmap_model",
+        "layout": "full",
+        "density": "spacious",
+        "defaultSort": {
+          "field": "phase_order",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "phase_order",
+            "label": "Phase",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "period",
+            "label": "Period",
+            "type": "text"
+          },
+          {
+            "field": "ship",
+            "label": "Ship",
+            "type": "text"
+          },
+          {
+            "field": "exit_gate",
+            "label": "Exit gate",
+            "type": "text"
+          },
+          {
+            "field": "funding_role",
+            "label": "Funding role",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "table_kpis",
+        "title": "Privacy-safe growth scorecard",
+        "subtitle": "Provisional targets should be reset after a four-week baseline.",
+        "showDescription": true,
+        "dataset": "kpis",
+        "sourceId": "source_kpi_model",
+        "layout": "full",
+        "density": "spacious",
+        "defaultSort": {
+          "field": "priority",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "priority",
+            "label": "Priority",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "kpi",
+            "label": "KPI",
+            "type": "text"
+          },
+          {
+            "field": "definition",
+            "label": "Definition",
+            "type": "text"
+          },
+          {
+            "field": "provisional_target",
+            "label": "Provisional target",
+            "type": "text"
+          },
+          {
+            "field": "measurement",
+            "label": "Measurement",
+            "type": "text"
+          },
+          {
+            "field": "guardrail",
+            "label": "Guardrail",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "layout": "full",
+        "body": "# Textonom Growth and Donation Strategy"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Executive Summary\n\n- **Stop optimizing for tool count.** Textonom already exposes 100 transformations across nine categories, plus pipelines, custom transformations, favorites, history, and tray actions. The next constraint is getting discovered, trusted, and used repeatedly.\n\n- **Create a daily habit.** The strongest product bet is Smart Paste: detect clipboard content, suggest the right action, and expose it through a configurable system-wide quick window. DevToys and DevUtils make this workflow central because it removes search and copy-paste friction.\n\n- **Repair trust and installation before asking for money.** The landing page is stale, macOS notarization is disabled, Windows signing is not enforced, and every Download button leads to a release page with roughly two dozen assets. Signed builds, a platform-aware installer choice, accurate privacy copy, and package-manager distribution should precede a broader launch.\n\n- **Ask after demonstrated value and attach the ask to a concrete outcome.** Use one primary support path, a public funding goal such as signed releases, and a dismissible milestone prompt stored locally. Do not promise priority support or feature control; keep rewards lightweight and transparent."
+      },
+      {
+        "id": "current_state_metrics",
+        "type": "metric-strip",
+        "layout": "full",
+        "cardIds": ["card_transformations", "card_stars", "card_downloads"]
+      },
+      {
+        "id": "finding_constraint",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## The product is already broad; discovery and trust are the constraint\n\nTextonom's internal registry contains 100 transformation surfaces, but its public signals do not communicate that maturity. The landing page still says **85+ transformations**, **seven categories**, and **MIT License**; the current registry and repository use 100, nine, and Apache-2.0. The same page loads a third-party Impact tracker while its hero says “no telemetry.” Even if that promise is intended to describe only the desktop app, the mismatch creates avoidable doubt.\n\nThe download funnel adds more friction. Both primary buttons send every visitor to GitHub Releases, where the current build publishes around 24 installer/package assets plus updater metadata and blockmaps. macOS notarization is explicitly disabled, and release configuration does not fail when signing is absent. [Apple's notarization guidance](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution) and [Microsoft's SmartScreen guidance](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation) both make the first-run cost clear: unsigned or unnotarized apps produce warnings or blocking behavior.\n\n**So what:** fix the promise, installer choice, signing, and screenshot before a major feature launch. A user who does not trust or install the app cannot become a repeat user or donor."
+      },
+      {
+        "id": "competitive_intro",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Mature competitors win on workflow, not only breadth\n\nDirect competitors emphasize fewer steps between clipboard and result. [DevToys](https://devtoys.app/) detects clipboard content, ships a CLI, supports extensions, and distributes through the Microsoft Store, WinGet, Homebrew, and native packages. [CyberChef](https://github.com/gchq/CyberChef) combines automatic decoding suggestions with saved recipes, step-through debugging, file input, and shareable workflows. [DevUtils](https://devutils.com/) positions Smart Detection and system-level convenience as the reason to replace untrusted websites.\n\nThe star counts are scale context, not proof that any one feature caused adoption. The consistent documented pattern is more useful: successful tools reduce invocation friction, make workflows reusable, and are easy to install."
+      },
+      {
+        "id": "competitive_table",
+        "type": "table",
+        "layout": "full",
+        "tableId": "table_competitive_patterns"
+      },
+      {
+        "id": "finding_habit",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Smart Paste should become Textonom's signature habit loop\n\n**Recommended experience:** a configurable hotkey opens a small quick window, reads the clipboard only after explicit invocation, shows two or three confidence-ranked actions, previews the output, and copies the chosen result. Examples include JSON → Prettify / Explore / YAML, JWT → Decode, timestamp → ISO, Base64 → Decode, URL → Decode / Query String to JSON, and CSV → JSON.\n\nDetection must be conservative. Ambiguous text should produce suggestions, not silently mutate data. Clipboard content should stay in memory, never be logged, and never be attached to share links. Users should be able to disable clipboard reading and the global shortcut independently.\n\nThe existing tray quick transforms, transformation registry, and history/favorites provide a strong implementation base. The feature should reuse those primitives instead of creating a second transformation engine.\n\n**So what:** this turns Textonom from “an app I can open” into “the fastest way to handle whatever is on my clipboard,” which is a much stronger reason to keep it installed and eventually support it."
+      },
+      {
+        "id": "priority_model_intro",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## The priority model favors workflow leverage over more tools\n\nThe model weights adoption reach (30%), repeat-use potential (25%), trust and donation leverage (20%), strength of external evidence (15%), and implementation ease (10%). The chart is a sequencing aid, not a revenue forecast. Smart detection ranks first because it improves activation and repeat use while fitting the existing architecture; generic tool expansion ranks last because breadth is already a strength."
+      },
+      {
+        "id": "priority_chart",
+        "type": "chart",
+        "layout": "full",
+        "chartId": "chart_priority_scores"
+      },
+      {
+        "id": "priority_backlog_intro",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## The backlog should follow one coherent product story\n\nThe first six initiatives form a single promise: **private text work, instantly, from anywhere on the desktop**. Named recipes turn one-off operations into reusable assets; package managers and a truthful landing page create discovery; signed builds remove first-run anxiety. CLI and extensions are valuable later, after the core loop has evidence."
+      },
+      {
+        "id": "priority_backlog_table",
+        "type": "table",
+        "layout": "full",
+        "tableId": "table_prioritized_backlog"
+      },
+      {
+        "id": "finding_donation",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Ask for support only after the app proves its value\n\nThe current About dialog and README present four equal funding choices with generic copy. The GitHub Sponsors URL currently resolves to the ordinary Netroforge profile rather than an active sponsor page, while the repository sidebar exposes the other platforms. This creates choice without a clear reason or destination.\n\nA better support flow is:\n\n1. **Choose one primary one-time path** such as Ko-fi and one secondary recurring path after GitHub Sponsors is fully activated. Remove inactive or unmaintained choices.\n2. **Publish one concrete goal:** “Fund signed and notarized Windows/macOS releases” is directly connected to user trust and has visible completion criteria.\n3. **Ask after value:** after 25 successful transformations or seven active days, show one non-modal, dismissible banner. Keep the counter local; never upload text, clipboard content, or transformation parameters.\n4. **Use low-maintenance tiers:** a €5 one-time thank-you, €3/month supporter, and €10/month sustainer. Offer an optional name on a supporters page and monthly progress updates, not priority support or control over the roadmap.\n5. **Report impact monthly:** state what shipped, what funding covered, and the next goal. Use Open Collective only if its transparent ledger is actively maintained.\n\nThe [ICSE donation study](https://www.cs.cmu.edu/~ckaestne/pdf/icse20-donations.pdf) found that projects receiving donations tend to be mature, active, and popular, and noted that many projects fail to explain goals or show how funds were used. It also warns that preferential treatment can create entitlement and fairness problems. [GitHub Sponsors](https://docs.github.com/en/enterprise-cloud@latest/sponsors/receiving-sponsorships-through-github-sponsors/managing-your-sponsorship-goal) supports public goals and one-time or monthly tiers, which fits this approach.\n\n**So what:** donations should be the output of trust, repeated value, and a credible impact story—not a substitute for audience growth."
+      },
+      {
+        "id": "roadmap_intro",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## A twelve-week sequence earns the right to ask\n\nStart with a two-week trust and conversion repair, then ship the habit loop, then make workflows reusable and relaunch through better distribution. Each phase has a measurable exit gate. If a gate misses, investigate the funnel instead of adding more scope."
+      },
+      {
+        "id": "roadmap_table",
+        "type": "table",
+        "layout": "full",
+        "tableId": "table_roadmap"
+      },
+      {
+        "id": "measurement_intro",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Measure growth without weakening the privacy promise\n\nThe current product has no reliable denominator for active users, successful first runs, repeat use, or donation conversion. GitHub asset downloads are useful as a trend proxy but include repeated, automated, and maintainer activity. Do not infer 876 users from 876 binary downloads.\n\nUse a four-week baseline before setting firm targets. Site-level aggregate analytics may count page and download-button events, but remove the current affiliate tracker or disclose it clearly. For in-app product metrics, prefer an explicit opt-in that sends only event names, app version, platform, and coarse counters—never input/output text, clipboard data, transformation parameters, filenames, recipes, or custom code. Users who decline should receive the complete product."
+      },
+      {
+        "id": "kpi_table",
+        "type": "table",
+        "layout": "full",
+        "tableId": "table_kpis"
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Recommended Next Steps\n\n1. **This week:** correct the landing page and README; remove or disclose the Impact tracker; add platform-aware download buttons; simplify release copy; replace stale screenshots; verify every funding destination.\n2. **Fund the trust milestone:** activate a concrete sponsor goal for signed and notarized releases, then wire signing into CI with failure-on-unsigned checks.\n3. **Prototype Smart Paste:** support five high-confidence detectors first—JSON, JWT, Base64, timestamps, and URLs—and test invocation time and false positives with a small group.\n4. **Add the global quick window:** make clipboard access invocation-based and configurable; reuse favorites, history, tray, and registry code.\n5. **Promote pipelines into named recipes:** local library, favorites, import/export, tray execution, and share files that omit input content by default.\n6. **Relaunch where developers install tools:** submit WinGet and Homebrew first, then evaluate Microsoft Store and Flathub after signing and packaging are stable.\n7. **Do not build an extension marketplace yet.** The privacy and security model must be designed first; DevToys explicitly warns that third-party extensions can access the computer and network."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Further Questions\n\n- Which platform currently produces real human installs rather than maintainer or updater traffic?\n- Where do first-time users abandon: landing page, asset choice, operating-system warning, or first-run UI?\n- Which five transformations are used most often, and which pairs are commonly chained?\n- Would users prefer a global shortcut, tray-only flow, or both?\n- Which funding destination is actually active, verified, and easiest for the target audience?\n- Is the priority individual developers, security practitioners, data engineers, or a narrower first segment?"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "layout": "full",
+        "body": "## Caveats and Assumptions\n\n- The repository has no user research, issue history, or privacy-safe usage baseline, so feature impact and targets are directional hypotheses.\n- GitHub downloads are asset counts, not unique installs or active users; release verification and updater behavior can inflate them.\n- Competitor popularity does not prove that a specific feature caused growth. The roadmap uses repeated workflow patterns across primary sources as evidence, not causal attribution.\n- Priority scores are transparent judgment calls. Re-score after four weeks of baseline data and five to ten user interviews.\n- Donation platform availability was checked from public redirects and repository presentation; account-side verification, payout eligibility, taxes, and fees still require owner confirmation.\n- The report inspected the current worktree and commit 194dd29. Existing uncommitted UI changes were preserved and not modified."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-28T19:34:26+03:00",
+    "status": "ready",
+    "datasets": {
+      "product_state": [
+        {
+          "transformations": 100,
+          "categories": 9
+        }
+      ],
+      "github_state": [
+        {
+          "stars": 0,
+          "forks": 1,
+          "release_count": 28,
+          "binary_asset_downloads": 876
+        }
+      ],
+      "competitive_patterns": [
+        {
+          "product": "IT-Tools",
+          "stars": 39979,
+          "documented_strength": "Large self-hostable browser toolbox",
+          "implication": "Discovery and zero-install access are major advantages"
+        },
+        {
+          "product": "CyberChef",
+          "stars": 35462,
+          "documented_strength": "Magic detection, recipes, step-through, files",
+          "implication": "Make complex workflows reusable and inspectable"
+        },
+        {
+          "product": "DevToys",
+          "stars": 31805,
+          "documented_strength": "Smart Detection, CLI, extensions, stores",
+          "implication": "Reduce invocation friction and distribute where developers install"
+        },
+        {
+          "product": "DevUtils",
+          "stars": 0,
+          "documented_strength": "Smart Detection and system-level quick access",
+          "implication": "Convenience can support a paid or supported utility"
+        }
+      ],
+      "priorities": [
+        {
+          "rank": 1,
+          "initiative": "Smart clipboard detection",
+          "score": 86,
+          "adoption": 4,
+          "habit": 5,
+          "trust": 4,
+          "evidence": 5,
+          "ease": 3,
+          "phase": "2",
+          "effort": "Medium",
+          "expected_outcome": "Faster activation and more repeat use"
+        },
+        {
+          "rank": 2,
+          "initiative": "Signed builds + smart downloads",
+          "score": 83,
+          "adoption": 5,
+          "habit": 2,
+          "trust": 5,
+          "evidence": 5,
+          "ease": 4,
+          "phase": "1",
+          "effort": "Low–Medium plus fees",
+          "expected_outcome": "Fewer install warnings and abandoned downloads"
+        },
+        {
+          "rank": 3,
+          "initiative": "System-wide quick window",
+          "score": 82,
+          "adoption": 4,
+          "habit": 5,
+          "trust": 3,
+          "evidence": 5,
+          "ease": 3,
+          "phase": "2",
+          "effort": "Medium",
+          "expected_outcome": "Textonom becomes a desktop habit"
+        },
+        {
+          "rank": 4,
+          "initiative": "Named and shareable recipes",
+          "score": 80,
+          "adoption": 3,
+          "habit": 5,
+          "trust": 4,
+          "evidence": 5,
+          "ease": 3,
+          "phase": "3",
+          "effort": "Medium",
+          "expected_outcome": "Reusable workflows and organic sharing"
+        },
+        {
+          "rank": 5,
+          "initiative": "Package-manager distribution",
+          "score": 78,
+          "adoption": 5,
+          "habit": 3,
+          "trust": 3,
+          "evidence": 5,
+          "ease": 3,
+          "phase": "3",
+          "effort": "Medium",
+          "expected_outcome": "More discovery and easier updates"
+        },
+        {
+          "rank": 6,
+          "initiative": "Truthful landing page refresh",
+          "score": 76,
+          "adoption": 5,
+          "habit": 1,
+          "trust": 4,
+          "evidence": 5,
+          "ease": 5,
+          "phase": "1",
+          "effort": "Low",
+          "expected_outcome": "Clearer value and higher download conversion"
+        },
+        {
+          "rank": 7,
+          "initiative": "Textonom CLI",
+          "score": 71,
+          "adoption": 3,
+          "habit": 5,
+          "trust": 3,
+          "evidence": 4,
+          "ease": 2,
+          "phase": "4",
+          "effort": "High",
+          "expected_outcome": "Power-user automation and CI use"
+        },
+        {
+          "rank": 8,
+          "initiative": "Concrete funding goal + milestone ask",
+          "score": 64,
+          "adoption": 2,
+          "habit": 2,
+          "trust": 5,
+          "evidence": 4,
+          "ease": 5,
+          "phase": "1–3",
+          "effort": "Low",
+          "expected_outcome": "More credible and measurable support conversion"
+        },
+        {
+          "rank": 9,
+          "initiative": "Extension ecosystem",
+          "score": 60,
+          "adoption": 3,
+          "habit": 4,
+          "trust": 2,
+          "evidence": 4,
+          "ease": 1,
+          "phase": "Later",
+          "effort": "Very high",
+          "expected_outcome": "Community expansion after a security model exists"
+        },
+        {
+          "rank": 10,
+          "initiative": "More standalone transformations",
+          "score": 45,
+          "adoption": 2,
+          "habit": 2,
+          "trust": 2,
+          "evidence": 3,
+          "ease": 3,
+          "phase": "Demand-led",
+          "effort": "Variable",
+          "expected_outcome": "Incremental breadth only when users request it"
+        }
+      ],
+      "roadmap": [
+        {
+          "phase_order": 1,
+          "period": "Weeks 1–2",
+          "ship": "Accurate website/README, new screenshots, OS-specific downloads, privacy copy, verified funding path, signing plan",
+          "exit_gate": "Every platform has one recommended download and trust warnings are documented; baseline tracking is live",
+          "funding_role": "Publish the signed-build funding goal"
+        },
+        {
+          "phase_order": 2,
+          "period": "Weeks 3–6",
+          "ship": "Smart Paste detectors and configurable system-wide quick window",
+          "exit_gate": "Five high-confidence detectors pass false-positive tests; median invoke-to-copy time is under 10 seconds in user sessions",
+          "funding_role": "No interruptive ask during onboarding"
+        },
+        {
+          "phase_order": 3,
+          "period": "Weeks 7–10",
+          "ship": "Named recipe library, safe import/export, tray execution, WinGet and Homebrew submissions",
+          "exit_gate": "At least five users create a second recipe or reuse one during a follow-up test",
+          "funding_role": "Enable the local milestone support prompt"
+        },
+        {
+          "phase_order": 4,
+          "period": "Weeks 11–12",
+          "ship": "Relaunch, use-case pages, demo video, public roadmap, first funding update",
+          "exit_gate": "Qualified weekly downloads are at least 3× the four-week pre-launch median",
+          "funding_role": "Report what support funded and set the next goal"
+        }
+      ],
+      "kpis": [
+        {
+          "priority": 1,
+          "kpi": "Qualified weekly installs",
+          "definition": "Package-manager installs plus installer asset downloads, reported separately by platform; excludes updater metadata and blockmaps",
+          "provisional_target": "3× the four-week pre-launch median by week 12",
+          "measurement": "GitHub Releases, WinGet, Homebrew, and store dashboards",
+          "guardrail": "Never call asset downloads unique users"
+        },
+        {
+          "priority": 2,
+          "kpi": "Four-week repeat-use rate",
+          "definition": "Share of opted-in devices with a successful transformation in week 1 that also have one in week 4",
+          "provisional_target": "Set after the four-week baseline; use 25–35% only as an experiment range",
+          "measurement": "Explicit opt-in aggregate events with random rotating device identifiers",
+          "guardrail": "No text, parameters, clipboard data, filenames, recipes, or custom code"
+        },
+        {
+          "priority": 3,
+          "kpi": "Support conversion",
+          "definition": "Completed one-time or recurring supporters divided by users who reached the local milestone and opened the support page",
+          "provisional_target": "Baseline first; improve support-page conversion, not prompt frequency",
+          "measurement": "Local eligibility counter, aggregate support-page opens, platform-side completed contributions",
+          "guardrail": "One dismissible prompt; respect dismiss forever"
+        },
+        {
+          "priority": 4,
+          "kpi": "Install trust coverage",
+          "definition": "Share of published Windows and macOS release assets that are signed; macOS assets must also be notarized",
+          "provisional_target": "100% before the public relaunch",
+          "measurement": "CI signature and notarization verification",
+          "guardrail": "CI fails rather than publishing unsigned production assets"
+        }
+      ]
+    }
+  }
+}

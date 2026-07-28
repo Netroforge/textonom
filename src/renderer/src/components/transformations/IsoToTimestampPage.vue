@@ -94,7 +94,7 @@ watch([inputText, outputText, unit], () => {
       <div class="actions-container">
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText"
           @click="applyTransformation"
         >
           Convert

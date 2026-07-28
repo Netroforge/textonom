@@ -156,8 +156,21 @@ const handleCloseTab = (e: MouseEvent, tabId: string): void => {
 
 const handleContextMenu = (e: MouseEvent, tabId: string): void => {
   e.preventDefault()
+  const viewportPadding = 8
+  const estimatedMenuWidth = 200
+  const estimatedMenuHeight = 156
+
   contextMenuTabId.value = tabId
-  contextMenuPosition.value = { x: e.clientX, y: e.clientY }
+  contextMenuPosition.value = {
+    x: Math.max(
+      viewportPadding,
+      Math.min(e.clientX, window.innerWidth - estimatedMenuWidth - viewportPadding)
+    ),
+    y: Math.max(
+      viewportPadding,
+      Math.min(e.clientY, window.innerHeight - estimatedMenuHeight - viewportPadding)
+    )
+  }
   contextMenuVisible.value = true
 }
 

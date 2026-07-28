@@ -32,6 +32,8 @@ const onOverlayClick = (e: MouseEvent, onClose: () => void): void => {
   }
 }
 
+const transformationCount = featureCategories.reduce((total, category) => total + category.count, 0)
+
 onMounted(async () => {
   try {
     appVersion.value = await window.api.getAppVersion()
@@ -56,7 +58,8 @@ onMounted(async () => {
         <p class="version">Version {{ appVersion }}</p>
 
         <p class="description">
-          A text editor that lets you perform common text transformations locally.
+          {{ transformationCount }} focused text tools that run locally, without sending your input
+          anywhere.
         </p>
 
         <div class="about-section">
@@ -87,39 +90,37 @@ onMounted(async () => {
           </p>
         </div>
 
-        <div class="about-section">
-          <h3>Support the Project</h3>
-          <p>If you find Textonom useful, consider supporting its development:</p>
-          <ul>
-            <li>
-              <a
-                href="https://github.com/sponsors/Netroforge"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub Sponsors
-              </a>
-            </li>
-            <li>
-              <a href="https://ko-fi.com/netroforge" target="_blank" rel="noopener noreferrer">
-                Ko-fi
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://opencollective.com/netroforge"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open Collective
-              </a>
-            </li>
-            <li>
-              <a href="https://patreon.com/Netroforge" target="_blank" rel="noopener noreferrer">
-                Patreon
-              </a>
-            </li>
-          </ul>
+        <div class="support-card">
+          <span class="support-kicker">Current funding goal</span>
+          <h3>Help make downloads easier to trust</h3>
+          <p>
+            Donations go toward Windows code signing and Apple notarization so new users see fewer
+            security warnings when installing Textonom.
+          </p>
+          <a
+            class="support-primary"
+            href="https://ko-fi.com/netroforge"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Support on Ko-fi
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14m-5-5 5 5-5 5" />
+            </svg>
+          </a>
+          <p class="support-alternatives">
+            Other ways:
+            <a
+              href="https://opencollective.com/netroforge"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Open Collective</a
+            >
+            ·
+            <a href="https://patreon.com/Netroforge" target="_blank" rel="noopener noreferrer"
+              >Patreon</a
+            >
+          </p>
         </div>
 
         <div class="about-section">

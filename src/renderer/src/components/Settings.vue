@@ -32,6 +32,7 @@ const activeSection = ref('theme')
 const showResetConfirm = ref(false)
 
 const fontOptions = [
+  "SFMono-Regular, Consolas, 'Liberation Mono', monospace",
   "Consolas, 'Courier New', monospace",
   "'Courier New', monospace",
   "'Fira Code', monospace",
@@ -151,7 +152,7 @@ onUnmounted(() => {
                 </div>
 
                 <div class="settings-row">
-                  <label class="settings-label" for="setting-turbo">Turbo Mode</label>
+                  <label class="settings-label" for="setting-turbo">CRT effects</label>
                   <div class="settings-control">
                     <input id="setting-turbo" v-model="turboMode" type="checkbox" />
                   </div>
@@ -159,17 +160,18 @@ onUnmounted(() => {
 
                 <div class="settings-info">
                   <p>
-                    Turbo Mode adds visual effects that may impact performance on older devices.
+                    Optional scanline and glitch effects for the Cyberpunk theme. These effects may
+                    reduce readability or impact performance.
                   </p>
                 </div>
               </div>
             </div>
 
             <div v-if="activeSection === 'font'" class="settings-section">
-              <h3 class="settings-section-title">Font</h3>
+              <h3 class="settings-section-title">Editor font</h3>
               <div class="settings-section-content">
                 <div class="settings-row">
-                  <label class="settings-label" for="setting-font-family">Font Family</label>
+                  <label class="settings-label" for="setting-font-family">Editor font</label>
                   <div class="settings-control">
                     <select id="setting-font-family" v-model="fontFamily">
                       <option v-for="font in fontOptions" :key="font" :value="font">

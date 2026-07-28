@@ -1,4 +1,47 @@
 document.addEventListener('DOMContentLoaded', function () {
+  const releaseApi = 'https://api.github.com/repos/Netroforge/textonom/releases/latest'
+  const downloadStatus = document.getElementById('download-status')
+  const downloadMatchers = {
+    windows: /x64-setup\.exe$/i,
+    'mac-arm64': /arm64\.dmg$/i,
+    'mac-x64': /x64\.dmg$/i,
+    linux: /(?:x64|x86_64)\.AppImage$/i
+  }
+
+  document.querySelectorAll('[data-download-target]').forEach((downloadLink) => {
+    downloadLink.addEventListener('click', async function (event) {
+      event.preventDefault()
+      const fallbackUrl = this.href
+      const target = this.getAttribute('data-download-target')
+      const originalText = this.textContent
+
+      this.setAttribute('aria-busy', 'true')
+      this.textContent = 'Finding latest download…'
+      downloadStatus.textContent = 'Checking the latest release on GitHub…'
+
+      try {
+        const response = await fetch(releaseApi, {
+          headers: { Accept: 'application/vnd.github+json' }
+        })
+        if (!response.ok) throw new Error(`GitHub returned ${response.status}`)
+
+        const release = await response.json()
+        const matcher = downloadMatchers[target]
+        const asset = release.assets.find((candidate) => matcher.test(candidate.name))
+        if (!asset) throw new Error('Matching installer not found')
+
+        downloadStatus.textContent = `Starting ${asset.name}`
+        window.location.assign(asset.browser_download_url)
+      } catch {
+        downloadStatus.textContent = 'Opening the latest release so you can choose a package.'
+        window.location.assign(fallbackUrl)
+      } finally {
+        this.removeAttribute('aria-busy')
+        this.textContent = originalText
+      }
+    })
+  })
+
   // Get the turbo mode toggle
   const turboToggle = document.getElementById('turbo-mode')
 

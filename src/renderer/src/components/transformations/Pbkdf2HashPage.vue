@@ -142,7 +142,7 @@ watch([inputText, outputText, algorithm, iterations, keyLength, salt], () => {
       <div class="actions-container">
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText"
           @click="applyTransformation"
         >
           Hash

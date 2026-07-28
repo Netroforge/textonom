@@ -187,7 +187,7 @@ watch(
       <div class="actions-container">
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || (!isGenerator && !inputText)"
           @click="applyTransformation"
         >
           {{ isGenerator ? 'Generate' : 'Transform' }}

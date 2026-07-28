@@ -613,6 +613,10 @@ app.whenReady().then(() => {
     return app.getVersion()
   })
 
+  ipcMain.handle('read-clipboard-text', () => {
+    return clipboard.readText()
+  })
+
   ipcMain.handle('set-tray-settings', (_, settings: TraySettings) => {
     if (
       !settings ||

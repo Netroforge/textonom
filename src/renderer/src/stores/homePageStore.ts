@@ -5,11 +5,15 @@ import { setupPersistence } from './electronStorage'
 export interface HomePageState {
   searchQuery: string
   scrollPosition: number
+  layoutVersion: number
 }
+
+const CURRENT_LAYOUT_VERSION = 2
 
 const defaultHomePageState = (): HomePageState => ({
   searchQuery: '',
-  scrollPosition: 0
+  scrollPosition: 0,
+  layoutVersion: CURRENT_LAYOUT_VERSION
 })
 
 export const useHomePageStore = defineStore('homePage', () => {
@@ -30,9 +34,15 @@ export const useHomePageStore = defineStore('homePage', () => {
       key: 'homePage',
       serialize: () => ({ homePage: { ...homePage } }),
       hydrate: (data: { homePage?: Partial<HomePageState> } | Partial<HomePageState>) => {
-        const incoming = (data as { homePage?: Partial<HomePageState> }).homePage ?? data
+        const incoming: Partial<HomePageState> =
+          (data as { homePage?: Partial<HomePageState> }).homePage ??
+          (data as Partial<HomePageState>)
         if (incoming && typeof incoming === 'object') {
           Object.assign(homePage, defaultHomePageState(), incoming)
+          if (incoming.layoutVersion !== CURRENT_LAYOUT_VERSION) {
+            homePage.scrollPosition = 0
+          }
+          homePage.layoutVersion = CURRENT_LAYOUT_VERSION
         }
       }
     },

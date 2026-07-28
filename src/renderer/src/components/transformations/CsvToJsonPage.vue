@@ -109,7 +109,7 @@ watch([inputText, outputText, delimiter, hasHeader], () => {
 
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText"
           @click="applyTransformation"
         >
           Convert

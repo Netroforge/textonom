@@ -16,12 +16,12 @@ export interface Settings {
 }
 
 export const defaultSettings: Settings = {
-  theme: 'cyberpunk',
+  theme: 'dark',
   fontSize: 14,
-  fontFamily: "Consolas, 'Courier New', monospace",
+  fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', monospace",
   autoUpdate: true,
   checkForUpdatesOnStartup: true,
-  crtEffect: true,
+  crtEffect: false,
   bcryptRounds: 12,
   wordWrap: true,
   showTrayIcon: true,

@@ -1,6 +1,6 @@
 .title-bar {
   height: 30px;
-  background-color: var(--titleBarBackground);
+  background-color: var(--surface);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,7 +21,8 @@
 
 .app-title {
   font-size: 12px;
-  color: var(--titleBarText);
+  color: var(--textSecondary);
+  font-family: var(--uiFont);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -42,7 +43,7 @@
   background: transparent;
   border: none;
   outline: none;
-  color: var(--titleBarText);
+  color: var(--textSecondary);
   cursor: pointer;
 }
 

@@ -110,7 +110,7 @@ watch([inputText, outputText, rounds], () => {
 
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText || rounds < 1 || rounds > 20"
           @click="applyTransformation"
         >
           Hash

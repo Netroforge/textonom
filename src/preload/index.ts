@@ -61,6 +61,7 @@ const api = {
     ipcRenderer.invoke('install-update'),
 
   getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
+  readClipboardText: (): Promise<string> => ipcRenderer.invoke('read-clipboard-text'),
 
   // Tray settings
   setTraySettings: (settings: {

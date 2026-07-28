@@ -137,7 +137,7 @@ watch([inputText, outputText, dialect, indentSize, uppercase], () => {
 
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText"
           @click="applyTransformation"
         >
           Format SQL

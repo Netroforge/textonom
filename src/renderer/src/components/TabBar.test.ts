@@ -52,4 +52,29 @@ describe('TabBar keyboard navigation', () => {
       'dataExplorer'
     ])
   })
+
+  it('keeps the tab context menu inside the window bounds', async () => {
+    const widthSpy = vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(500)
+    const heightSpy = vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(400)
+    const tabsStore = useTabsStore()
+    tabsStore.addTab('base64Encode')
+
+    const wrapper = mount(TabBar, {
+      props: {
+        isHomeActive: false,
+        onShowHome: vi.fn(),
+        onHideHome: vi.fn()
+      }
+    })
+
+    await wrapper.get('.tab').trigger('contextmenu', { clientX: 499, clientY: 399 })
+
+    const menuStyle = wrapper.get('.tab-context-menu').attributes('style')
+    expect(menuStyle).toContain('left: 292px')
+    expect(menuStyle).toContain('top: 236px')
+
+    widthSpy.mockRestore()
+    heightSpy.mockRestore()
+    wrapper.unmount()
+  })
 })

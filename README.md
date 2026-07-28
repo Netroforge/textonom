@@ -6,8 +6,8 @@
 
 # Textonom
 
-A text editor that lets you perform common text transformations locally.
-Helps make your sensitive data safe.
+A private desktop toolkit with 100 text transformations. Smart Paste detects common clipboard
+formats locally and suggests the right tool without sending your text away.
 
 ![Screenshot.png](docs/screenshot.png)
 
@@ -113,7 +113,7 @@ _Generate cryptographic hashes_
 - **SHA-512 Hash**: Generate SHA-512 hash of text
 - **HMAC Hash**: Generate HMAC hash with custom key
 - **Bcrypt Hash**: Generate Bcrypt hash of text (with configurable rounds)
-- **Argon2 Hash**: Generate Argon2 hash
+- **PBKDF2 Hash**: Derive a key with configurable HMAC algorithm, iterations, key length, and salt
 
 ### Format Conversion
 
@@ -134,6 +134,10 @@ _Convert between different data formats_
 - **Tab-based Interface**: Open multiple transformations in tabs
 - **Draggable Tabs**: Rearrange tabs as needed
 - **Home Page**: Quick access to all transformations with search functionality
+- **Smart Paste**: Detect JSON, JWT, Base64, dates, query strings, delimited data, and more after an
+  explicit clipboard scan
+- **History & Favorites**: Return to recent tools and pin frequently used transformations
+- **System Tray Tools**: Apply common transformations directly to clipboard content
 - **Multiple Themes**: Choose between Light, Dark, and Cyberpunk themes
 - **Turbo Mode**: Optional CRT effects for a retro experience
 - **Settings**: Customize font size, font family, word wrap, and more
@@ -218,14 +222,16 @@ Join our [Slack channel](https://join.slack.com/t/netroforge/shared_invite/zt-33
 
 ## Support the Project
 
-Support the ongoing development of Textonom:
+Textonom is free and open source. The current funding goal is Windows code signing and Apple
+notarization so new users see fewer security warnings during installation.
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/Netroforge?style=for-the-badge&logo=githubsponsors)](https://github.com/sponsors/Netroforge)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-donate-FF5E5B?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/netroforge)
 [![Open Collective](https://img.shields.io/badge/Open%20Collective-contribute-7FADF2?style=for-the-badge&logo=opencollective)](https://opencollective.com/netroforge)
 [![Patreon](https://img.shields.io/badge/Patreon-support-FF424D?style=for-the-badge&logo=patreon)](https://patreon.com/Netroforge)
 
-Your support helps cover development costs, server infrastructure, and enables new features.
+Release automation is ready to use signing credentials from GitHub Actions secrets:
+`MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`,
+`APPLE_TEAM_ID`, `WIN_CSC_LINK`, and `WIN_CSC_KEY_PASSWORD`.
 
 ## License
 

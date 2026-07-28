@@ -49,6 +49,7 @@ interface API {
   downloadUpdate: () => Promise<void>
   installUpdate: () => Promise<UpdateInstallResult>
   getAppVersion: () => Promise<string>
+  readClipboardText: () => Promise<string>
 
   // Tray settings
   setTraySettings: (settings: {

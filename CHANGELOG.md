@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0] - 2026-07-28
+
+### Features
+
+- Added **Smart Paste** to the home page. It reads the clipboard only after an explicit click,
+  detects JSON, JWT, Base64, XML, dates, query strings, delimited data, and useful plain-text
+  patterns locally, then ranks relevant tools and opens the selected tool with the input prefilled.
+- Added content-aware fallbacks for multi-line and plain text, including deduplication, sorting,
+  statistics, slug, and title suggestions.
+
+### Improvements
+
+- Redesigned the home page, navigation, tabs, transformation workspace, and themes for clearer
+  hierarchy, faster category browsing, stronger local-processing cues, responsive layouts, and more
+  consistent interaction states.
+- Added category filters, richer recent/favorite tool sections, improved search feedback, and clearer
+  empty states.
+- Focused project support around a concrete goal: funding Windows code signing and Apple
+  notarization. Ko-fi is now the primary support action, with Open Collective and Patreon as
+  alternatives.
+- Updated the GitHub Pages site to the current 100 transformations and 9 categories, added Smart
+  Paste messaging, platform-specific download choices, and an explicit signing/notarization funding
+  goal.
+- Platform download buttons now resolve the matching asset from the latest GitHub release after the
+  user clicks, with a release-page fallback.
+- Prepared release automation to consume macOS, Apple notarization, and Windows signing credentials
+  from GitHub Actions secrets when they become available.
+- Synchronized the Linux desktop application name so desktop environments can associate the running
+  window with its launcher entry.
+
+### Privacy and trust
+
+- Removed the website's third-party affiliate tracker so the public no-telemetry claim matches its
+  behavior.
+- Corrected the website footer and documentation to consistently identify the Apache License 2.0.
+- Removed unused camera and microphone permission descriptions from the macOS bundle configuration.
+- Removed the unavailable GitHub Sponsors destination from funding surfaces.
+
+### Tests
+
+- Added unit coverage for Smart Paste detection, explicit clipboard access, ranked suggestions, and
+  prefilling transformation tabs.
+
 ## [1.6.1] - 2026-07-28
 
 ### Improvements

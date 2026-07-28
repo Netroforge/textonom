@@ -95,7 +95,7 @@ watch([inputText, outputText, indentSize], () => {
 
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText"
           @click="applyTransformation"
         >
           Format CSS

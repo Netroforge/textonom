@@ -88,6 +88,16 @@ describe('GenericTransformationPage', () => {
     const wrapper = mountPage('jsonToToml')
     expect(wrapper.find('#input-textarea').exists()).toBe(true)
     expect(wrapper.find('.transform-button').text()).toBe('Transform')
+    expect(wrapper.find('.transform-button').attributes('disabled')).toBeDefined()
+  })
+
+  it('enables input-based transformations only after text is entered', async () => {
+    const wrapper = mountPage('jsonToToml')
+    const transformButton = wrapper.find('.transform-button')
+
+    expect(transformButton.attributes('disabled')).toBeDefined()
+    await wrapper.find('#input-textarea').setValue('{"ready":true}')
+    expect(transformButton.attributes('disabled')).toBeUndefined()
   })
 
   it('persists input, output, and params to the tab content store', async () => {

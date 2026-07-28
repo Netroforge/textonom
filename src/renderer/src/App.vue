@@ -168,6 +168,8 @@ watch(
   () => settings.value.crtEffect,
   (crtEffect) => {
     document.documentElement.setAttribute('data-crt-effect', crtEffect ? 'true' : 'false')
+    if (!crtEffect) return
+
     setTimeout(() => {
       try {
         const glitchElement = document.querySelector('.crt-glitch-overlay') as HTMLElement | null

@@ -121,7 +121,7 @@ watch([inputText, outputText, secretKey, algorithm], () => {
       <div class="actions-container">
         <button
           class="action-button transform-button"
-          :disabled="isTransforming"
+          :disabled="isTransforming || !inputText || !secretKey"
           @click="applyTransformation"
         >
           Generate HMAC

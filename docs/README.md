@@ -4,14 +4,18 @@ This directory contains the GitHub Pages website for the Textonom project.
 
 ## About
 
-Textonom is a desktop text editor with 85+ transformations that lets you process text locally. It helps keep your sensitive data safe by keeping everything on your machine.
+Textonom is a desktop toolkit with 100 transformations and local Smart Paste suggestions. Text
+input stays on the user's machine.
 
 ## Features
 
 - Cyberpunk theme with optional Turbo Mode (CRT effects)
 - Responsive design that works on mobile and desktop
 - Interactive elements with hover effects
-- Showcases all 85+ transformations across 7 categories available in Textonom v1.4.3
+- Showcases all 100 transformations across 9 categories
+- Resolves platform-specific downloads from the latest GitHub release after an explicit click
+- Explains the current code-signing and notarization funding goal
+- Contains no analytics or affiliate tracker
 - Optimized for SEO and social sharing with proper meta tags
 
 ## Development
@@ -30,4 +34,4 @@ Then open your browser to the printed URL (e.g. `http://localhost:8000`).
 
 ## License
 
-This website is licensed under the same MIT license as the main Textonom project.
+This website is licensed under the same Apache License 2.0 as the main Textonom project.

@@ -3,6 +3,7 @@
   /* Default theme variables will be set by the theme system */
   --fontSize: 14px;
   --fontFamily: Consolas, 'Courier New', monospace;
+  --uiFont: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 * {
@@ -12,7 +13,7 @@
 }
 
 body {
-  font-family: var(--fontFamily);
+  font-family: var(--uiFont);
   font-size: var(--fontSize);
   color: var(--text);
   background-color: var(--background);
@@ -52,7 +53,7 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  font-family: var(--fontFamily);
+  font-family: var(--uiFont);
   font-size: var(--fontSize);
 }
 
@@ -64,7 +65,7 @@ button:disabled {
 /* Input styles */
 input,
 textarea {
-  font-family: var(--fontFamily);
+  font-family: var(--uiFont);
   font-size: var(--fontSize);
   color: var(--text);
   background-color: var(--inputBackground);

@@ -47,11 +47,8 @@ mac:
   entitlementsInherit: build/entitlements.mac.plist
   icon: ./build/icon.icns
   extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-  notarize: false
   target:
     - target: zip
       arch:
@@ -67,6 +64,7 @@ dmg:
 linux:
   icon: ./build/icon.png
   maintainer: Netroforge
+  syncDesktopName: true
   target:
     - target: AppImage
       arch:

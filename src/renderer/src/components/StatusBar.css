@@ -7,7 +7,8 @@
   border-top: 1px solid var(--border);
   padding: 0 8px;
   font-size: 12px;
-  color: var(--text);
+  color: var(--textSecondary);
+  font-family: var(--uiFont);
   flex-shrink: 0;
 }
 
