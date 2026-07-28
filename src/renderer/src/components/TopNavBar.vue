@@ -5,6 +5,8 @@ import './TopNavBar.css'
 const props = defineProps<{
   onMenuAction: (menuAction: string) => void
   onOpenSettings: () => void
+  onOpenShortcuts: () => void
+  onOpenHistory: () => void
 }>()
 
 const activeMenu = ref('')
@@ -39,6 +41,15 @@ const handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key.toLowerCase() === ',') {
       event.preventDefault()
       props.onOpenSettings()
+    } else if (event.key.toLowerCase() === 'h' && event.shiftKey) {
+      event.preventDefault()
+      props.onOpenHistory()
+    }
+  } else if (event.key === '?') {
+    const target = event.target as HTMLElement
+    if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+      event.preventDefault()
+      props.onOpenShortcuts()
     }
   } else if (event.key === 'Escape') {
     closeAllMenus()
@@ -83,6 +94,10 @@ const openGithub = (): void => {
         File
       </div>
       <div v-if="activeMenu === 'file'" class="menu">
+        <div class="menu-item" @click="handleMenuAction('history')">
+          <span>History & Favorites</span>
+          <span class="menu-item-shortcut">Ctrl+Shift+H</span>
+        </div>
         <div class="menu-item" @click="handleMenuAction('settings')">
           <span>Settings</span>
         </div>
@@ -97,6 +112,10 @@ const openGithub = (): void => {
         Help
       </div>
       <div v-if="activeMenu === 'help'" class="menu">
+        <div class="menu-item" @click="handleMenuAction('shortcuts')">
+          <span>Keyboard Shortcuts</span>
+          <span class="menu-item-shortcut">?</span>
+        </div>
         <div class="menu-item" @click="handleMenuAction('about')">
           <span>About Textonom</span>
         </div>

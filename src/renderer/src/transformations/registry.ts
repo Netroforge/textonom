@@ -737,6 +737,13 @@ const transformationMetadata: Transformation[] = [
     ],
     fn: transformations.regexReplace
   },
+  {
+    id: 'regexTester',
+    name: 'Regex Tester',
+    description: 'Test regular expressions with live preview and match details',
+    category: 'text',
+    fn: transformations.regexTester
+  },
 
   // Base32
   {
@@ -996,6 +1003,15 @@ const transformationMetadata: Transformation[] = [
     description: 'Describe cron expressions (one per line) in plain English',
     category: 'conversion',
     fn: transformations.cronToHuman
+  },
+
+  // Data Explorer
+  {
+    id: 'dataExplorer',
+    name: 'Data Explorer',
+    description: 'Explore JSON, YAML, and TOML data as an interactive tree',
+    category: 'conversion',
+    fn: transformations.dataExplorer
   },
 
   // Generators (additional)

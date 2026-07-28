@@ -37,3 +37,7 @@ export {
   numberToRoman,
   cronToHuman
 }
+
+export const dataExplorer = async (): Promise<string> => {
+  return 'Use the Data Explorer page to inspect structured data'
+}

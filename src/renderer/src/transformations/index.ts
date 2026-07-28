@@ -49,7 +49,8 @@ import {
   jsonToQueryString,
   romanToNumber,
   numberToRoman,
-  cronToHuman
+  cronToHuman,
+  dataExplorer
 } from './conversion'
 import { jwtDecode } from './jwt'
 import { hexEncode, hexDecode } from './hex'
@@ -76,7 +77,7 @@ import { loremGenerate } from './lorem'
 import { colorConvert } from './color'
 import { baseConvert } from './numeric'
 import { computeTextDiff, formatDiffAsText } from './diff'
-import { regexReplace, regexTest } from './regex'
+import { regexReplace, regexTest, regexTester } from './regex'
 import { aesEncrypt, aesDecrypt } from './aes'
 import { pipelineTransform, pipelinePreview } from './pipeline'
 import {
@@ -155,6 +156,7 @@ export {
   formatDiffAsText,
   regexReplace,
   regexTest,
+  regexTester,
   aesEncrypt,
   aesDecrypt,
   base32Encode,
@@ -187,6 +189,7 @@ export {
   romanToNumber,
   numberToRoman,
   cronToHuman,
+  dataExplorer,
   ulidGenerate,
   tokenGenerate,
   extractEmails,
@@ -260,6 +263,7 @@ export const transformations = {
   formatDiffAsText,
   regexReplace,
   regexTest,
+  regexTester,
   aesEncrypt,
   aesDecrypt,
   base32Encode,
@@ -292,6 +296,7 @@ export const transformations = {
   romanToNumber,
   numberToRoman,
   cronToHuman,
+  dataExplorer,
   ulidGenerate,
   tokenGenerate,
   extractEmails,

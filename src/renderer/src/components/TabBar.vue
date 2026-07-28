@@ -59,27 +59,20 @@ const handleResize = (): void => {
 }
 
 const handleKeyDown = (e: KeyboardEvent): void => {
-  if (e.ctrlKey && e.key === 'Tab') {
+  const hasPrimaryModifier = e.ctrlKey || e.metaKey
+
+  if (hasPrimaryModifier && e.key === 'Tab') {
     e.preventDefault()
     if (tabs.value.length > 0) {
       const currentIndex = tabs.value.findIndex((tab) => tab.id === activeTabId.value)
-      const nextIndex = (currentIndex + 1) % tabs.value.length
+      const direction = e.shiftKey ? -1 : 1
+      const nextIndex = (currentIndex + direction + tabs.value.length) % tabs.value.length
       setActiveTab(tabs.value[nextIndex].id)
       props.onHideHome()
     }
   }
 
-  if (e.ctrlKey && e.shiftKey && e.key === 'Tab') {
-    e.preventDefault()
-    if (tabs.value.length > 0) {
-      const currentIndex = tabs.value.findIndex((tab) => tab.id === activeTabId.value)
-      const prevIndex = (currentIndex - 1 + tabs.value.length) % tabs.value.length
-      setActiveTab(tabs.value[prevIndex].id)
-      props.onHideHome()
-    }
-  }
-
-  if (e.ctrlKey && !e.shiftKey && !e.altKey && /^[1-9]$/.test(e.key)) {
+  if (hasPrimaryModifier && !e.shiftKey && !e.altKey && /^[1-9]$/.test(e.key)) {
     const tabIndex = parseInt(e.key) - 1
     if (tabIndex < tabs.value.length) {
       e.preventDefault()

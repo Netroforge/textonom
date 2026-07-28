@@ -3,7 +3,12 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTabsStore } from '../stores/tabsStore'
 import { useHomePageStore } from '../stores/homePageStore'
-import { getAllCategories, searchTransformations } from '../transformations/registry'
+import { useHistoryStore } from '../stores/historyStore'
+import {
+  getAllCategories,
+  searchTransformations,
+  getTransformationById
+} from '../transformations/registry'
 import './HomePage.css'
 
 const props = defineProps<{
@@ -18,10 +23,18 @@ const homePageStore = useHomePageStore()
 const { homePage } = storeToRefs(homePageStore)
 const { setHomePageSearchQuery, setHomePageScrollPosition } = homePageStore
 
+const historyStore = useHistoryStore()
+
 const homePageRef = ref<HTMLDivElement | null>(null)
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
 const categories = getAllCategories()
+
+const favoriteTransformations = computed(() => {
+  return historyStore.state.favorites
+    .map((id) => getTransformationById(id))
+    .filter((t) => t !== undefined) as NonNullable<ReturnType<typeof getTransformationById>>[]
+})
 
 const handleKeydown = (e: KeyboardEvent): void => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
@@ -60,6 +73,11 @@ const handleClearSearch = (): void => {
 const handleTransformationClick = (transformationId: string): void => {
   addTab(transformationId)
   props.onTransformationOpened()
+}
+
+const handleToggleFavorite = (transformationId: string, e: Event): void => {
+  e.stopPropagation()
+  historyStore.toggleFavorite(transformationId)
 }
 
 const handleScroll = (): void => {
@@ -113,6 +131,41 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <section v-if="favoriteTransformations.length > 0" class="favorites-section">
+      <h2 class="favorites-title">Favorites ★</h2>
+      <div class="favorites-grid">
+        <div
+          v-for="transformation in favoriteTransformations"
+          :key="transformation.id"
+          class="transformation-card"
+          :class="{ 'transformation-card-open': isTransformationOpen(transformation.id) }"
+          role="button"
+          tabindex="0"
+          :aria-pressed="isTransformationOpen(transformation.id)"
+          @click="handleTransformationClick(transformation.id)"
+          @keydown.enter.prevent="handleTransformationClick(transformation.id)"
+          @keydown.space.prevent="handleTransformationClick(transformation.id)"
+        >
+          <div class="transformation-card-content">
+            <div class="transformation-card-header">
+              <h3 class="transformation-title">{{ transformation.name }}</h3>
+              <button
+                type="button"
+                class="transformation-favorite transformation-favorite-active"
+                :aria-label="`Remove ${transformation.name} from favorites`"
+                aria-pressed="true"
+                @click="(e) => handleToggleFavorite(transformation.id, e)"
+                @keydown.stop
+              >
+                ★
+              </button>
+            </div>
+            <p class="transformation-description">{{ transformation.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <div class="categories-container">
       <section
         v-for="category in filteredCategories"
@@ -137,7 +190,22 @@ onUnmounted(() => {
             @keydown.space.prevent="handleTransformationClick(transformation.id)"
           >
             <div class="transformation-card-content">
-              <h3 class="transformation-title">{{ transformation.name }}</h3>
+              <div class="transformation-card-header">
+                <h3 class="transformation-title">{{ transformation.name }}</h3>
+                <button
+                  type="button"
+                  class="transformation-favorite"
+                  :class="{
+                    'transformation-favorite-active': historyStore.isFavorite(transformation.id)
+                  }"
+                  :aria-label="`${historyStore.isFavorite(transformation.id) ? 'Remove' : 'Add'} ${transformation.name} ${historyStore.isFavorite(transformation.id) ? 'from' : 'to'} favorites`"
+                  :aria-pressed="historyStore.isFavorite(transformation.id)"
+                  @click="(e) => handleToggleFavorite(transformation.id, e)"
+                  @keydown.stop
+                >
+                  {{ historyStore.isFavorite(transformation.id) ? '★' : '☆' }}
+                </button>
+              </div>
               <p class="transformation-description">{{ transformation.description }}</p>
             </div>
           </div>

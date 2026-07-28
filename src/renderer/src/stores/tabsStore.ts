@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { getTransformationById } from '../transformations/registry'
 import { setupPersistence } from './electronStorage'
+import { useHistoryStore } from './historyStore'
 
 export interface Tab {
   id: string
@@ -16,6 +17,7 @@ interface PersistedTabsState {
 }
 
 export const useTabsStore = defineStore('tabs', () => {
+  const historyStore = useHistoryStore()
   const tabs = ref<Tab[]>([])
   const activeTabId = ref<string | null>(null)
   const showHomePage = ref(true)
@@ -30,6 +32,8 @@ export const useTabsStore = defineStore('tabs', () => {
       console.error('TabsStore: Transformation not found:', transformationId)
       return ''
     }
+
+    historyStore.addToHistory(transformation.id, transformation.name)
 
     const existingTab = tabs.value.find((tab) => tab.transformationId === transformationId)
     if (existingTab) {

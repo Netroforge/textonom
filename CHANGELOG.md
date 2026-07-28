@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-07-28
+
+### Features
+
+- **Data Explorer**: Added an interactive tree view for JSON, YAML, and TOML with automatic format detection, path/value copying, and expand/collapse controls.
+- **Regex Tester**: Added live match highlighting, capture and named-group details, quick pattern helpers, configurable flags, and JSON result copying.
+- **History and favorites**: Added persisted recent-transformation history and favorites, including a dedicated panel and favorites on the home page.
+- **System tray tools**: Added optional tray integration with clipboard-based quick transformations and configurable minimize-to-tray behavior.
+- **Keyboard shortcuts**: Added a discoverable shortcuts overlay and shortcuts for Settings and History & Favorites.
+
+### Fixes
+
+- Applied tray settings at startup and immediately when changed, restored hidden or closed windows from the tray, and kept explicit Exit behavior distinct from closing to the tray.
+- Allowed tray UUID generation with an empty clipboard and removed unused renderer clipboard IPC access.
+- Fixed previous-tab navigation and added Command-key parity for tab navigation on macOS.
+- Made regex matching work when the global flag is omitted, reported invalid expressions without requiring input text, and synchronized highlighted-preview scrolling.
+- Correctly rendered valid JSON primitives, detected single-line TOML, produced safe paths for non-identifier keys, and bounded cyclic or deeply nested tree data.
+- Recorded every opened transformation in history, including bespoke transformation pages, and validated persisted history before hydration.
+
 ## [1.4.9] - 2026-06-20
 
 ### Improvements

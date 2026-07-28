@@ -53,8 +53,10 @@ import TimestampToIsoPage from './TimestampToIsoPage.vue'
 import IsoToTimestampPage from './IsoToTimestampPage.vue'
 import ColorConvertPage from './ColorConvertPage.vue'
 import BaseConvertPage from './BaseConvertPage.vue'
+import DataExplorerPage from './DataExplorerPage.vue'
 import AesPage from './AesPage.vue'
 import RegexReplacePage from './RegexReplacePage.vue'
+import RegexTesterPage from './RegexTesterPage.vue'
 import DiffPage from './DiffPage.vue'
 import ImageBase64Page from './ImageBase64Page.vue'
 import PipelinePage from './PipelinePage.vue'
@@ -113,11 +115,13 @@ const transformationPageMap: Record<string, Component> = {
   isoToTimestamp: IsoToTimestampPage,
   colorConvert: ColorConvertPage,
   baseConvert: BaseConvertPage,
+  dataExplorer: DataExplorerPage,
   textDiff: DiffPage,
   imageBase64: ImageBase64Page,
   aesEncrypt: AesPage,
   aesDecrypt: AesPage,
   regexReplace: RegexReplacePage,
+  regexTester: RegexTesterPage,
   pipelineTransform: PipelinePage,
   customTransformationBuilder: CustomTransformationBuilderPage
 }

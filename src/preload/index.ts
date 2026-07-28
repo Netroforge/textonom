@@ -18,6 +18,7 @@ const api = {
   minimizeWindow: (): Promise<boolean> => ipcRenderer.invoke('window-minimize'),
   maximizeWindow: (): Promise<boolean> => ipcRenderer.invoke('window-maximize'),
   closeWindow: (): Promise<boolean> => ipcRenderer.invoke('window-close'),
+  quitApp: (): Promise<boolean> => ipcRenderer.invoke('app-quit'),
   isWindowMaximized: (): Promise<boolean> => ipcRenderer.invoke('window-is-maximized'),
   setWindowTitle: (title: string): Promise<boolean> =>
     ipcRenderer.invoke('set-window-title', title),
@@ -59,7 +60,23 @@ const api = {
   installUpdate: (): Promise<{ success: boolean; isDev?: boolean }> =>
     ipcRenderer.invoke('install-update'),
 
-  getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version')
+  getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
+
+  // Tray settings
+  setTraySettings: (settings: {
+    showTrayIcon: boolean
+    minimizeToTray: boolean
+  }): Promise<boolean> => ipcRenderer.invoke('set-tray-settings', settings),
+
+  // Toast notifications from main process
+  onShowToast: (callback: (message: string, type: string) => void): (() => void) => {
+    const listener = (_: IpcRendererEvent, message: string, type: string): void =>
+      callback(message, type)
+    ipcRenderer.on('show-toast', listener)
+    return () => {
+      ipcRenderer.removeListener('show-toast', listener)
+    }
+  }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

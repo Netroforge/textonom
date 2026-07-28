@@ -11,6 +11,8 @@ export interface Settings {
   crtEffect: boolean
   bcryptRounds: number
   wordWrap: boolean
+  showTrayIcon: boolean
+  minimizeToTray: boolean
 }
 
 export const defaultSettings: Settings = {
@@ -21,7 +23,9 @@ export const defaultSettings: Settings = {
   checkForUpdatesOnStartup: true,
   crtEffect: true,
   bcryptRounds: 12,
-  wordWrap: true
+  wordWrap: true,
+  showTrayIcon: true,
+  minimizeToTray: true
 }
 
 export const useSettingsStore = defineStore('settings', () => {
@@ -50,6 +54,12 @@ export const useSettingsStore = defineStore('settings', () => {
   }
   const setWordWrap = (wordWrap: boolean): void => {
     settings.wordWrap = wordWrap
+  }
+  const setShowTrayIcon = (showTrayIcon: boolean): void => {
+    settings.showTrayIcon = showTrayIcon
+  }
+  const setMinimizeToTray = (minimizeToTray: boolean): void => {
+    settings.minimizeToTray = minimizeToTray
   }
   const resetSettings = (): void => {
     Object.assign(settings, defaultSettings)
@@ -81,6 +91,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setCrtEffect,
     setBcryptRounds,
     setWordWrap,
+    setShowTrayIcon,
+    setMinimizeToTray,
     resetSettings,
     persist
   }

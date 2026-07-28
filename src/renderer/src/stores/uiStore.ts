@@ -5,13 +5,17 @@ export interface UIState {
   showSettings: boolean
   showAbout: boolean
   showUpdateNotification: boolean
+  showShortcuts: boolean
+  showHistory: boolean
 }
 
 export const useUIStore = defineStore('ui', () => {
   const ui = reactive<UIState>({
     showSettings: false,
     showAbout: false,
-    showUpdateNotification: false
+    showUpdateNotification: false,
+    showShortcuts: false,
+    showHistory: false
   })
 
   const setShowSettings = (show: boolean): void => {
@@ -23,11 +27,19 @@ export const useUIStore = defineStore('ui', () => {
   const setShowUpdateNotification = (show: boolean): void => {
     ui.showUpdateNotification = show
   }
+  const setShowShortcuts = (show: boolean): void => {
+    ui.showShortcuts = show
+  }
+  const setShowHistory = (show: boolean): void => {
+    ui.showHistory = show
+  }
 
   return {
     ui,
     setShowSettings,
     setShowAbout,
-    setShowUpdateNotification
+    setShowUpdateNotification,
+    setShowShortcuts,
+    setShowHistory
   }
 })

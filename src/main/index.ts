@@ -1,8 +1,9 @@
-import { app, BrowserWindow, ipcMain, shell, screen } from 'electron'
+import { app, BrowserWindow, ipcMain, shell, screen, Tray, Menu, clipboard } from 'electron'
 import path, { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/e55776f0-9aff-49ea-ba3c-7c796e1a98cf.png?asset'
 import fs from 'fs'
+import crypto from 'crypto'
 import { autoUpdater, UpdateCheckResult } from 'electron-updater'
 import electronLog from 'electron-log'
 
@@ -43,6 +44,25 @@ if (is.dev) {
 
 // Store main window reference
 let mainWindow: BrowserWindow | null = null
+let tray: Tray | null = null
+let isQuitting = false
+
+interface TraySettings {
+  showTrayIcon: boolean
+  minimizeToTray: boolean
+}
+
+interface QuickTransform {
+  transform: (text: string) => string
+  requiresInput?: boolean
+}
+
+const defaultTraySettings: TraySettings = {
+  showTrayIcon: true,
+  minimizeToTray: true
+}
+
+let traySettings: TraySettings = { ...defaultTraySettings }
 
 // Default window state
 const defaultWindowState: WindowState = {
@@ -62,6 +82,50 @@ function ensureStateDirExists(): void {
   } catch (error) {
     log.error('Failed to create state directory:', error)
   }
+}
+
+function getSavedTraySettings(): TraySettings {
+  try {
+    const filePath = path.join(appStateDir, 'settings.json')
+    if (!fs.existsSync(filePath)) return { ...defaultTraySettings }
+
+    const persisted = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    const outerState = persisted?.state
+    const state = typeof outerState === 'string' ? JSON.parse(outerState) : outerState
+    const settings = state?.settings ?? state
+
+    return {
+      showTrayIcon:
+        typeof settings?.showTrayIcon === 'boolean'
+          ? settings.showTrayIcon
+          : defaultTraySettings.showTrayIcon,
+      minimizeToTray:
+        typeof settings?.minimizeToTray === 'boolean'
+          ? settings.minimizeToTray
+          : defaultTraySettings.minimizeToTray
+    }
+  } catch (error) {
+    log.error('Failed to read tray settings:', error)
+    return { ...defaultTraySettings }
+  }
+}
+
+// Quick transform functions for system tray
+const quickTransforms: Record<string, QuickTransform> = {
+  'Base64 Encode': { transform: (text) => Buffer.from(text).toString('base64') },
+  'Base64 Decode': { transform: (text) => Buffer.from(text, 'base64').toString('utf-8') },
+  'URL Encode': { transform: (text) => encodeURIComponent(text) },
+  'URL Decode': { transform: (text) => decodeURIComponent(text) },
+  'JSON Prettify': { transform: (text) => JSON.stringify(JSON.parse(text), null, 2) },
+  'To Uppercase': { transform: (text) => text.toUpperCase() },
+  'To Lowercase': { transform: (text) => text.toLowerCase() },
+  'MD5 Hash': {
+    transform: (text) => crypto.createHash('md5').update(text).digest('hex')
+  },
+  'SHA256 Hash': {
+    transform: (text) => crypto.createHash('sha256').update(text).digest('hex')
+  },
+  'UUID Generate': { transform: () => crypto.randomUUID(), requiresInput: false }
 }
 
 // Check if the window is on a visible display
@@ -334,11 +398,20 @@ function createWindow(): void {
   mainWindow.on('enter-full-screen', updateWindowState)
   mainWindow.on('leave-full-screen', updateWindowState)
 
-  // Save window state before the window is closed
-  mainWindow.on('close', () => {
+  // Save window state before the window is closed. Keep the window alive when
+  // minimize-to-tray is enabled so tray actions can restore it.
+  mainWindow.on('close', (event) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       updateWindowState()
+      if (!isQuitting && traySettings.minimizeToTray && tray) {
+        event.preventDefault()
+        mainWindow.hide()
+      }
     }
+  })
+
+  mainWindow.on('closed', () => {
+    mainWindow = null
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -357,6 +430,97 @@ function createWindow(): void {
   // Only open DevTools in development mode
   if (is.dev) {
     mainWindow.webContents.openDevTools()
+  }
+}
+
+function createTray(): void {
+  if (tray || !traySettings.showTrayIcon) return
+
+  try {
+    tray = new Tray(icon)
+    tray.setToolTip('Textonom - Quick Transform')
+
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Open Textonom',
+        click: showMainWindow
+      },
+      { type: 'separator' },
+      {
+        label: 'Quick Transform',
+        enabled: false
+      },
+      ...Object.entries(quickTransforms).map(([name, quickTransform]) => ({
+        label: name,
+        click: () => {
+          const text = clipboard.readText()
+          if (!text && quickTransform.requiresInput !== false) {
+            if (mainWindow) {
+              mainWindow.webContents.send('show-toast', 'Clipboard is empty', 'error')
+            }
+            return
+          }
+          try {
+            const result = quickTransform.transform(text)
+            clipboard.writeText(result)
+            if (mainWindow) {
+              mainWindow.webContents.send(
+                'show-toast',
+                `${name} completed - result copied to clipboard`,
+                'success'
+              )
+            }
+          } catch (error) {
+            if (mainWindow) {
+              mainWindow.webContents.send(
+                'show-toast',
+                `${name} failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                'error'
+              )
+            }
+          }
+        }
+      })),
+      { type: 'separator' },
+      {
+        label: 'Exit',
+        click: () => {
+          app.quit()
+        }
+      }
+    ])
+
+    tray.setContextMenu(contextMenu)
+
+    tray.on('double-click', showMainWindow)
+  } catch (error) {
+    destroyTray()
+    log.error('Failed to create tray:', error)
+  }
+}
+
+function showMainWindow(): void {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    createWindow()
+    return
+  }
+  if (mainWindow.isMinimized()) mainWindow.restore()
+  mainWindow.show()
+  mainWindow.focus()
+}
+
+function destroyTray(): void {
+  if (!tray) return
+  tray.destroy()
+  tray = null
+}
+
+function applyTraySettings(settings: TraySettings): void {
+  traySettings = settings
+  if (traySettings.showTrayIcon) {
+    createTray()
+  } else {
+    destroyTray()
   }
 }
 
@@ -401,6 +565,11 @@ app.whenReady().then(() => {
     return true
   })
 
+  ipcMain.handle('app-quit', () => {
+    app.quit()
+    return true
+  })
+
   ipcMain.handle('window-is-maximized', () => {
     const window = BrowserWindow.getFocusedWindow()
     return window ? window.isMaximized() : false
@@ -442,6 +611,18 @@ app.whenReady().then(() => {
 
   ipcMain.handle('get-app-version', () => {
     return app.getVersion()
+  })
+
+  ipcMain.handle('set-tray-settings', (_, settings: TraySettings) => {
+    if (
+      !settings ||
+      typeof settings.showTrayIcon !== 'boolean' ||
+      typeof settings.minimizeToTray !== 'boolean'
+    ) {
+      return false
+    }
+    applyTraySettings(settings)
+    return true
   })
 
   // Set the window title
@@ -551,17 +732,19 @@ app.whenReady().then(() => {
     }, 3000)
   }
 
+  traySettings = getSavedTraySettings()
   createWindow()
+  createTray()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    // Re-create or reveal the window when the dock icon is clicked.
+    showMainWindow()
   })
 })
 
 // Save window state before quitting
 app.on('before-quit', () => {
+  isQuitting = true
   // Only save window state if mainWindow exists and is not destroyed
   if (mainWindow && !mainWindow.isDestroyed()) {
     updateWindowState()

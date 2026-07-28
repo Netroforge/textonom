@@ -28,6 +28,7 @@ interface API {
   minimizeWindow: () => Promise<boolean>
   maximizeWindow: () => Promise<boolean>
   closeWindow: () => Promise<boolean>
+  quitApp: () => Promise<boolean>
   isWindowMaximized: () => Promise<boolean>
   setWindowTitle: (title: string) => Promise<boolean>
   onWindowStateUpdated: (callback: (windowState: WindowState) => void) => () => void
@@ -48,6 +49,15 @@ interface API {
   downloadUpdate: () => Promise<void>
   installUpdate: () => Promise<UpdateInstallResult>
   getAppVersion: () => Promise<string>
+
+  // Tray settings
+  setTraySettings: (settings: {
+    showTrayIcon: boolean
+    minimizeToTray: boolean
+  }) => Promise<boolean>
+
+  // Toast notifications from main process
+  onShowToast: (callback: (message: string, type: string) => void) => () => void
 }
 
 declare global {

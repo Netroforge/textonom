@@ -46,3 +46,7 @@ export const regexTest = async (
     throw new Error(`Invalid regex: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
+
+export const regexTester = async (): Promise<string> => {
+  return 'Use the Regex Tester page to inspect live matches'
+}

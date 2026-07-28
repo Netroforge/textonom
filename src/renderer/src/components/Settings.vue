@@ -24,7 +24,8 @@ const sections: Section[] = [
   { id: 'theme', title: 'Theme' },
   { id: 'font', title: 'Font' },
   { id: 'updates', title: 'Updates' },
-  { id: 'transformations', title: 'Transformations' }
+  { id: 'transformations', title: 'Transformations' },
+  { id: 'system', title: 'System Tray' }
 ]
 
 const activeSection = ref('theme')
@@ -69,6 +70,14 @@ const bcryptRounds = computed({
 const wordWrap = computed({
   get: () => settings.value.wordWrap,
   set: (v) => (settings.value.wordWrap = v)
+})
+const showTrayIcon = computed({
+  get: () => settings.value.showTrayIcon,
+  set: (v) => (settings.value.showTrayIcon = v)
+})
+const minimizeToTray = computed({
+  get: () => settings.value.minimizeToTray,
+  set: (v) => (settings.value.minimizeToTray = v)
 })
 
 const requestReset = (): void => {
@@ -238,6 +247,38 @@ onUnmounted(() => {
                   <p>
                     Higher rounds provide stronger security but take longer to compute. The default
                     value of 12 is a good balance between security and performance.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="activeSection === 'system'" class="settings-section">
+              <h3 class="settings-section-title">System Tray</h3>
+              <div class="settings-section-content">
+                <div class="settings-row">
+                  <label class="settings-label" for="setting-show-tray">Show tray icon</label>
+                  <div class="settings-control">
+                    <input id="setting-show-tray" v-model="showTrayIcon" type="checkbox" />
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <label class="settings-label" for="setting-minimize-tray">
+                    Minimize to tray
+                  </label>
+                  <div class="settings-control">
+                    <input
+                      id="setting-minimize-tray"
+                      v-model="minimizeToTray"
+                      type="checkbox"
+                      :disabled="!showTrayIcon"
+                    />
+                  </div>
+                </div>
+                <div class="settings-info">
+                  <p>
+                    Quick Transform lets you transform clipboard content directly from the system
+                    tray without opening the app. Right-click the tray icon to access quick
+                    transformations.
                   </p>
                 </div>
               </div>
