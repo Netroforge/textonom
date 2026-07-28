@@ -28,7 +28,8 @@ All notable changes to this project will be documented in this file.
 - Platform download buttons now resolve the matching asset from the latest GitHub release after the
   user clicks, with a release-page fallback.
 - Prepared release automation to consume macOS, Apple notarization, and Windows signing credentials
-  from GitHub Actions secrets when they become available.
+  from GitHub Actions secrets when they become available, while cleanly omitting absent certificate
+  variables so unsigned builds continue to work.
 - Synchronized the Linux desktop application name so desktop environments can associate the running
   window with its launcher entry.
 

@@ -75,7 +75,7 @@ jobs:
       - name: Installing Node
         uses: actions/setup-node@v6
         with:
-          node-version: 23
+          node-version: 24
 
       - name: Build and publish
         env:
@@ -96,7 +96,7 @@ jobs:
       - name: Installing Node
         uses: actions/setup-node@v6
         with:
-          node-version: 23
+          node-version: 24
 
       - name: Build and publish
         env:
@@ -107,6 +107,12 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          # GitHub exposes missing secrets as empty strings. electron-builder treats
+          # an empty CSC_LINK as the current directory, so remove signing variables
+          # entirely until a certificate is configured.
+          if [[ -z "${CSC_LINK:-}" ]]; then
+            unset CSC_LINK CSC_KEY_PASSWORD
+          fi
           npm install
           npm run publish:mac
 
@@ -120,14 +126,20 @@ jobs:
       - name: Installing Node
         uses: actions/setup-node@v6
         with:
-          node-version: 23
+          node-version: 24
 
       - name: Build and publish
         env:
           GH_TOKEN: ${{ github.token }}
           WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+        shell: pwsh
         run: |
+          # Keep unsigned releases working until the optional certificate exists.
+          if ([string]::IsNullOrWhiteSpace($env:WIN_CSC_LINK)) {
+            Remove-Item Env:WIN_CSC_LINK -ErrorAction SilentlyContinue
+            Remove-Item Env:WIN_CSC_KEY_PASSWORD -ErrorAction SilentlyContinue
+          }
           npm install
           npm run publish:win
 
