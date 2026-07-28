@@ -9,6 +9,7 @@ import {
   searchTransformations,
   getTransformationById
 } from '../transformations/registry'
+import FavoriteButton from './FavoriteButton.vue'
 import './HomePage.css'
 
 const props = defineProps<{
@@ -75,8 +76,7 @@ const handleTransformationClick = (transformationId: string): void => {
   props.onTransformationOpened()
 }
 
-const handleToggleFavorite = (transformationId: string, e: Event): void => {
-  e.stopPropagation()
+const handleToggleFavorite = (transformationId: string): void => {
   historyStore.toggleFavorite(transformationId)
 }
 
@@ -149,16 +149,11 @@ onUnmounted(() => {
           <div class="transformation-card-content">
             <div class="transformation-card-header">
               <h3 class="transformation-title">{{ transformation.name }}</h3>
-              <button
-                type="button"
-                class="transformation-favorite transformation-favorite-active"
-                :aria-label="`Remove ${transformation.name} from favorites`"
-                aria-pressed="true"
-                @click="(e) => handleToggleFavorite(transformation.id, e)"
-                @keydown.stop
-              >
-                ★
-              </button>
+              <FavoriteButton
+                active
+                :item-name="transformation.name"
+                @toggle="handleToggleFavorite(transformation.id)"
+              />
             </div>
             <p class="transformation-description">{{ transformation.description }}</p>
           </div>
@@ -192,19 +187,11 @@ onUnmounted(() => {
             <div class="transformation-card-content">
               <div class="transformation-card-header">
                 <h3 class="transformation-title">{{ transformation.name }}</h3>
-                <button
-                  type="button"
-                  class="transformation-favorite"
-                  :class="{
-                    'transformation-favorite-active': historyStore.isFavorite(transformation.id)
-                  }"
-                  :aria-label="`${historyStore.isFavorite(transformation.id) ? 'Remove' : 'Add'} ${transformation.name} ${historyStore.isFavorite(transformation.id) ? 'from' : 'to'} favorites`"
-                  :aria-pressed="historyStore.isFavorite(transformation.id)"
-                  @click="(e) => handleToggleFavorite(transformation.id, e)"
-                  @keydown.stop
-                >
-                  {{ historyStore.isFavorite(transformation.id) ? '★' : '☆' }}
-                </button>
+                <FavoriteButton
+                  :active="historyStore.isFavorite(transformation.id)"
+                  :item-name="transformation.name"
+                  @toggle="handleToggleFavorite(transformation.id)"
+                />
               </div>
               <p class="transformation-description">{{ transformation.description }}</p>
             </div>

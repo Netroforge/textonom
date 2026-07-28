@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import { useHistoryStore } from '../stores/historyStore'
 import { useTabsStore } from '../stores/tabsStore'
 import { getTransformationById } from '../transformations/registry'
+import FavoriteButton from './FavoriteButton.vue'
 import './HistoryPanel.css'
 
 const props = defineProps<{
@@ -38,8 +39,7 @@ const handleRemoveFromHistory = (id: string, e: Event): void => {
   historyStore.removeFromHistory(id)
 }
 
-const handleToggleFavorite = (transformationId: string, e: Event): void => {
-  e.stopPropagation()
+const handleToggleFavorite = (transformationId: string): void => {
   historyStore.toggleFavorite(transformationId)
 }
 
@@ -98,15 +98,12 @@ const onOverlayClick = (e: MouseEvent): void => {
               @keydown.enter.prevent="handleOpenTransformation(fav.id)"
               @keydown.space.prevent="handleOpenTransformation(fav.id)"
             >
-              <button
-                type="button"
-                class="history-item-star history-item-star-active"
-                :aria-label="`Remove ${fav.name} from favorites`"
-                @click="(e) => handleToggleFavorite(fav.id, e)"
-                @keydown.stop
-              >
-                ★
-              </button>
+              <FavoriteButton
+                active
+                compact
+                :item-name="fav.name"
+                @toggle="handleToggleFavorite(fav.id)"
+              />
               <div class="history-item-info">
                 <span class="history-item-name">{{ fav.name }}</span>
               </div>
@@ -130,18 +127,12 @@ const onOverlayClick = (e: MouseEvent): void => {
               @keydown.enter.prevent="handleOpenTransformation(entry.transformationId)"
               @keydown.space.prevent="handleOpenTransformation(entry.transformationId)"
             >
-              <button
-                type="button"
-                class="history-item-star"
-                :class="{
-                  'history-item-star-active': historyStore.isFavorite(entry.transformationId)
-                }"
-                :aria-label="`${historyStore.isFavorite(entry.transformationId) ? 'Remove' : 'Add'} ${entry.transformationName} ${historyStore.isFavorite(entry.transformationId) ? 'from' : 'to'} favorites`"
-                @click="(e) => handleToggleFavorite(entry.transformationId, e)"
-                @keydown.stop
-              >
-                {{ historyStore.isFavorite(entry.transformationId) ? '★' : '☆' }}
-              </button>
+              <FavoriteButton
+                compact
+                :active="historyStore.isFavorite(entry.transformationId)"
+                :item-name="entry.transformationName"
+                @toggle="handleToggleFavorite(entry.transformationId)"
+              />
               <div class="history-item-info">
                 <span class="history-item-name">{{ entry.transformationName }}</span>
                 <span class="history-item-time">{{ formatTime(entry.timestamp) }}</span>

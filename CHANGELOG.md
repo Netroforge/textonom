@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.1] - 2026-07-28
+
+### Improvements
+
+- Replaced the small text-based favorite control with a reusable SVG icon button featuring clearer inactive and selected states, larger click targets, hover and press feedback, keyboard focus styling, tooltips, and reduced-motion support.
+- Applied the improved favorite control consistently across transformation cards and the History & Favorites panel.
+
+### Fixes
+
+- Prevented the raised hover state from clipping the top border of cards in the horizontally scrolling Favorites row.
+- Prepared a single draft release before parallel platform builds, added per-tag release serialization, regenerated checksums after all artifacts finish, and published releases only after checksum completion.
+
 ## [1.6.0] - 2026-07-28
 
 ### Features
