@@ -6,6 +6,8 @@ import rot13 from './rot13'
 import caesarCipher from './caesar-cipher'
 import natoAlphabet from './nato-alphabet'
 import stripHtmlTags from './strip-html'
+import { defangIndicators, fangIndicators } from './indicators'
+import stringInspector from './string-inspector'
 
 export {
   removeDuplicateWords,
@@ -15,5 +17,8 @@ export {
   rot13,
   caesarCipher,
   natoAlphabet,
-  stripHtmlTags
+  stripHtmlTags,
+  defangIndicators,
+  fangIndicators,
+  stringInspector
 }

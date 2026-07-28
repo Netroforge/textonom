@@ -1,3 +1,4 @@
 import tokenGenerate from './generate'
+import nanoIdGenerate from './nanoid'
 
-export { tokenGenerate }
+export { tokenGenerate, nanoIdGenerate }

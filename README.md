@@ -6,7 +6,7 @@
 
 # Textonom
 
-A private desktop toolkit with 100 text transformations. Smart Paste detects common clipboard
+A private desktop toolkit with 127 text transformations. Smart Paste detects common clipboard
 formats locally and suggests the right tool without sending your text away.
 
 ![Screenshot.png](docs/screenshot.png)
@@ -64,9 +64,13 @@ _Encode or decode text using various algorithms_
 - **HTML Decode**: Decode HTML entities to characters
 - **Unicode Escape**: Escape Unicode characters to \uXXXX format
 - **Unicode Unescape**: Convert \uXXXX format to actual Unicode characters
+- **Backslash Escape / Unescape**: Convert JavaScript-style string escapes
+- **GZIP Compress / Decompress**: Exchange UTF-8 text as Base64 GZIP data
 - **Hex Encode**: Convert text to hexadecimal representation
 - **Hex Decode**: Convert hexadecimal back to text
 - **JWT Decode**: Decode and display JWT token contents
+- **X.509 Certificate Inspector**: Inspect certificate identity, validity, keys, and extensions
+- **Atbash / XOR**: Apply reversible classical and bytewise ciphers
 
 ### Formatting
 
@@ -102,6 +106,10 @@ _Various text manipulation operations_
 - **Reverse Lines**: Reverse the order of lines
 - **Remove Empty Lines**: Remove all empty lines from text
 - **Remove Duplicate Words**: Remove duplicate words from text
+- **Defang / Restore Indicators**: Safely share or restore URLs, domains, and IP addresses
+- **String Inspector**: Inspect code points, UTF-8 bytes, and Unicode escapes
+- **IPv4 / CIDR Inspector**: Calculate network ranges, masks, and host counts
+- **Hash Identifier**: Suggest possible digest families from structure and length
 
 ### Hashing
 
@@ -118,6 +126,14 @@ _Generate cryptographic hashes_
 ### Format Conversion
 
 _Convert between different data formats_
+
+- **URL Parser**: Inspect URL components, query values, path segments, and fragments
+- **HTML to JSX**: Convert common HTML syntax to JSX
+- **JSONPath / JSON Schema**: Query and validate structured data
+- **Unit Converter**: Convert length, area, mass, speed, data, volume, time, and temperature
+- **JSON to Code**: Generate TypeScript, PHP, or Python structures
+- **PHP Serialization**: Convert between PHP serialized data and JSON
+- **QR and Image Tools**: Generate/read QR codes and convert/compress local images
 
 - **JSON to YAML**: Convert JSON to YAML format
 - **YAML to JSON**: Convert YAML to JSON format

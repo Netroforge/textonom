@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import tokenGenerate from '@renderer/transformations/token/generate'
+import nanoIdGenerate from '@renderer/transformations/token/nanoid'
 
 describe('tokenGenerate', () => {
   it('generates a 32-character token by default', async () => {
@@ -36,5 +37,18 @@ describe('tokenGenerate', () => {
     await expect(
       tokenGenerate('', { uppercase: false, lowercase: false, numbers: false, symbols: false })
     ).rejects.toThrow('At least one character set')
+  })
+})
+
+describe('nanoIdGenerate', () => {
+  it('uses the standard 21-character length by default', async () => {
+    expect(await nanoIdGenerate('')).toMatch(/^[_A-Za-z0-9-]{21}$/)
+  })
+
+  it('supports custom lengths and multiple IDs', async () => {
+    const ids = (await nanoIdGenerate('', { length: 10, count: 3 })).split('\n')
+    expect(ids).toHaveLength(3)
+    expect(ids.every((id) => id.length === 10)).toBe(true)
+    expect(new Set(ids).size).toBe(3)
   })
 })

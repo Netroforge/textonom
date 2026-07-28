@@ -4,7 +4,7 @@ This directory contains the GitHub Pages website for the Textonom project.
 
 ## About
 
-Textonom is a desktop toolkit with 100 transformations and local Smart Paste suggestions. Text
+Textonom is a desktop toolkit with 127 transformations and local Smart Paste suggestions. Text
 input stays on the user's machine.
 
 ## Features
@@ -12,7 +12,7 @@ input stays on the user's machine.
 - Cyberpunk theme with optional Turbo Mode (CRT effects)
 - Responsive design that works on mobile and desktop
 - Interactive elements with hover effects
-- Showcases all 100 transformations across 9 categories
+- Showcases all 127 transformations across 9 categories
 - Resolves platform-specific downloads from the latest GitHub release after an explicit click
 - Explains the current code-signing and notarization funding goal
 - Contains no analytics or affiliate tracker

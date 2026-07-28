@@ -104,6 +104,8 @@ export const detectText = (input: string): SmartDetectionResult => {
       addSuggestion(suggestions, 'jsonPrettify', 'Format it for easier reading', 0.99)
       addSuggestion(suggestions, 'dataExplorer', 'Explore nested values as a tree', 0.96)
       addSuggestion(suggestions, 'sortJsonKeys', 'Sort object keys consistently', 0.88)
+      addSuggestion(suggestions, 'jsonPathQuery', 'Query nested values with JSONPath', 0.78)
+      addSuggestion(suggestions, 'jsonSchemaValidate', 'Validate it against a JSON Schema', 0.7)
     } catch {
       // Keep looking for formats with similar opening characters.
     }
@@ -114,6 +116,35 @@ export const detectText = (input: string): SmartDetectionResult => {
     summary = 'XML document'
     addSuggestion(suggestions, 'xmlPrettify', 'Format the XML structure', 0.98)
     addSuggestion(suggestions, 'xmlToJson', 'Convert the document to JSON', 0.9)
+  }
+
+  if (/-----BEGIN CERTIFICATE-----[\s\S]+-----END CERTIFICATE-----/.test(value)) {
+    kind = 'X.509 certificate'
+    summary = 'PEM-encoded certificate'
+    addSuggestion(suggestions, 'x509Inspect', 'Inspect identity, validity, keys, and extensions', 1)
+  }
+
+  if (/^(?:\d{1,3}\.){3}\d{1,3}\/(?:[0-9]|[12][0-9]|3[0-2])$/.test(value)) {
+    kind = 'IPv4 CIDR'
+    summary = 'IPv4 address and network prefix'
+    addSuggestion(suggestions, 'ipv4CidrInspect', 'Calculate the network and host range', 0.98)
+  }
+
+  if (
+    /^(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{56}|[0-9a-fA-F]{64}|[0-9a-fA-F]{96}|[0-9a-fA-F]{128})$/.test(
+      value
+    ) ||
+    /^\$(?:2[aby]|argon2(?:id|i|d))\$/.test(value)
+  ) {
+    kind = 'Hash digest'
+    summary = 'Digest-like value'
+    addSuggestion(suggestions, 'hashIdentify', 'Suggest possible hash families', 0.96)
+  }
+
+  if (/^(?:N;|[bidsaOC]:)/.test(value) && /[;}]$/.test(value)) {
+    kind = 'PHP serialized data'
+    summary = 'PHP serialization syntax'
+    addSuggestion(suggestions, 'phpUnserialize', 'Convert the value to JSON', 0.96)
   }
 
   if (/^\d{10}$|^\d{13}$/.test(value)) {
@@ -157,6 +188,25 @@ export const detectText = (input: string): SmartDetectionResult => {
     } catch {
       // Invalid percent encoding should not surface a decode recommendation.
     }
+  }
+
+  if (/^https?:\/\/[^\s]+$/i.test(value)) {
+    kind = 'URL'
+    summary = 'Absolute web URL'
+    addSuggestion(suggestions, 'urlParser', 'Inspect every URL component', 0.97)
+    if (/%[0-9A-Fa-f]{2}/.test(value)) {
+      addSuggestion(suggestions, 'urlDecode', 'Decode percent-encoded characters', 0.86)
+    }
+    addSuggestion(suggestions, 'defangIndicators', 'Make the URL safe to share', 0.72)
+  }
+
+  if (
+    /\bhxxps?(?:\[?:\/\/\]?|:\/\/)/i.test(value) ||
+    /\[(?:\.|dot)\]|\((?:\.|dot)\)/i.test(value)
+  ) {
+    kind = 'Defanged indicator'
+    summary = 'A URL, domain, or IP address in safe sharing notation'
+    addSuggestion(suggestions, 'fangIndicators', 'Restore the original indicator', 0.96)
   }
 
   if (isProbablyBase64(value) && !isProbablyJwt(value)) {

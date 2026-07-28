@@ -50,6 +50,14 @@ import {
   romanToNumber,
   numberToRoman,
   cronToHuman,
+  urlParser,
+  htmlToJsx,
+  unitConvert,
+  jsonToPhp,
+  jsonToPython,
+  jsonToTypeScript,
+  phpSerialize,
+  phpUnserialize,
   dataExplorer
 } from './conversion'
 import { jwtDecode } from './jwt'
@@ -63,7 +71,10 @@ import {
   rot13,
   caesarCipher,
   natoAlphabet,
-  stripHtmlTags
+  stripHtmlTags,
+  defangIndicators,
+  fangIndicators,
+  stringInspector
 } from './text'
 import { extractEmails, extractUrls, extractIps, extractNumbers } from './extract'
 import { base64ToImage } from './image'
@@ -71,7 +82,19 @@ import { tabsToSpaces, spacesToTabs, trimLines } from './whitespace'
 import { sqlFormat, htmlFormat, cssFormat, jsFormat, xmlFormat, codeFormat } from './formatting'
 import { uuidGenerate } from './uuid'
 import { ulidGenerate } from './ulid'
-import { tokenGenerate } from './token'
+import { nanoIdGenerate, tokenGenerate } from './token'
+import { gzipCompress, gzipDecompress } from './compression'
+import { backslashEscape, backslashUnescape } from './escape'
+import { jsonPathQuery, jsonSchemaValidate } from './structured'
+import {
+  atbashCipher,
+  hashIdentify,
+  ipv4CidrInspect,
+  x509Inspect,
+  xorDecrypt,
+  xorEncrypt
+} from './security'
+import { imageConvertCompress, qrDecode, qrGenerate } from './media'
 import { isoToTimestamp, timestampToIso } from './timestamp'
 import { loremGenerate } from './lorem'
 import { colorConvert } from './color'
@@ -189,9 +212,36 @@ export {
   romanToNumber,
   numberToRoman,
   cronToHuman,
+  urlParser,
+  htmlToJsx,
+  unitConvert,
+  jsonToPhp,
+  jsonToPython,
+  jsonToTypeScript,
+  phpSerialize,
+  phpUnserialize,
   dataExplorer,
   ulidGenerate,
   tokenGenerate,
+  nanoIdGenerate,
+  gzipCompress,
+  gzipDecompress,
+  backslashEscape,
+  backslashUnescape,
+  defangIndicators,
+  fangIndicators,
+  stringInspector,
+  jsonPathQuery,
+  jsonSchemaValidate,
+  x509Inspect,
+  atbashCipher,
+  xorEncrypt,
+  xorDecrypt,
+  ipv4CidrInspect,
+  hashIdentify,
+  qrGenerate,
+  qrDecode,
+  imageConvertCompress,
   extractEmails,
   extractUrls,
   extractIps,
@@ -296,9 +346,36 @@ export const transformations = {
   romanToNumber,
   numberToRoman,
   cronToHuman,
+  urlParser,
+  htmlToJsx,
+  unitConvert,
+  jsonToPhp,
+  jsonToPython,
+  jsonToTypeScript,
+  phpSerialize,
+  phpUnserialize,
   dataExplorer,
   ulidGenerate,
   tokenGenerate,
+  nanoIdGenerate,
+  gzipCompress,
+  gzipDecompress,
+  backslashEscape,
+  backslashUnescape,
+  defangIndicators,
+  fangIndicators,
+  stringInspector,
+  jsonPathQuery,
+  jsonSchemaValidate,
+  x509Inspect,
+  atbashCipher,
+  xorEncrypt,
+  xorDecrypt,
+  ipv4CidrInspect,
+  hashIdentify,
+  qrGenerate,
+  qrDecode,
+  imageConvertCompress,
   extractEmails,
   extractUrls,
   extractIps,

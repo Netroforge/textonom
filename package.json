@@ -1,7 +1,7 @@
 {
   "name": "textonom",
-  "version": "1.7.1",
-  "description": "A private desktop toolkit with 100 local text transformations and Smart Paste",
+  "version": "1.8.0",
+  "description": "A private desktop toolkit with 127 local text transformations and Smart Paste",
   "main": "./out/main/index.js",
   "desktopName": "Textonom",
   "author": "Netroforge",
@@ -26,21 +26,28 @@
     "publish:linux": "npm run build && electron-builder --linux --publish always"
   },
   "dependencies": {
-    "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
+    "@peculiar/x509": "^2.0.0",
     "@prettier/plugin-xml": "^3.4.2",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "bcryptjs": "^3.0.3",
     "cronstrue": "^3.20.0",
     "crypto-js": "^4.2.0",
     "electron-log": "^5.4.4",
     "electron-updater": "^6.8.9",
-    "fast-xml-parser": "^5.9.3",
+    "fast-xml-parser": "^5.10.1",
     "js-base64": "^3.7.8",
-    "js-yaml": "^5.0.0",
+    "js-yaml": "^5.2.2",
+    "jsonpath-plus": "^10.4.0",
+    "jsqr": "^1.4.0",
     "jwt-decode": "^4.0.0",
     "marked": "^18.0.5",
+    "php-serialize": "^5.1.3",
     "pinia": "^3.0.4",
+    "qrcode": "^1.5.4",
+    "reflect-metadata": "^0.2.2",
     "smol-toml": "^1.6.1",
     "sql-formatter": "^15.8.1",
     "turndown": "^7.2.4",
@@ -50,12 +57,16 @@
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^2.1.0",
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/crypto-js": "^4.2.2",
     "@types/js-yaml": "^4.0.9",
     "@types/marked": "^6.0.0",
     "@types/node": "^25.9.2",
+    "@types/php-serialize": "^3.0.4",
+    "@types/pngjs": "^6.0.5",
+    "@types/qrcode": "^1.5.6",
     "@types/turndown": "^5.0.6",
     "@types/xml-formatter": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
@@ -68,6 +79,7 @@
     "eslint": "^10.5.0",
     "eslint-plugin-vue": "^10.9.2",
     "happy-dom": "^20.10.6",
+    "pngjs": "^7.0.0",
     "prettier": "^3.8.4",
     "typescript": "^6.0.3",
     "undici-types": "^8.5.0",
@@ -75,5 +87,13 @@
     "vitest": "^4.1.9",
     "vue-eslint-parser": "^10.4.1",
     "vue-tsc": "^3.3.5"
+  },
+  "overrides": {
+    "@electron/get": {
+      "undici": "^7.28.0"
+    },
+    "electron-updater": {
+      "js-yaml": "^4.3.0"
+    }
   }
 }

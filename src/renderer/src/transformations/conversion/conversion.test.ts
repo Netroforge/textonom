@@ -17,6 +17,8 @@ import jsonToQueryString from '@renderer/transformations/conversion/json-to-quer
 import romanToNumber from '@renderer/transformations/conversion/roman-to-number'
 import numberToRoman from '@renderer/transformations/conversion/number-to-roman'
 import cronToHuman from '@renderer/transformations/conversion/cron-to-human'
+import urlParser from '@renderer/transformations/conversion/url-parser'
+import htmlToJsx from '@renderer/transformations/conversion/html-to-jsx'
 
 describe('jsonToYaml', () => {
   it('converts JSON to YAML', async () => {
@@ -269,5 +271,47 @@ describe('cronToHuman', () => {
 
   it('throws on an invalid expression', async () => {
     await expect(cronToHuman('not a cron')).rejects.toThrow('Invalid cron expression')
+  })
+})
+
+describe('urlParser', () => {
+  it('breaks an absolute URL into useful fields and repeated query values', async () => {
+    const result = JSON.parse(
+      await urlParser('https://alice:secret@example.com:8443/a%20b?tag=one&tag=two#details')
+    )
+
+    expect(result).toMatchObject({
+      protocol: 'https',
+      username: 'alice',
+      password: 'secret',
+      hostname: 'example.com',
+      port: '8443',
+      pathname: '/a%20b',
+      pathSegments: ['a b'],
+      query: { tag: ['one', 'two'] },
+      hash: 'details'
+    })
+  })
+
+  it('accepts a domain without an explicit scheme', async () => {
+    expect(JSON.parse(await urlParser('example.com/docs')).href).toBe('https://example.com/docs')
+  })
+
+  it('rejects input that is not a URL', async () => {
+    await expect(urlParser('not a url')).rejects.toThrow('Enter an absolute URL')
+  })
+})
+
+describe('htmlToJsx', () => {
+  it('renames common attributes and closes void elements', async () => {
+    expect(await htmlToJsx('<label for="name" class="field"><input readonly></label>')).toBe(
+      '<label htmlFor="name" className="field"><input readOnly /></label>'
+    )
+  })
+
+  it('converts inline styles and comments', async () => {
+    expect(await htmlToJsx('<!--note--><div style="font-size: 12px; color: red"></div>')).toBe(
+      '{/*note*/}<div style={{ fontSize: "12px", color: "red" }}></div>'
+    )
   })
 })

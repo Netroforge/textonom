@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2026-07-28
+
+### Features
+
+- Expanded Textonom from 100 to 127 local transformations after reviewing the official DevToys,
+  CyberChef, and DevUtils catalogs.
+- Added GZIP compression, JavaScript-style backslash escaping, URL inspection, HTML-to-JSX
+  conversion, Nano ID generation, indicator defanging, and Unicode string inspection.
+- Added JSONPath queries, JSON Schema 2020-12 validation, unit conversion, PHP serialization, and
+  JSON-to-TypeScript, PHP, and Python code generation.
+- Added X.509 certificate inspection, Atbash and repeating-key XOR ciphers, IPv4/CIDR inspection,
+  and conservative hash-family identification.
+- Added fully local QR reading/generation and image conversion/compression with dedicated
+  drag-and-drop interfaces, previews, and downloads.
+
+### Improvements
+
+- Extended Smart Paste detection to suggest tools for URLs, defanged indicators, certificates,
+  CIDR ranges, hashes, PHP serialized data, JSONPath, and JSON Schema workflows.
+- Updated application, README, documentation, and website transformation counts and catalogs.
+- Updated vulnerable runtime dependencies and constrained transitive dependencies to patched
+  releases; production dependency audit now reports no known vulnerabilities.
+- Moved the lint-only TypeScript ESLint configuration out of production dependencies to reduce
+  shipped package overhead.
+
+### Tests
+
+- Added round-trip and fixture coverage for compression, escaping, QR pixels, image dimensions,
+  ciphers, certificates, structured-data validation, code generation, units, indicators, URLs, and
+  Smart Paste detection.
+
 ## [1.7.1] - 2026-07-28
 
 ### Fixes

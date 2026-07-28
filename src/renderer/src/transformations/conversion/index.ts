@@ -16,6 +16,11 @@ import jsonToQueryString from './json-to-query'
 import romanToNumber from './roman-to-number'
 import numberToRoman from './number-to-roman'
 import cronToHuman from './cron-to-human'
+import urlParser from './url-parser'
+import htmlToJsx from './html-to-jsx'
+import unitConvert from './unit-converter'
+import { jsonToPhp, jsonToPython, jsonToTypeScript } from './code-generation'
+import { phpSerialize, phpUnserialize } from './php-serialization'
 
 export {
   jsonToYaml,
@@ -35,7 +40,15 @@ export {
   jsonToQueryString,
   romanToNumber,
   numberToRoman,
-  cronToHuman
+  cronToHuman,
+  urlParser,
+  htmlToJsx,
+  unitConvert,
+  jsonToPhp,
+  jsonToPython,
+  jsonToTypeScript,
+  phpSerialize,
+  phpUnserialize
 }
 
 export const dataExplorer = async (): Promise<string> => {

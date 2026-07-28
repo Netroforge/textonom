@@ -34,6 +34,20 @@ describe('smart clipboard detection', () => {
     expect(suggestedIds('name,mode\nTextonom,local')[0]).toBe('csvToJson')
   })
 
+  it('recognizes URLs and defanged indicators', () => {
+    expect(suggestedIds('https://example.com/path?name=value')[0]).toBe('urlParser')
+    expect(suggestedIds('hxxps[://]example[.]com')[0]).toBe('fangIndicators')
+  })
+
+  it('recognizes certificates, CIDR ranges, hashes, and PHP serialized data', () => {
+    expect(suggestedIds('-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----')[0]).toBe(
+      'x509Inspect'
+    )
+    expect(suggestedIds('192.168.1.20/24')[0]).toBe('ipv4CidrInspect')
+    expect(suggestedIds('d41d8cd98f00b204e9800998ecf8427e')[0]).toBe('hashIdentify')
+    expect(suggestedIds('a:1:{s:4:"name";s:8:"Textonom";}')[0]).toBe('phpUnserialize')
+  })
+
   it('falls back to useful general text tools', () => {
     const result = detectText('Textonom makes local text tools convenient')
 

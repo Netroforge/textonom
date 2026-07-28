@@ -353,6 +353,88 @@ const transformationMetadata: Transformation[] = [
     category: 'encoding',
     fn: transformations.unicodeUnescape
   },
+  {
+    id: 'backslashEscape',
+    name: 'Backslash Escape',
+    description: 'Escape quotes, backslashes, control characters, and Unicode-safe text',
+    category: 'encoding',
+    fn: transformations.backslashEscape
+  },
+  {
+    id: 'backslashUnescape',
+    name: 'Backslash Unescape',
+    description: 'Decode JavaScript-style backslash escapes including Unicode code points',
+    category: 'encoding',
+    fn: transformations.backslashUnescape
+  },
+  {
+    id: 'gzipCompress',
+    name: 'GZIP Compress',
+    description: 'Compress UTF-8 text with GZIP and return Base64 data',
+    category: 'encoding',
+    fn: transformations.gzipCompress
+  },
+  {
+    id: 'gzipDecompress',
+    name: 'GZIP Decompress',
+    description: 'Decompress Base64-encoded GZIP data back to UTF-8 text',
+    category: 'encoding',
+    fn: transformations.gzipDecompress
+  },
+  {
+    id: 'x509Inspect',
+    name: 'X.509 Certificate Inspector',
+    description: 'Inspect certificate identity, validity, fingerprints, keys, and extensions',
+    category: 'encoding',
+    fn: transformations.x509Inspect
+  },
+  {
+    id: 'atbashCipher',
+    name: 'Atbash Cipher',
+    description: 'Apply the reversible Atbash substitution cipher to Latin letters',
+    category: 'encoding',
+    fn: transformations.atbashCipher
+  },
+  {
+    id: 'xorEncrypt',
+    name: 'XOR Encrypt to Hex',
+    description: 'XOR UTF-8 text with a repeating text or hexadecimal key',
+    category: 'encoding',
+    parameters: [
+      {
+        name: 'key',
+        type: 'string',
+        description: 'XOR key'
+      },
+      {
+        name: 'keyEncoding',
+        type: 'string',
+        description: 'Key encoding: text or hex',
+        default: 'text'
+      }
+    ],
+    fn: transformations.xorEncrypt
+  },
+  {
+    id: 'xorDecrypt',
+    name: 'XOR Decrypt from Hex',
+    description: 'Decrypt hexadecimal XOR data with a repeating text or hexadecimal key',
+    category: 'encoding',
+    parameters: [
+      {
+        name: 'key',
+        type: 'string',
+        description: 'XOR key'
+      },
+      {
+        name: 'keyEncoding',
+        type: 'string',
+        description: 'Key encoding: text or hex',
+        default: 'text'
+      }
+    ],
+    fn: transformations.xorDecrypt
+  },
 
   // Conversion
   {
@@ -869,6 +951,42 @@ const transformationMetadata: Transformation[] = [
     fn: transformations.stripHtmlTags
   },
   {
+    id: 'defangIndicators',
+    name: 'Defang URLs and IPs',
+    description: 'Make URLs, domains, and IP addresses non-clickable for safe sharing',
+    category: 'text',
+    fn: transformations.defangIndicators
+  },
+  {
+    id: 'fangIndicators',
+    name: 'Restore Defanged URLs and IPs',
+    description: 'Restore common hxxp and bracketed-dot indicator notation',
+    category: 'text',
+    fn: transformations.fangIndicators
+  },
+  {
+    id: 'stringInspector',
+    name: 'String Inspector',
+    description: 'Inspect characters, code points, UTF-8 bytes, and Unicode escapes',
+    category: 'text',
+    fn: transformations.stringInspector
+  },
+  {
+    id: 'ipv4CidrInspect',
+    name: 'IPv4 / CIDR Inspector',
+    description: 'Calculate network, broadcast, host range, mask, and private-address status',
+    category: 'text',
+    fn: transformations.ipv4CidrInspect
+  },
+  {
+    id: 'hashIdentify',
+    name: 'Hash Identifier',
+    description:
+      'Suggest possible hash families from syntax and digest length without overclaiming',
+    category: 'text',
+    fn: transformations.hashIdentify
+  },
+  {
     id: 'tabsToSpaces',
     name: 'Tabs to Spaces',
     description: 'Replace tab characters with spaces',
@@ -968,6 +1086,167 @@ const transformationMetadata: Transformation[] = [
     description: 'Convert HTML to Markdown',
     category: 'conversion',
     fn: transformations.htmlToMarkdown
+  },
+  {
+    id: 'htmlToJsx',
+    name: 'HTML to JSX',
+    description: 'Convert common HTML attributes, inline styles, comments, and void tags to JSX',
+    category: 'conversion',
+    fn: transformations.htmlToJsx
+  },
+  {
+    id: 'urlParser',
+    name: 'URL Parser',
+    description: 'Inspect URL components, path segments, repeated query values, and fragments',
+    category: 'conversion',
+    fn: transformations.urlParser
+  },
+  {
+    id: 'jsonPathQuery',
+    name: 'JSONPath Query',
+    description: 'Query JSON using filters, recursive descent, slices, and wildcards',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'path',
+        type: 'string',
+        description: 'JSONPath expression',
+        default: '$'
+      }
+    ],
+    fn: transformations.jsonPathQuery
+  },
+  {
+    id: 'jsonSchemaValidate',
+    name: 'JSON Schema Validator',
+    description: 'Validate JSON against JSON Schema 2020-12 with detailed errors',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'schema',
+        type: 'string',
+        description: 'JSON Schema document'
+      }
+    ],
+    fn: transformations.jsonSchemaValidate
+  },
+  {
+    id: 'unitConvert',
+    name: 'Unit Converter',
+    description: 'Convert length, area, mass, speed, data, volume, time, and temperature values',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'fromUnit',
+        type: 'string',
+        description: 'Source unit (for example km, lb, MiB, or °F)',
+        default: 'km'
+      },
+      {
+        name: 'toUnit',
+        type: 'string',
+        description: 'Target unit (for example m, kg, GB, or °C)',
+        default: 'm'
+      },
+      {
+        name: 'precision',
+        type: 'number',
+        description: 'Maximum decimal places',
+        default: 6,
+        min: 0,
+        max: 15
+      }
+    ],
+    fn: transformations.unitConvert
+  },
+  {
+    id: 'jsonToPhp',
+    name: 'JSON to PHP',
+    description: 'Convert JSON into a formatted PHP array literal',
+    category: 'conversion',
+    fn: transformations.jsonToPhp
+  },
+  {
+    id: 'jsonToPython',
+    name: 'JSON to Python',
+    description: 'Convert JSON into a formatted Python literal',
+    category: 'conversion',
+    fn: transformations.jsonToPython
+  },
+  {
+    id: 'jsonToTypeScript',
+    name: 'JSON to TypeScript',
+    description: 'Infer TypeScript interfaces from JSON objects and arrays',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'rootName',
+        type: 'string',
+        description: 'Root interface name',
+        default: 'Root'
+      }
+    ],
+    fn: transformations.jsonToTypeScript
+  },
+  {
+    id: 'phpSerialize',
+    name: 'JSON to PHP Serialized Data',
+    description: 'Serialize JSON-compatible data using the PHP serialization format',
+    category: 'conversion',
+    fn: transformations.phpSerialize
+  },
+  {
+    id: 'phpUnserialize',
+    name: 'PHP Serialized Data to JSON',
+    description: 'Parse PHP serialized values into formatted JSON',
+    category: 'conversion',
+    fn: transformations.phpUnserialize
+  },
+  {
+    id: 'qrDecode',
+    name: 'QR Code Reader',
+    description: 'Read QR content from a local PNG, JPEG, or WebP image',
+    category: 'conversion',
+    fn: transformations.qrDecode
+  },
+  {
+    id: 'imageConvertCompress',
+    name: 'Image Converter / Compressor',
+    description: 'Resize and convert local images to PNG, JPEG, or WebP',
+    category: 'conversion',
+    parameters: [
+      {
+        name: 'format',
+        type: 'string',
+        description: 'Output MIME type',
+        default: 'image/webp'
+      },
+      {
+        name: 'quality',
+        type: 'number',
+        description: 'JPEG/WebP quality from 0.05 to 1',
+        default: 0.82,
+        min: 0.05,
+        max: 1
+      },
+      {
+        name: 'maxWidth',
+        type: 'number',
+        description: 'Maximum output width',
+        default: 1920,
+        min: 1,
+        max: 16384
+      },
+      {
+        name: 'maxHeight',
+        type: 'number',
+        description: 'Maximum output height',
+        default: 1920,
+        min: 1,
+        max: 16384
+      }
+    ],
+    fn: transformations.imageConvertCompress
   },
   {
     id: 'queryStringToJson',
@@ -1072,6 +1351,62 @@ const transformationMetadata: Transformation[] = [
       }
     ],
     fn: transformations.tokenGenerate
+  },
+  {
+    id: 'nanoIdGenerate',
+    name: 'Nano ID Generator',
+    description: 'Generate compact, URL-safe identifiers using cryptographically secure randomness',
+    category: 'generators',
+    parameters: [
+      {
+        name: 'length',
+        type: 'number',
+        description: 'Identifier length',
+        default: 21,
+        min: 1,
+        max: 256
+      },
+      {
+        name: 'count',
+        type: 'number',
+        description: 'Number of identifiers to generate',
+        default: 1,
+        min: 1,
+        max: 1000
+      }
+    ],
+    fn: transformations.nanoIdGenerate
+  },
+  {
+    id: 'qrGenerate',
+    name: 'QR Code Generator',
+    description: 'Generate a downloadable PNG QR code from text or a URL',
+    category: 'generators',
+    parameters: [
+      {
+        name: 'errorCorrectionLevel',
+        type: 'string',
+        description: 'Error correction level: L, M, Q, or H',
+        default: 'M'
+      },
+      {
+        name: 'size',
+        type: 'number',
+        description: 'PNG width in pixels',
+        default: 384,
+        min: 128,
+        max: 2048
+      },
+      {
+        name: 'margin',
+        type: 'number',
+        description: 'Quiet-zone size in modules',
+        default: 4,
+        min: 0,
+        max: 20
+      }
+    ],
+    fn: transformations.qrGenerate
   },
   // CRC
   {

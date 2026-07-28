@@ -61,6 +61,10 @@ import DiffPage from './DiffPage.vue'
 import ImageBase64Page from './ImageBase64Page.vue'
 import PipelinePage from './PipelinePage.vue'
 import CustomTransformationBuilderPage from './CustomTransformationBuilderPage.vue'
+import JsonPathPage from './JsonPathPage.vue'
+import JsonSchemaPage from './JsonSchemaPage.vue'
+import QrCodePage from './QrCodePage.vue'
+import ImageToolsPage from './ImageToolsPage.vue'
 
 const transformationPageMap: Record<string, Component> = {
   base64Encode: Base64EncodePage,
@@ -122,6 +126,11 @@ const transformationPageMap: Record<string, Component> = {
   aesDecrypt: AesPage,
   regexReplace: RegexReplacePage,
   regexTester: RegexTesterPage,
+  jsonPathQuery: JsonPathPage,
+  jsonSchemaValidate: JsonSchemaPage,
+  qrGenerate: QrCodePage,
+  qrDecode: QrCodePage,
+  imageConvertCompress: ImageToolsPage,
   pipelineTransform: PipelinePage,
   customTransformationBuilder: CustomTransformationBuilderPage
 }

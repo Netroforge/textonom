@@ -5,6 +5,10 @@ describe('transformation registry', () => {
   const all = getAllTransformations()
   const categoryIds = new Set(getAllCategories().map((c) => c.id))
 
+  it('contains the documented 127 built-in transformations', () => {
+    expect(all).toHaveLength(127)
+  })
+
   it('has a unique id for every transformation', () => {
     const ids = all.map((t) => t.id)
     expect(new Set(ids).size).toBe(ids.length)

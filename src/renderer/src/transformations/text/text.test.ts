@@ -7,6 +7,8 @@ import rot13 from '@renderer/transformations/text/rot13'
 import caesarCipher from '@renderer/transformations/text/caesar-cipher'
 import natoAlphabet from '@renderer/transformations/text/nato-alphabet'
 import stripHtmlTags from '@renderer/transformations/text/strip-html'
+import { defangIndicators, fangIndicators } from '@renderer/transformations/text/indicators'
+import stringInspector from '@renderer/transformations/text/string-inspector'
 
 describe('removeDuplicateWords', () => {
   it('returns empty string for empty input', async () => {
@@ -106,5 +108,29 @@ describe('stripHtmlTags', () => {
 
   it('removes tags but keeps text content', async () => {
     expect(await stripHtmlTags('<p>Hello <b>world</b></p>')).toBe('Hello world')
+  })
+})
+
+describe('indicator defanging', () => {
+  it('defangs and restores URLs, domains, and IP addresses', async () => {
+    const input = 'Visit https://example.com or 192.0.2.1'
+    const defanged = await defangIndicators(input)
+
+    expect(defanged).toBe('Visit hxxps[://]example[.]com or 192[.]0[.]2[.]1')
+    expect(await fangIndicators(defanged)).toBe(input)
+  })
+
+  it('restores common dot spellings', async () => {
+    expect(await fangIndicators('example(dot)com test[dot]org')).toBe('example.com test.org')
+  })
+})
+
+describe('stringInspector', () => {
+  it('reports code points, UTF-8 bytes, and JavaScript escapes', async () => {
+    const result = await stringInspector('A🎉\n')
+
+    expect(result).toContain('0\tA\tU+0041\t41\t\\u0041')
+    expect(result).toContain('1\t🎉\tU+1F389\tF0 9F 8E 89\t\\u{1F389}')
+    expect(result).toContain('3\tLINE FEED\tU+000A\t0A\t\\u000A')
   })
 })
