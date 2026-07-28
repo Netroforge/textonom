@@ -1,6 +1,6 @@
 {
   "name": "textonom",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "A private desktop toolkit with 100 local text transformations and Smart Paste",
   "main": "./out/main/index.js",
   "desktopName": "Textonom",
